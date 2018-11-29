@@ -2,7 +2,7 @@ import json
 
 import requests
 
-from constant import USER_AGENT, COZYTOUCH_ENDPOINT
+from cozypy.constant import USER_AGENT, COZYTOUCH_ENDPOINT
 from cozypy.exception import CozytouchException
 from cozypy.models import CozytouchSetup
 
