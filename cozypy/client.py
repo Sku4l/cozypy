@@ -34,7 +34,7 @@ class CozytouchClient:
         if response.status_code != 200:
             raise CozytouchException("Unable to retrieve setup %s " % response.content)
 
-        return SetupHandler(response)
+        return SetupHandler(response.json(), self)
 
     def get_states(self, devices: list):
         """ Get devices states """

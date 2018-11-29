@@ -3,10 +3,10 @@ from cozypy.objects import CozytouchDevice, CozytouchPlace
 
 class SetupHandler:
 
-    def __init__(self, response):
+    def __init__(self, data, client):
+        self.client = client
+        self.data = data
         self.places = []
-
-        data = response.json()
 
         self.__build_places(data["setup"]["rootPlace"])
         self.__build_devices(data["setup"]["devices"])
@@ -23,6 +23,7 @@ class SetupHandler:
             if place is None:
                 raise CozytouchException("Place %s not found" % data["placeOID"])
             device = CozytouchDevice(data=data)
+            device.client = self.client
             place.add_device(device)
 
     def __find_place(self, oid):
