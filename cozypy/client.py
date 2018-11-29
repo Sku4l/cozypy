@@ -4,7 +4,7 @@ import requests
 
 from cozypy.constant import USER_AGENT, COZYTOUCH_ENDPOINT
 from cozypy.exception import CozytouchException
-from cozypy.models import CozytouchSetup
+from cozypy.handlers import SetupHandler
 
 
 class CozytouchClient:
@@ -34,7 +34,7 @@ class CozytouchClient:
         if response.status_code != 200:
             raise CozytouchException("Unable to retrieve setup %s " % response.content)
 
-        return CozytouchSetup(response.json())
+        return SetupHandler(response)
 
     def get_states(self, devices: list):
         """ Get devices states """
@@ -68,4 +68,3 @@ class CozytouchClient:
             raise CozytouchException("Unable to send command %s" % response.content)
 
         return response.json()
-

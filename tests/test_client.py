@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 from requests import Session
 
-from constant import TEMPERATURE_STATE
+from cozypy.constant import DeviceState
 from cozypy.client import CozytouchClient
 
 
@@ -59,11 +59,29 @@ setup_response = {
                 "attributes":[],
                 "available": True,
                 "enabled": True,
-                "placeOID": "452bedf0-1891-4126-900d-2eb6b69a9db9",
+                "placeOID": "aff4857b-18be-4201-b14c-d8233b439931",
                 "widget": "TemperatureSensor",
                 "type": 2,
                 "oid": "fd053def-0e93-4a1f-9f52-9450afada98b",
                 "uiClass": "TemperatureSensor"
+            },
+            {
+                'creationTime': 1541532294000,
+                'lastUpdateTime': 1541532294000,
+                'label': 'I2G_Actuator',
+                'deviceURL': 'io://0812-9894-4518/10071767#1',
+                'shortcut': False,
+                'controllableName': 'io:AtlanticElectricalHeaterWithAdjustableTemperatureSetpointIOComponent',
+                'definition': {},
+                'attributes': [],
+                'available': True,
+                'enabled': True,
+                'placeOID': 'aff4857b-18be-4201-b14c-d8233b439931',
+                'widget': 'AtlanticElectricalHeaterWithAdjustableTemperatureSetpoint',
+                'type': 1,
+                'oid': 'aff4857b-18be-4201-b14c-d8233b439931',
+                'uiClass': 'HeatingSystem',
+                'states':[]
             }
         ],
         "rootPlace": {
@@ -77,6 +95,28 @@ setup_response = {
     }
 }
 
+def print_setup(setup):
+    from cozypy.objects import CozytouchPlace
+
+    for place in setup.places:
+        place: CozytouchPlace = place
+        print("%s" % place.label)
+
+        if len(place.pods) > 0:
+            print("\tPods")
+            for pod in place.pods:
+                print("\t\t- %s" % pod.label)
+
+        if len(place.sensors) > 0:
+            print("\tSensors")
+            for sensor in place.sensors:
+                print("\t\t- %s %s" % (sensor.label, sensor.widget))
+
+        if len(place.heaters) > 0:
+            print("\tHeaters")
+            for heater in place.heaters:
+                print("\t\t- %s" % heater.label)
+
 
 class TestClient(unittest.TestCase):
 
@@ -88,10 +128,13 @@ class TestClient(unittest.TestCase):
             with patch.object(Session, 'get') as mock_get:
                 mock_get.return_value = mock_response(200, setup_response, True)
                 setup = client.get_setup()
+
+                print_setup(setup)
+
                 self.assertIsNotNone(setup)
                 self.assertEqual(len(setup.places), 1)
-                self.assertEqual(len(setup.devices), 1)
-                self.assertEqual(setup.devices[0].get_state(TEMPERATURE_STATE), 19.84)
+                self.assertEqual(len(setup.places[0].sensors), 1)
+                self.assertEqual(setup.places[0].sensors[0].get_state(DeviceState.TEMPERATURE_STATE), 19.84)
 
 
 if __name__ == '__main__':
