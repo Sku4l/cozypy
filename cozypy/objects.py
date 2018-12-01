@@ -144,7 +144,10 @@ class CozytouchHeater(CozytouchDevice):
 
     @property
     def operation_list(self):
-        return self.get_state_definition(DeviceState.OPERATING_MODE_STATE)
+        definition = self.get_state_definition(DeviceState.OPERATING_MODE_STATE)
+        if definition is not None:
+            return definition["values"]
+        return []
 
 
 class CozytouchPlace(CozytouchObject):

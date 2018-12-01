@@ -20,6 +20,10 @@ try:
     for heater in setup.heaters:
         print(heater.id)
         print(heater.name)
+        print(heater.temperature)
+        print(heater.eco_temperature)
+        print(heater.comfort_temperature)
+        print(heater.operation_list)
 
         if len(heater.sensors) > 0:
             print("\tSensors")
