@@ -28,3 +28,4 @@ class DeviceState(enum.Enum):
     COMFORT_TEMPERATURE_STATE = "core:ComfortRoomTemperatureState"
     ECO_TEMPERATURE_STATE = "core:EcoRoomTemperatureState"
     ON_OFF_STATE = "core:OnOffState"
+    ELECTRIC_ENERGY_CONSUMTION_STATE = "core:ElectricEnergyConsumptionState"

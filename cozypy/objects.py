@@ -85,8 +85,13 @@ class CozytouchDevice(CozytouchObject):
 class CozytouchContactSensor(CozytouchDevice):
     pass
 
+
 class CozytouchElectricitySensor(CozytouchDevice):
-    pass
+
+    @property
+    def consumption(self):
+        return self.get_state(DeviceState.ELECTRIC_ENERGY_CONSUMTION_STATE)
+
 
 class CozytouchTemperatureSensor(CozytouchDevice):
 
