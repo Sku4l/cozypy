@@ -1,5 +1,7 @@
+from cozypy.constant import DeviceType
 from cozypy.exception import CozytouchException
-from cozypy.objects import CozytouchDevice, CozytouchPlace
+from cozypy.objects import CozytouchDevice, CozytouchPlace, CozytouchHeater
+
 
 class SetupHandler:
 
@@ -7,6 +9,7 @@ class SetupHandler:
         self.client = client
         self.data = data
         self.places = []
+        self.heaters = []
 
         self.__build_places(data["setup"]["rootPlace"])
         self.__build_devices(data["setup"]["devices"])
@@ -18,16 +21,38 @@ class SetupHandler:
         self.places.append(CozytouchPlace(place))
 
     def __build_devices(self, devices):
-        for data in devices:
-            place:CozytouchPlace = self.__find_place(data["placeOID"])
+        sensors = []
+        heaters = []
+        for device in devices:
+            #place:CozytouchPlace = self.__find_place(data["placeOID"])
+            #if place is None:
+            #    raise CozytouchException("Place %s not found" % data["placeOID"])
+            if device["widget"] == DeviceType.HEATER.value:
+                heaters.append(device)
+            else:
+                sensors.append(device)
+            #device = CozytouchDevice(data=data)
+            #device.client = self.client
+            #place.add_device(device)
+
+        def extract_id(url):
+            if '#' not in url:
+                return url;
+            return url[0:url.index("#")]
+
+        for heater in heaters:
+            place: CozytouchPlace = self.__find_place(heater["placeOID"])
             if place is None:
-                raise CozytouchException("Place %s not found" % data["placeOID"])
-            device = CozytouchDevice(data=data)
-            device.client = self.client
-            place.add_device(device)
+                raise CozytouchException("Place %s not found" % heater["placeOID"])
+            heater_url = extract_id(heater["deviceURL"])
+            heater_sensors = [CozytouchDevice.build(sensor, self.client, place) for sensor in sensors if extract_id(sensor["deviceURL"]) == heater_url]
+            heater = CozytouchHeater(heater)
+            heater.sensors = heater_sensors
+            heater.place = place
+            self.heaters.append(heater)
 
     def __find_place(self, oid):
         for place in self.places:
-            if place.oid == oid:
+            if place.id == oid:
                 return place
         return None

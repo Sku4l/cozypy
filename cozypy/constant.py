@@ -24,7 +24,7 @@ class DeviceStateType(enum.Enum):
 class DeviceState(enum.Enum):
     OPERATING_MODE_STATE = 'core:OperatingModeState'
     OCCUPANCY_STATE = "core:OccupancyState"
-    CURRENT_TEMPERATURE_STATE = "core:TemperatureState"
+    TEMPERATURE_STATE = "core:TemperatureState"
     COMFORT_TEMPERATURE_STATE = "core:ComfortRoomTemperatureState"
     ECO_TEMPERATURE_STATE = "core:EcoRoomTemperatureState"
     ON_OFF_STATE = "core:OnOffState"

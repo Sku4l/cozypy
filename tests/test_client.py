@@ -4,7 +4,6 @@ from unittest.mock import patch
 
 from requests import Session
 
-from cozypy.constant import DeviceState
 from cozypy.client import CozytouchClient
 
 
@@ -134,7 +133,7 @@ setup_response = {
                 'creationTime': 1541532294000,
                 'lastUpdateTime': 1541532294000,
                 'label': 'I2G_Actuator',
-                'deviceURL': 'io://0812-9894-4518/10071767#1',
+                'deviceURL': 'io://0812-9894-4518/10071768#1',
                 'shortcut': False,
                 'controllableName': 'io:AtlanticElectricalHeaterWithAdjustableTemperatureSetpointIOComponent',
                 'definition': {},
@@ -177,17 +176,7 @@ class TestClient(unittest.TestCase):
 
                 self.assertIsNotNone(setup)
                 self.assertEqual(len(setup.places), 1)
-
-                place = setup.places[0]
-
-                self.assertEqual(len(place.sensors), 2)
-                self.assertEqual(len(place.heaters), 3)
-
-                self.assertEqual(place.temperature, 17)
-                self.assertEqual(place.eco_temperature, 18)
-                self.assertEqual(place.comfort_temperature, 20)
-                self.assertEqual(place.on_off, 'on')
-                self.assertEqual(place.sensors[0].get_state(DeviceState.CURRENT_TEMPERATURE_STATE), 14)
+                self.assertEqual(len(setup.heaters), 3)
 
 
 

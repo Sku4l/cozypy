@@ -14,20 +14,18 @@ try:
     client = CozytouchClient(clientId, clientPassword)
     setup = client.get_setup()
     for place in setup.places:
-        print(place.label)
-        if len(place.heaters) > 0:
-            print("\tHeaters")
-            for heater in place.heaters:
-                print("\t\t %s" % heater.label)
-        if len(place.sensors) > 0:
-            print("\tSensors")
-            for sensor in place.sensors:
-                print("\t\t %s %s" % (sensor.label, sensor.widget))
+        print(place.id)
+        print(place.name)
 
-        if len(place.pods) > 0:
-            print("\tPods")
-            for pod in place.pods:
-                print("\t\t %s" % pod.label)
+    for heater in setup.heaters:
+        print(heater.id)
+        print(heater.name)
+
+        if len(heater.sensors) > 0:
+            print("\tSensors")
+            for sensor in heater.sensors:
+                print("\t\t %s %s %s" % (sensor.id, sensor.name, sensor.widget))
+
 
 except CozytouchException as e:
     logger.exception(e)

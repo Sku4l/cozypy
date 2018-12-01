@@ -1,34 +1,44 @@
-from functools import reduce
-
-import numpy as np
-
+from cozypy.constant import DeviceType, DeviceState
 from cozypy.exception import CozytouchException
-
-from cozypy.constant import DeviceType, DeviceState, DeviceStateType
 
 
 class CozytouchObject:
 
     def __init__(self, data:dict):
+        self.client = None
         self.data = data
-        self.oid = data["oid"]
-        self.label = data["label"]
-        self.creationTime = data["creationTime"]
-        self.lastUpdateTime = data["lastUpdateTime"]
+
+    @property
+    def id(self):
+        return self.data["oid"]
+
+    @property
+    def name(self):
+        return self.data["label"]
+
+    @property
+    def creationTime(self):
+        return self.data["creationTime"]
+
+    @property
+    def lastUpdateTime(self):
+        return self.data["lastUpdateTime"]
+
 
 class CozytouchDevice(CozytouchObject):
 
     def __init__(self, data:dict):
         super(CozytouchDevice, self).__init__(data)
         self.states = data["states"]
-        self.widget = DeviceType(data["widget"])
-        self.deviceUrl = data["deviceURL"]
-        self.client = None
+        self.place = None
 
-    def update(self):
-        if self.client:
-            response = self.client.get_states([self])
-            self.states = response["devices"][0]["states"]
+    @property
+    def deviceUrl(self):
+        return self.data["deviceURL"]
+
+    @property
+    def widget(self):
+        return DeviceType(self.data['widget'])
 
     def get_state_definition(self, state:DeviceState):
         for definition in self.data["definition"]["states"]:
@@ -48,98 +58,97 @@ class CozytouchDevice(CozytouchObject):
                 return True
         return False
 
+    def update(self):
+        if self.client:
+            updated_data = self.client.get_states([self])
+            self.states = updated_data["devices"][0]["states"]
+
+    @staticmethod
+    def build(data, client, place):
+        device = None
+        if data["widget"] == DeviceType.OCCUPANCY.value:
+            device = CozytouchOccupancySensor(data)
+        elif data["widget"] == DeviceType.TEMPERATURE.value:
+            device = CozytouchTemperatureSensor(data)
+        elif data["widget"] == DeviceType.ELECTRECITY.value:
+            device = CozytouchElectricitySensor(data)
+        elif data["widget"] == DeviceType.CONTACT.value:
+            device = CozytouchContactSensor(data)
+
+        if device is None:
+            raise CozytouchException("Unknown device %s" % data["widget"])
+
+        device.client = client
+        device.place = place
+        return device
+
+class CozytouchContactSensor(CozytouchDevice):
+    pass
+
+class CozytouchElectricitySensor(CozytouchDevice):
+    pass
+
+class CozytouchTemperatureSensor(CozytouchDevice):
+
+    @property
+    def temperature(self):
+        return self.get_state(DeviceState.TEMPERATURE_STATE)
+
+
+class CozytouchOccupancySensor(CozytouchDevice):
+
+    @property
+    def is_occupied(self):
+        state = self.get_state(DeviceState.OCCUPANCY_STATE)
+        if state == "noPersonInside":
+            return False
+        elif state == "PersonInside":
+            return True
+        return False
+
+
+class CozytouchHeater(CozytouchDevice):
+
+    def __init__(self, data:dict):
+        super(CozytouchHeater, self).__init__(data)
+        self.sensors = []
+
+    def __get_sensors(self, type:DeviceType):
+        for sensor in self.sensors:
+            if sensor.widget == type:
+                return sensor
+        return None
+
+    @property
+    def is_on(self):
+        return self.get_state(DeviceState.ON_OFF_STATE)
+
+    @property
+    def temperature(self):
+        sensor = self.__get_sensors(DeviceType.TEMPERATURE)
+        if sensor is None:
+            return 0
+        return sensor.temperature
+
+    @property
+    def comfort_temperature(self):
+        return self.get_state(DeviceState.COMFORT_TEMPERATURE_STATE)
+
+    @property
+    def eco_temperature(self):
+        return self.get_state(DeviceState.ECO_TEMPERATURE_STATE)
+
+    @property
+    def operation_mode(self):
+        return self.get_state(DeviceState.OPERATING_MODE_STATE)
+
+    @property
+    def operation_list(self):
+        return self.get_state_definition(DeviceState.OPERATING_MODE_STATE)
+
 
 class CozytouchPlace(CozytouchObject):
 
     def __init__(self, data):
         super(CozytouchPlace, self).__init__(data)
-        self.pods = []
-        self.sensors = []
-        self.heaters = []
 
-    @property
-    def operation_mode(self):
-        return self.__aggregate_state(DeviceType.HEATER, DeviceState.OPERATING_MODE_STATE)
-
-    @property
-    def temperature(self):
-        return self.__aggregate_state(DeviceType.TEMPERATURE, DeviceState.CURRENT_TEMPERATURE_STATE)
-
-    @property
-    def on_off(self):
-        return self.__aggregate_state(DeviceType.HEATER, DeviceState.ON_OFF_STATE)
-
-    @property
-    def comfort_temperature(self):
-        return self.__aggregate_state(DeviceType.HEATER, DeviceState.COMFORT_TEMPERATURE_STATE)
-
-    @property
-    def eco_temperature(self):
-        return self.comfort_temperature - self.__aggregate_state(DeviceType.HEATER, DeviceState.ECO_TEMPERATURE_STATE)
-
-    def add_device(self, device):
-        if device.widget == DeviceType.HEATER:
-            self.heaters.append(device)
-        elif device.widget == DeviceType.POD:
-            self.pods.append(device)
-        else:
-            self.sensors.append(device)
-
-    def get_state_definition(self, type: DeviceType, state:DeviceState):
-        devices = self.__get_devices(type, state)
-
-        values = []
-        for device in devices:
-            definition = device.get_state_definition(state)
-            if definition is not None:
-                values.append(definition["values"])
-
-        if not len(values):
-            return None
-        if len(values) == 1:
-            return values[0]
-
-        values = reduce(np.intersect1d, (value for value in values))
-        return values
-
-    def __filter_devices(self, devices, state:DeviceState):
-        return [device for device in devices if device.has_state(state)]
-
-    def __get_devices(self, type:DeviceType, state:DeviceState) -> list:
-        if type == DeviceType.HEATER:
-            devices = self.__filter_devices(self.heaters, state)
-        elif type == DeviceType.POD:
-            devices = self.__filter_devices(self.pods, state)
-        else:
-            devices = self.__filter_devices(self.sensors, state)
-        return devices
-
-    def __aggregate_state(self, type:DeviceType, state:DeviceState):
-        devices = self.__get_devices(type, state)
-        if devices is None or not len(devices):
-            return None
-
-        type = None
-        values = []
-        for device in devices:
-            state_info = device.get_state(state, False)
-            if state_info is not None:
-                state_type = DeviceStateType(state_info["type"])
-                if type is not None and type != state_type:
-                    raise CozytouchException("Inconsistent state type")
-                type = state_type
-                if state_type in [DeviceStateType.INT, DeviceStateType.FLOAT, DeviceStateType.STR]:
-                    values.append(state_info["value"])
-                else:
-                    raise CozytouchException("Unable to aggregate non numeric state")
-
-        if not len(values):
-            return None
-        if type in [DeviceStateType.INT, DeviceStateType.FLOAT]:
-            return np.average(values)
-        elif type == DeviceStateType.STR:
-            values, counts = np.unique(values, return_counts=True)
-            idx = np.argmax(counts)
-            value = values[idx]
-            return value
-        return None
