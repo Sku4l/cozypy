@@ -17,18 +17,19 @@ try:
         print(place.id)
         print(place.name)
 
+    print()
     for heater in setup.heaters:
-        print(heater.id)
-        print(heater.name)
-        print(heater.temperature)
-        print(heater.eco_temperature)
-        print(heater.comfort_temperature)
-        print(heater.operation_list)
+        print("\t", heater.name)
+        print("\t\t", heater.id)
+        print("\t\t", heater.supported_states)
+        for state in heater.supported_states:
+            print("\t\t", state.value, heater.get_state(state))
 
         if len(heater.sensors) > 0:
-            print("\tSensors")
+            print("\t\tSensors")
             for sensor in heater.sensors:
-                print("\t\t %s %s %s" % (sensor.id, sensor.name, sensor.widget))
+                print("\t\t\t %s %s %s" % (sensor.id, sensor.name, sensor.widget))
+
 
 
 except CozytouchException as e:
