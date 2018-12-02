@@ -7,6 +7,7 @@ USER_AGENT = "Home assistant/Cozytouch"
 class DeviceType(enum.Enum):
     POD = "Pod"
     HEATER = "AtlanticElectricalHeaterWithAdjustableTemperatureSetpoint"
+    HEATER_PASV = "AtlanticElectricalHeater"
     TEMPERATURE = "TemperatureSensor"
     CONTACT = "ContactSensor"
     OCCUPANCY = "OccupancySensor"
@@ -22,10 +23,22 @@ class DeviceStateType(enum.Enum):
 
 
 class DeviceState(enum.Enum):
-    OPERATING_MODE_STATE = 'core:OperatingModeState'
+    AWAY_STATE = 'core:HolidaysModeState'
+    OPERATING_MODE_STATE = 'io:TargetHeatingLevelState'
     OCCUPANCY_STATE = "core:OccupancyState"
     TEMPERATURE_STATE = "core:TemperatureState"
     COMFORT_TEMPERATURE_STATE = "core:ComfortRoomTemperatureState"
     ECO_TEMPERATURE_STATE = "core:EcoRoomTemperatureState"
     ON_OFF_STATE = "core:OnOffState"
     ELECTRIC_ENERGY_CONSUMTION_STATE = "core:ElectricEnergyConsumptionState"
+
+
+class DeviceCommand(enum.Enum):
+    SET_OPERATION_MODE = "setHeatingLevel"
+    SET_ECO_TEMP = "setEcoTemperature"
+    SET_COMFORT_TEMP = "setComfortTemperature"
+    SET_AWAY_MODE = "setHolidays"
+
+    REFRESH_OPERATION_MODE = "refreshHeatingLevel"
+    REFRESH_ECO_TEMPERATURE= "refreshEcoTemperature"
+    REFRESH_COMFORT_TEMPERATURE = "refreshComfortTemperature"
