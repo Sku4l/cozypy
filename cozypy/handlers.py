@@ -24,16 +24,10 @@ class SetupHandler:
         sensors = []
         heaters = []
         for device in devices:
-            #place:CozytouchPlace = self.__find_place(data["placeOID"])
-            #if place is None:
-            #    raise CozytouchException("Place %s not found" % data["placeOID"])
-            if device["widget"] == DeviceType.HEATER.value:
+            if device["widget"] in [DeviceType.HEATER.value, DeviceType.HEATER_PASV.value]:
                 heaters.append(device)
             else:
                 sensors.append(device)
-            #device = CozytouchDevice(data=data)
-            #device.client = self.client
-            #place.add_device(device)
 
         def extract_id(url):
             if '#' not in url:
@@ -49,6 +43,7 @@ class SetupHandler:
             heater = CozytouchHeater(heater)
             heater.sensors = heater_sensors
             heater.place = place
+            heater.client = self.client
             self.heaters.append(heater)
 
     def __find_place(self, oid):
