@@ -2,7 +2,7 @@ import json
 
 import requests
 
-from cozypy.constant import USER_AGENT, COZYTOUCH_ENDPOINT
+from cozypy.constant import USER_AGENT, COZYTOUCH_ENDPOINT, DeviceCommand
 from cozypy.exception import CozytouchException
 from cozypy.handlers import SetupHandler
 
@@ -11,6 +11,7 @@ class CozytouchClient:
 
     def __init__(self, userId, userPassword):
         self.session = requests.Session()
+        self.retry = 0
         self.userId = userId
         self.userPassword = userPassword
         self.__authenticate()
@@ -25,18 +26,28 @@ class CozytouchClient:
         if response.status_code != 200:
             raise CozytouchException("Authentication failed")
 
-    def get_setup(self):
+    def __retry(self, response, callback, *kwargs):
+        if response.status_code == 401 and self.retry < 3:
+            self.retry += 1
+            self.__authenticate()
+            callback(kwargs)
+        else:
+            self.retry = 0
+
+    def get_setup(self, *args):
         """ Get cozytouch setup (devices, places) """
 
         headers = {'User-Agent': USER_AGENT}
         response = self.session.get(COZYTOUCH_ENDPOINT + '/getSetup', headers=headers)
+
+        self.__retry(response, self.get_setup)
 
         if response.status_code != 200:
             raise CozytouchException("Unable to retrieve setup %s " % response.content)
 
         return SetupHandler(response.json(), self)
 
-    def get_states(self, devices: list):
+    def get_states(self, devices: list, *args):
         """ Get devices states """
         headers = {'User-Agent': USER_AGENT, 'Content-type': 'application/json'}
         payload = [
@@ -48,23 +59,34 @@ class CozytouchClient:
         ]
         response = self.session.post(COZYTOUCH_ENDPOINT + '/getStates', headers=headers, data=json.dumps(payload))
 
+        self.__retry(response, self.get_states, *args)
+
         if response.status_code != 200:
             raise CozytouchException("Unable to retrieve devices states %s" % response.content)
 
         return response.json()
 
-    def send_command(self, device, commands):
+    def send_command(self, label, device, command:DeviceCommand, parameters = None, *args):
         """ Get devices states """
         headers = {'User-Agent': USER_AGENT, 'Content-type': 'application/json'}
-        payload = [
-            {
-             "deviceURL": device.deviceUrl,
-             "commands": commands
-            }
-        ]
+        payload = {
+            "label": label,
+            "actions": [
+                {
+                 "deviceURL": device.deviceUrl,
+                 "commands": [
+                     {"name": command.value, "parameters": parameters}
+                 ]
+                }
+            ]
+        }
         response = self.session.post(COZYTOUCH_ENDPOINT + '/apply', headers=headers, data=json.dumps(payload))
+
+        self.__retry(response, self.send_command, *args)
 
         if response.status_code != 200:
             raise CozytouchException("Unable to send command %s" % response.content)
 
-        return response.json()
+        json_response = response.json()
+        print(json_response)
+        return json_response
