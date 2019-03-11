@@ -14,7 +14,6 @@ class SetupHandler:
         self.__build_places(data["setup"]["rootPlace"])
         self.__build_devices(data["setup"]["devices"])
 
-
     def __build_places(self, place):
         for subPlace in place["subPlaces"]:
             self.__build_places(subPlace)
