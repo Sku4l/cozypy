@@ -110,7 +110,7 @@ class CozytouchOccupancySensor(CozytouchDevice):
         state = self.get_state(DeviceState.OCCUPANCY_STATE)
         if state == "noPersonInside":
             return False
-        elif state == "PersonInside":
+        elif state == "personInside":
             return True
         return False
 
