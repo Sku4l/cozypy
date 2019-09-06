@@ -96,7 +96,6 @@ class CozytouchDevice(CozytouchObject):
         return False
 
     def update(self):
-        sleep(2)
         if self.client is None:
             raise CozytouchException("Unable to execute command")
         self.states = self.client.get_device_info(self.deviceUrl)
