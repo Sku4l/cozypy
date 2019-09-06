@@ -1,4 +1,3 @@
-import logging
 from time import sleep
 
 from cozypy.constant import DeviceType, DeviceState, DeviceCommand, OperatingModeState, \

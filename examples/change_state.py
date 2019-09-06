@@ -1,6 +1,5 @@
 import os
 import logging
-import time
 
 from cozypy.client import CozytouchClient
 from cozypy.exception import CozytouchException

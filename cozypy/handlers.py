@@ -1,6 +1,6 @@
 from cozypy.constant import DeviceType
 from cozypy.exception import CozytouchException
-from cozypy.objects import CozytouchDevice, CozytouchPlace, CozytouchHeater
+from cozypy.objects import CozytouchDevice, CozytouchPlace
 
 
 class SetupHandler:

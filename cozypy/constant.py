@@ -1,5 +1,3 @@
-import enum
-
 from cozypy.utils import TextEnum
 
 COZYTOUCH_BASE_URL = "https://ha110-1.overkiz.com/enduser-mobile-web/enduserAPI"
