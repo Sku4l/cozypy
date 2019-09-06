@@ -19,149 +19,148 @@ def mock_response(status, content, json_data = False):
 
 
 setup_response = {
-    'setup': {
+    "creationTime": 1541529744000,
+    "lastUpdateTime": 1541529744000,
+    "id": "SETUP-0812-9894-4518",
+    "location": {
         "creationTime": 1541529744000,
         "lastUpdateTime": 1541529744000,
-        "id": "SETUP-0812-9894-4518",
-        "location": {
-            "creationTime": 1541529744000,
-            "lastUpdateTime": 1541529744000,
-            "city": "Paris",
-            "country": "Paris",
-            "postalCode": "75000",
-            "addressLine1": "Paris",
-            "timezone": "Europe/Paris",
-            "longitude": 2.343,
-            "latitude": 47.939,
-            "twilightMode": 2,
-            "twilightAngle": "CIVIL",
-            "twilightCity": "paris",
-            "summerSolsticeDuskMinutes": 1290,
-            "winterSolsticeDuskMinutes": 990,
-            "twilightOffsetEnabled": False,
-            "dawnOffset": 0,
-            "duskOffset": 0
+        "city": "Paris",
+        "country": "Paris",
+        "postalCode": "75000",
+        "addressLine1": "Paris",
+        "timezone": "Europe/Paris",
+        "longitude": 2.343,
+        "latitude": 47.939,
+        "twilightMode": 2,
+        "twilightAngle": "CIVIL",
+        "twilightCity": "paris",
+        "summerSolsticeDuskMinutes": 1290,
+        "winterSolsticeDuskMinutes": 990,
+        "twilightOffsetEnabled": False,
+        "dawnOffset": 0,
+        "duskOffset": 0
+    },
+    "devices": [
+        {
+            "creationTime": 1541532294000,
+            "lastUpdateTime": 1541532294000,
+            "label": "IO (19071767#3)",
+            "deviceURL": "io://0832-9894-4518/10071767#2",
+            "shortcut": False,
+            "controllableName": "io:TemperatureInCelciusIOSystemDeviceSensor",
+            "definition":{"commands":[], "states":[]},
+            "states":[
+                {"name": "core:StatusState", "type": 3, "value": "available" },
+                {"name": "core:TemperatureState", "type": 2, "value": 14}
+            ],
+            "attributes":[],
+            "available": True,
+            "enabled": True,
+            "placeOID": "aff4857b-18be-4201-b14c-d8233b439931",
+            "widget": "TemperatureSensor",
+            "type": 2,
+            "oid": "ed053def-0e93-4a1f-9f52-9450afada98b",
+            "uiClass": "TemperatureSensor"
         },
-        "devices": [
-            {
-                "creationTime": 1541532294000,
-                "lastUpdateTime": 1541532294000,
-                "label": "IO (19071767#3)",
-                "deviceURL": "io://0832-9894-4518/10071767#2",
-                "shortcut": False,
-                "controllableName": "io:TemperatureInCelciusIOSystemDeviceSensor",
-                "definition":{"commands":[], "states":[]},
-                "states":[
-                    {"name": "core:StatusState", "type": 3, "value": "available" },
-                    {"name": "core:TemperatureState", "type": 2, "value": 14}
-                ],
-                "attributes":[],
-                "available": True,
-                "enabled": True,
-                "placeOID": "aff4857b-18be-4201-b14c-d8233b439931",
-                "widget": "TemperatureSensor",
-                "type": 2,
-                "oid": "ed053def-0e93-4a1f-9f52-9450afada98b",
-                "uiClass": "TemperatureSensor"
-            },
-{
-                "creationTime": 1541532294000,
-                "lastUpdateTime": 1541532294000,
-                "label": "IO (19071767#2)",
-                "deviceURL": "io://0832-9894-4518/10071767#2",
-                "shortcut": False,
-                "controllableName": "io:TemperatureInCelciusIOSystemDeviceSensor",
-                "definition":{"commands":[], "states":[]},
-                "states":[
-                    {"name": "core:StatusState", "type": 3, "value": "available" },
-                    {"name": "core:TemperatureState", "type": 2, "value": 20}
-                ],
-                "attributes":[],
-                "available": True,
-                "enabled": True,
-                "placeOID": "aff4857b-18be-4201-b14c-d8233b439931",
-                "widget": "TemperatureSensor",
-                "type": 2,
-                "oid": "fd053def-0e93-4a1f-9f52-9450afada98b",
-                "uiClass": "TemperatureSensor"
-            },
-            {
-                'creationTime': 1541532294000,
-                'lastUpdateTime': 1541532294000,
-                'label': 'I2G_Actuator',
-                'deviceURL': 'io://0812-9894-4518/10071767#1',
-                'shortcut': False,
-                'controllableName': 'io:AtlanticElectricalHeaterWithAdjustableTemperatureSetpointIOComponent',
-                'definition': {},
-                'attributes': [],
-                'available': True,
-                'enabled': True,
-                'placeOID': 'aff4857b-18be-4201-b14c-d8233b439931',
-                'widget': 'AtlanticElectricalHeaterWithAdjustableTemperatureSetpoint',
-                'type': 1,
-                'oid': 'aff4857b-18be-4201-b14c-d8233b439931',
-                'uiClass': 'HeatingSystem',
-                'states':[
-                    {'name': 'core:ComfortRoomTemperatureState', 'type': 1, 'value': 20},
-                    {'name': 'core:EcoRoomTemperatureState', 'type': 1, 'value': 2},
-                    {'name': 'core:OnOffState', 'type': 3, 'value': 'off'}
-                ]
-            },
-            {
-                'creationTime': 1541532294000,
-                'lastUpdateTime': 1541532294000,
-                'label': 'I2G_Actuator',
-                'deviceURL': 'io://0812-9894-4518/10071767#1',
-                'shortcut': False,
-                'controllableName': 'io:AtlanticElectricalHeaterWithAdjustableTemperatureSetpointIOComponent',
-                'definition': {},
-                'attributes': [],
-                'available': True,
-                'enabled': True,
-                'placeOID': 'aff4857b-18be-4201-b14c-d8233b439931',
-                'widget': 'AtlanticElectricalHeaterWithAdjustableTemperatureSetpoint',
-                'type': 1,
-                'oid': 'aff4857b-18be-4201-b14c-d8233b439931',
-                'uiClass': 'HeatingSystem',
-                'states':[
-                    {'name': 'core:ComfortRoomTemperatureState', 'type': 1, 'value': 20},
-                    {'name': 'core:EcoRoomTemperatureState', 'type': 1, 'value': 2},
-                    {'name': 'core:OnOffState', 'type': 3, 'value': 'on'}
-                ]
-            },
-{
-                'creationTime': 1541532294000,
-                'lastUpdateTime': 1541532294000,
-                'label': 'I2G_Actuator',
-                'deviceURL': 'io://0812-9894-4518/10071768#1',
-                'shortcut': False,
-                'controllableName': 'io:AtlanticElectricalHeaterWithAdjustableTemperatureSetpointIOComponent',
-                'definition': {},
-                'attributes': [],
-                'available': True,
-                'enabled': True,
-                'placeOID': 'aff4857b-18be-4201-b14c-d8233b439931',
-                'widget': 'AtlanticElectricalHeaterWithAdjustableTemperatureSetpoint',
-                'type': 1,
-                'oid': 'bff4857b-18be-4201-b14c-d8233b439931',
-                'uiClass': 'HeatingSystem',
-                'states':[
-                    {'name': 'core:ComfortRoomTemperatureState', 'type': 1, 'value': 20},
-                    {'name': 'core:EcoRoomTemperatureState', 'type': 1, 'value': 2},
-                    {'name': 'core:OnOffState', 'type': 3, 'value': 'on'}
-                ]
-            }
-        ],
-        "rootPlace": {
-            "creationTime": 1541529744000,
-            "lastUpdateTime": 1541529744000,
-            "label": "All House",
-            "type": 0,
-            "oid": "aff4857b-18be-4201-b14c-d8233b439931",
-            "subPlaces":[]
+        {
+            "creationTime": 1541532294000,
+            "lastUpdateTime": 1541532294000,
+            "label": "IO (19071767#2)",
+            "deviceURL": "io://0832-9894-4518/10071767#2",
+            "shortcut": False,
+            "controllableName": "io:TemperatureInCelciusIOSystemDeviceSensor",
+            "definition":{"commands":[], "states":[]},
+            "states":[
+                {"name": "core:StatusState", "type": 3, "value": "available" },
+                {"name": "core:TemperatureState", "type": 2, "value": 20}
+            ],
+            "attributes":[],
+            "available": True,
+            "enabled": True,
+            "placeOID": "aff4857b-18be-4201-b14c-d8233b439931",
+            "widget": "TemperatureSensor",
+            "type": 2,
+            "oid": "fd053def-0e93-4a1f-9f52-9450afada98b",
+            "uiClass": "TemperatureSensor"
+        },
+        {
+            'creationTime': 1541532294000,
+            'lastUpdateTime': 1541532294000,
+            'label': 'I2G_Actuator',
+            'deviceURL': 'io://0812-9894-4518/10071767#1',
+            'shortcut': False,
+            'controllableName': 'io:AtlanticElectricalHeaterWithAdjustableTemperatureSetpointIOComponent',
+            'definition': {},
+            'attributes': [],
+            'available': True,
+            'enabled': True,
+            'placeOID': 'aff4857b-18be-4201-b14c-d8233b439931',
+            'widget': 'AtlanticElectricalHeaterWithAdjustableTemperatureSetpoint',
+            'type': 1,
+            'oid': 'aff4857b-18be-4201-b14c-d8233b439931',
+            'uiClass': 'HeatingSystem',
+            'states':[
+                {'name': 'core:ComfortRoomTemperatureState', 'type': 1, 'value': 20},
+                {'name': 'core:EcoRoomTemperatureState', 'type': 1, 'value': 2},
+                {'name': 'core:OnOffState', 'type': 3, 'value': 'off'}
+            ]
+        },
+        {
+            'creationTime': 1541532294000,
+            'lastUpdateTime': 1541532294000,
+            'label': 'I2G_Actuator',
+            'deviceURL': 'io://0812-9894-4518/10071767#1',
+            'shortcut': False,
+            'controllableName': 'io:AtlanticElectricalHeaterWithAdjustableTemperatureSetpointIOComponent',
+            'definition': {},
+            'attributes': [],
+            'available': True,
+            'enabled': True,
+            'placeOID': 'aff4857b-18be-4201-b14c-d8233b439931',
+            'widget': 'AtlanticElectricalHeaterWithAdjustableTemperatureSetpoint',
+            'type': 1,
+            'oid': 'aff4857b-18be-4201-b14c-d8233b439931',
+            'uiClass': 'HeatingSystem',
+            'states':[
+                {'name': 'core:ComfortRoomTemperatureState', 'type': 1, 'value': 20},
+                {'name': 'core:EcoRoomTemperatureState', 'type': 1, 'value': 2},
+                {'name': 'core:OnOffState', 'type': 3, 'value': 'on'}
+            ]
+        },
+        {
+            'creationTime': 1541532294000,
+            'lastUpdateTime': 1541532294000,
+            'label': 'I2G_Actuator',
+            'deviceURL': 'io://0812-9894-4518/10071768#1',
+            'shortcut': False,
+            'controllableName': 'io:AtlanticElectricalHeaterWithAdjustableTemperatureSetpointIOComponent',
+            'definition': {},
+            'attributes': [],
+            'available': True,
+            'enabled': True,
+            'placeOID': 'aff4857b-18be-4201-b14c-d8233b439931',
+            'widget': 'AtlanticElectricalHeaterWithAdjustableTemperatureSetpoint',
+            'type': 1,
+            'oid': 'bff4857b-18be-4201-b14c-d8233b439931',
+            'uiClass': 'HeatingSystem',
+            'states':[
+                {'name': 'core:ComfortRoomTemperatureState', 'type': 1, 'value': 20},
+                {'name': 'core:EcoRoomTemperatureState', 'type': 1, 'value': 2},
+                {'name': 'core:OnOffState', 'type': 3, 'value': 'on'}
+            ]
         }
+    ],
+    "rootPlace": {
+        "creationTime": 1541529744000,
+        "lastUpdateTime": 1541529744000,
+        "label": "All House",
+        "type": 0,
+        "oid": "aff4857b-18be-4201-b14c-d8233b439931",
+        "subPlaces":[]
     }
 }
+
 
 class TestClient(unittest.TestCase):
 
