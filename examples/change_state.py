@@ -6,6 +6,7 @@ from cozypy.exception import CozytouchException
 from cozypy.objects import CozytouchHeater
 from cozypy.constant import OperatingModeState
 
+logging.config.fileConfig('logging.conf')
 logger = logging.getLogger("cozytouch.examples")
 
 
