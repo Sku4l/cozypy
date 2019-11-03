@@ -4,40 +4,47 @@ import logging
 from cozypy.client import CozytouchClient
 from cozypy.exception import CozytouchException
 
-logger = logging.getLogger("cozytouch.examples")
 
-
-clientId = os.environ['COZYTOUTCH_CLIENT_ID']
-clientPassword = os.environ['COZYTOUTCH_CLIENT_PASSWORD']
+clientId = os.environ['COZYTOUCH_CLIENT_ID']
+clientPassword = os.environ['COZYTOUCH_CLIENT_PASSWORD']
 
 try:
     client = CozytouchClient(clientId, clientPassword)
     setup = client.get_setup()
+
+    def print_device(device):
+        print()
+        print("\t Name:", device.name)
+        print("\t\t Id:", device.id)
+        print("\t\t Place:", device.place.name)
+        print("\t\t Suported states:")
+        for state in device.supported_states:
+            print("\t\t\t", state)
+        print("\t\t States value:")
+        for state in device.supported_states:
+            print("\t\t\t", state.value, device.get_state(state))
+        print("\t\t Is on:", device.is_on)
+        print("\t\t Operating mode:", device.operating_mode)
+        if len(device.sensors) > 0:
+            print("\t\t Sensors")
+            for sensor in device.sensors:
+                print("\t\t\t Id:", sensor.id)
+                print("\t\t\t Name:", sensor.name)
+                print("\t\t\t Type:", sensor.widget)
+                for sensor_state in sensor.states:
+                    print("\t\t\t\t {name}: {value}".format(name=sensor_state["name"], value=sensor_state["value"]))
+
+
     for place in setup.places:
         print(place.id)
         print(place.name)
 
-    print()
+    for water_heater in setup.water_heaters:
+        print_device(water_heater)
+
     for heater in setup.heaters:
-        print("\t", heater.name)
-        print("\t\t", heater.id)
-        print("\t\t", heater.place.name)
-        print("\t\t", heater.supported_states)
-        print("\t\t", heater.is_on)
-        print("\t\t", heater.operating_mode)
-        for state in heater.supported_states:
-            print("\t\t", state.value, heater.get_state(state))
-
-        if heater.id == "7b56551a-badd-4dae-b12a-7a5864d8e6b5":
-            heater.set_targeting_heating_level("comfort")
-            heater.update()
-        if len(heater.sensors) > 0:
-            print("\t\tSensors")
-            for sensor in heater.sensors:
-                print("\t\t\t {id} {name} {type}".format(id=sensor.id, name=sensor.name, type=sensor.widget))
-                for sensor_state in sensor.states:
-                    print("\t\t\t\t {name}: {value}".format(name=sensor_state["name"], value=sensor_state["value"]))
-
+        print_device(heater)
+        
 
 
 except CozytouchException as e:
