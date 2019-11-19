@@ -17,6 +17,7 @@ class DeviceType(TextEnum):
     POD = "Pod"
     HEATER = "AtlanticElectricalHeaterWithAdjustableTemperatureSetpoint"
     HEATER_PASV = "AtlanticElectricalHeater"
+    WATER_HEATER = "DomesticHotWaterProduction"
     TEMPERATURE = "TemperatureSensor"
     CONTACT = "ContactSensor"
     OCCUPANCY = "OccupancySensor"
@@ -25,6 +26,12 @@ class DeviceType(TextEnum):
 
 class DeviceState(TextEnum):
     AWAY_STATE = 'core:HolidaysModeState'
+    WH_AWAY_STATE = 'io:DHWAbsenceModeState'
+    WH_BOOST_STATE = 'io:DHWBoostModeState'
+    WH_SHOWER_REMAINING_STATE = 'core:NumberOfShowerRemainingState'
+    WH_SHOWER_CAPACITY_STATE = 'core:ExpectedNumberOfShowerState'
+    WH_HEATING_STATUS_STATE = 'core:HeatingStatusState'
+    WH_TANK_STATE = 'core:NumberOfTankState'
     OPERATING_MODE_STATE = 'core:OperatingModeState'
     TARGETING_HEATING_LEVEL_STATE = 'io:TargetHeatingLevelState'
     OCCUPANCY_STATE = "core:OccupancyState"
@@ -34,7 +41,6 @@ class DeviceState(TextEnum):
     TARGET_TEMPERATURE_STATE = "core:TargetTemperatureState"
     ON_OFF_STATE = "core:OnOffState"
     ELECTRIC_ENERGY_CONSUMPTION_STATE = "core:ElectricEnergyConsumptionState"
-
 
 class OnOffState(TextEnum):
     ON = "on"
@@ -74,7 +80,7 @@ class DeviceCommand(TextEnum):
     SET_TARGET_TEMP = "setTargetTemperature"
 
     REFRESH_OPERATION_MODE = "refreshOperatingMode"
-    REFRESH_ECO_TEMPERATURE= "refreshEcoTemperature"
+    REFRESH_ECO_TEMPERATURE = "refreshEcoTemperature"
     REFRESH_COMFORT_TEMPERATURE = "refreshComfortTemperature"
     REFRESH_HEATING_LEVEL = "refreshHeatingLevel"
     REFRESH_TARGET_TEMPERATURE = "refreshTargetTemperature"
