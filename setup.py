@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name='cozypy',
-    version='1.1.0',
+    version='1.1.1',
     packages=setuptools.find_packages(),
     url='https://github.com/biker91620/cozypy/tree/master',
     license='https://github.com/biker91620/cozypy/blob/master/LICENSE',
@@ -23,6 +23,6 @@ setup(
         'io',
         'smart-things',
         'iot'
-    ],  # arbitrary keywords
+    ],
     install_requires=["requests"]
 )

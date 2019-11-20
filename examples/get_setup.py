@@ -4,6 +4,7 @@ import logging
 from cozypy.client import CozytouchClient
 from cozypy.exception import CozytouchException
 
+logger = logging.getLogger("cozytouch.examples")
 
 clientId = os.environ['COZYTOUCH_CLIENT_ID']
 clientPassword = os.environ['COZYTOUCH_CLIENT_PASSWORD']
@@ -44,8 +45,6 @@ try:
 
     for heater in setup.heaters:
         print_device(heater)
-        
-
 
 except CozytouchException as e:
     logger.exception(e)
