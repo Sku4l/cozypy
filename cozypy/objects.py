@@ -1,8 +1,8 @@
 from time import sleep
 
-from cozypy.constant import DeviceType, DeviceState, DeviceCommand, OperatingModeState, \
-    TargetingHeatingLevelState, AwayModeState
+from cozypy.constant import *
 from cozypy.exception import CozytouchException
+
 
 class CozytouchCommands:
 
@@ -430,20 +430,78 @@ class CozytouchWaterHeater(CozytouchDevice):
     def set_operating_mode(self, mode):
         if not self.has_state(DeviceState.OPERATING_MODE_STATE):
             raise CozytouchException(
-                "Unsupported command {command}".format(command=DeviceCommand.SET_OPERATION_MODE)
+                "Unsupported command {command}".format(command=DeviceCommand.SET_DWH_MODE)
             )
         if self.client is None:
             raise CozytouchException("Unable to execute command")
 
         commands = CozytouchCommands("Change operating mode")
         action = CozytouchAction(device_url=self.deviceUrl)
-        action.add_command(CozytouchCommand(DeviceCommand.SET_OPERATION_MODE, mode))
-        action.add_command(CozytouchCommand(DeviceCommand.REFRESH_OPERATION_MODE))
+        action.add_command(CozytouchCommand(DeviceCommand.SET_DWH_MODE, mode))
+        action.add_command(CozytouchCommand(DeviceCommand.REFRESH_DHW_MODE))
         commands.add_action(action)
 
         self.client.send_commands(commands)
 
         self.set_state(DeviceState.OPERATING_MODE_STATE, mode)
+
+    def set_away_mode(self, duration):
+        if not self.has_state(DeviceState.AWAY_MODE_DURATION_STATE):
+            raise CozytouchException(
+                "Unsupported command {command}".format(command=DeviceCommand.SET_DWH_MODE)
+            )
+        if self.client is None:
+            raise CozytouchException("Unable to execute command")
+
+        commands = CozytouchCommands("Change operating mode")
+        action = CozytouchAction(device_url=self.deviceUrl)
+        if  int(duration) == 0:
+            action.add_command(CozytouchCommand(DeviceCommand.SET_CURRENT_OPERATION_MODE, {"relaunch":"off","absence":"off"}))
+        else:
+            action.add_command(CozytouchCommand(DeviceCommand.SET_CURRENT_OPERATION_MODE, {"relaunch":"off","absence":"on"}))
+        action.add_command(CozytouchCommand(DeviceCommand.SET_ALWAYS_MODE_DURATION, duration))
+        action.add_command(CozytouchCommand(DeviceCommand.REFRESH_ALWAYS_MODE_DURATION))
+        commands.add_action(action)
+
+        self.client.send_commands(commands)
+
+        self.set_state(DeviceState.AWAY_MODE_DURATION_STATE, duration)
+
+    def set_boost_mode(self, duration):
+        if not self.has_state(DeviceState.BOOST_MODE_DURATION_STATE):
+            raise CozytouchException(
+                "Unsupported command {command}".format(command=DeviceCommand.SET_BOOST_DURATION)
+            )
+        if self.client is None:
+            raise CozytouchException("Unable to execute command")
+
+        commands = CozytouchCommands("Change Boost mode")
+        action = CozytouchAction(device_url=self.deviceUrl)
+        action.add_command(CozytouchCommand(DeviceCommand.SET_BOOST_DURATION, duration))
+        action.add_command(CozytouchCommand(DeviceCommand.REFRESH_BOOST_MODE_DURATION))
+        commands.add_action(action)
+
+        self.client.send_commands(commands)
+
+        self.set_state(DeviceState.BOOST_MODE_DURATION_STATE, duration)
+
+    def set_temperature(self, temp):
+        if not self.has_state(DeviceState.TARGET_TEMPERATURE_STATE):
+            raise CozytouchException(
+                "Unsupported command {command}".format(command=DeviceCommand.SET_TARGET_TEMP)
+            )
+        if self.client is None:
+            raise CozytouchException("Unable to execute command")
+
+        commands = CozytouchCommands("Change target temperature")
+        action = CozytouchAction(device_url=self.deviceUrl)
+        action.add_command(CozytouchCommand(DeviceCommand.SET_TARGET_TEMP, temp))
+        action.add_command(CozytouchCommand(DeviceCommand.REFRESH_TARGET_TEMPERATURE))
+        commands.add_action(action)
+
+        self.client.send_commands(commands)
+
+        self.set_state(DeviceState.TARGET_TEMPERATURE_STATE, temp)
 
     def update(self):
         if self.client is None:
