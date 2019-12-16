@@ -1,4 +1,4 @@
-from cozypy.utils import TextEnum
+from .utils import TextEnum
 
 COZYTOUCH_BASE_URL = "https://ha110-1.overkiz.com/enduser-mobile-web/enduserAPI"
 
@@ -27,6 +27,12 @@ class DeviceType(TextEnum):
 
 class DeviceState(TextEnum):
     BOOST_MODE_DURATION_STATE = 'core:BoostModeDurationState'
+
+    CONNECTIVITY_STATE = 'core:ConnectivityState'
+    COUNTRY_CODE_STATE = 'core:CountryCodeState'
+    LAST_ACTION_CONF_BUTTON_STATE = 'internal:LastActionConfigButtonState'
+    LIGHTING_LED_POD_MODE_STATE = 'internal:LightingLedPodModeState'
+
     COMFORT_TARGET_TEMPERATURE_STATE = 'core:ComfortTargetTemperatureState'
     COMFORT_TEMPERATURE_STATE = "core:ComfortRoomTemperatureState"
     DHWP_SOFTWARE_VERSION_STATE = 'core:DHWPSoftwareVersionState'
@@ -185,3 +191,5 @@ class DeviceCommand(TextEnum):
     REFRESH_PROGRAMMING_SLOT = "refreshProgrammingSlots"
     REFRESH_RATE_MANAGMENT = "refreshRateManagement"
     REFRESH_SMART_GRID_OPTION = "refreshSmartGridOption"
+    REFRESH_POD_MODE = "refreshPodMode"
+    REFRESH_UPDATE_STATUS = "refreshUpdateStatus"

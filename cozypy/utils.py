@@ -1,6 +1,9 @@
+import logging
 import enum
 import json
 from enum import Enum
+
+logger = logging.getLogger(__name__)
 
 
 class TextEnum(enum.Enum):
@@ -14,7 +17,7 @@ class TextEnum(enum.Enum):
 
 class CozytouchEncoder(json.JSONEncoder):
     def default(self, obj):
-        from cozypy.objects import CozytouchCommands, CozytouchAction, CozytouchCommand
+        from .objects import CozytouchCommands, CozytouchAction, CozytouchCommand
         if isinstance(obj, Enum):
             return obj.value
         if isinstance(obj, CozytouchCommands):

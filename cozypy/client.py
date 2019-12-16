@@ -1,18 +1,22 @@
+"""Cozytouch API."""
+import logging
 import json
 import re
-
 import requests
 import urllib.parse
 
-from cozypy.constant import USER_AGENT, COZYTOUCH_ENDPOINTS
-from cozypy.exception import CozytouchException
-from cozypy.handlers import SetupHandler, DevicesHandler
-from cozypy.utils import CozytouchEncoder
+from .constant import USER_AGENT, COZYTOUCH_ENDPOINTS
+from .exception import CozytouchException
+from .handlers import SetupHandler, DevicesHandler
+from .utils import CozytouchEncoder
 
+logger = logging.getLogger(__name__)
 
 class CozytouchClient:
+    """Client session."""
 
     def __init__(self, username, password, timeout=60, max_retry=3):
+        """ Initialization."""
         self.session = requests.Session()
         self.retry = 0
         self.max_retry = max_retry
@@ -57,6 +61,7 @@ class CozytouchClient:
                 data=data,
                 timeout=self.timeout
             )
+
         return response
 
     def __authenticate(self):
@@ -68,6 +73,7 @@ class CozytouchClient:
             json_encode=False
         )
 
+        logger.debug(response.cookies.get_dict())
         if response.status_code != 200:
             raise CozytouchException("Authentication failed")
 
@@ -79,14 +85,13 @@ class CozytouchClient:
         else:
             self.retry = 0
 
-    def get_setup(self, *args):
+    async def async_get_setup(self, *args):
         """ Get cozytouch setup (devices, places) """
-
         response = self.__make_request(
             "setup",
             method="GET"
         )
-        self.__retry(response, self.get_setup)
+        self.__retry(response, self.async_get_setup)
 
         if response.status_code != 200:
             response_json = response.json()
@@ -97,22 +102,22 @@ class CozytouchClient:
 
         return SetupHandler(response.json(), self)
 
-    def get_devices(self, *args):
+    async def async_get_devices(self, *args):
         """ Get cozytouch setup (devices, places) """
 
         response = self.__make_request("devices")
-        self.__retry(response, self.get_devices)
+        self.__retry(response, self.async_get_devices)
 
         if response.status_code != 200:
             raise CozytouchException("Unable to retrieve devices: {response}".format(response=response.content))
 
         return DevicesHandler(response.json(), self)
 
-    def get_device_info(self, device_url, *args):
+    async def async_get_device_info(self, device_url, *args):
         """ Get cozytouch setup (devices, places) """
 
         response = self.__make_request("deviceInfo", data={"device_url": device_url})
-        self.__retry(response, self.get_devices, {"device_url": device_url})
+        self.__retry(response, self.async_get_devices, {"device_url": device_url})
 
         if response.status_code != 200:
             response_json = response.json()
@@ -123,12 +128,12 @@ class CozytouchClient:
         state = response.json()
         return state
 
-    def get_device_state(self, device_url, state_name, *args):
+    async def async_get_device_state(self, device_url, state_name, *args):
         """ Get cozytouch setup (devices, places) """
 
         response = self.__make_request("stateInfo", data={"device_url": device_url, "state_name": state_name})
         kwargs = {"device_url": device_url, "state_name": state_name}
-        self.__retry(response, self.get_devices, kwargs)
+        self.__retry(response, self.async_get_devices, kwargs)
 
         if response.status_code != 200:
             raise CozytouchException(
@@ -138,7 +143,7 @@ class CozytouchClient:
 
         return SetupHandler(response.json(), self)
 
-    def send_commands(self, commands, *args):
+    async def async_send_commands(self, commands, *args):
         """ Get devices states """
 
         response = self.__make_request(
@@ -147,7 +152,7 @@ class CozytouchClient:
             data=commands,
             headers={'Content-type': 'application/json'}
         )
-        self.__retry(response, self.send_commands, *args)
+        self.__retry(response, self.async_send_commands, *args)
 
         if response.status_code != 200:
             response_json = response.json()

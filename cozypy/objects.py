@@ -1,7 +1,10 @@
+import logging
 from time import sleep
 
-from cozypy.constant import *
-from cozypy.exception import CozytouchException
+from .constant import *
+from .exception import CozytouchException
+
+logger = logging.getLogger(__name__)
 
 
 class CozytouchCommands:
@@ -107,6 +110,7 @@ class CozytouchDevice(CozytouchObject):
         if "widget" not in data or "uiClass" not in data:
             raise CozytouchException("Unable to identify device")
         device_class = DeviceType.from_str(data["widget"] if "widget" in data else data["uiClass"])
+        logger.debug(device_class)
         if device_class == DeviceType.OCCUPANCY:
             device = CozytouchOccupancySensor(data)
         elif device_class == DeviceType.POD:
@@ -134,8 +138,28 @@ class CozytouchDevice(CozytouchObject):
 
 
 class CozytouchPod(CozytouchDevice):
-    pass
 
+    def __init__(self, data:dict):
+        super(CozytouchPod, self).__init__(data)
+
+    @property
+    def available(self):
+        return self.data["available"]
+
+    @property
+    def is_on(self):
+        return self.data["enabled"]
+
+    @property
+    def supported_states(self):
+        supported_state = [state for state in DeviceState if self.has_state(state)]
+        for state in DeviceState:
+            if state in supported_state:
+                continue
+        return supported_state
+
+    def is_state_supported(self, state:DeviceState):
+        return state in self.supported_states
 
 class CozytouchContactSensor(CozytouchDevice):
     pass
@@ -371,14 +395,14 @@ class CozytouchHeater(CozytouchDevice):
         self.set_state(DeviceState.AWAY_STATE, AwayModeState.ON)
 
     def turn_on(self):
-        from cozypy.constant import DeviceType, OperatingModeState, TargetingHeatingLevelState
+        from .constant import DeviceType, OperatingModeState, TargetingHeatingLevelState
         if self.widget == DeviceType.HEATER_PASV:
             self.set_targeting_heating_level(TargetingHeatingLevelState.COMFORT)
         elif self.widget == DeviceType.HEATER:
             self.set_operating_mode(OperatingModeState.INTERNAL)
 
     def turn_off(self):
-        from cozypy.constant import DeviceType, OperatingModeState, TargetingHeatingLevelState
+        from .constant import DeviceType, OperatingModeState, TargetingHeatingLevelState
         if self.widget == DeviceType.HEATER_PASV:
             self.set_targeting_heating_level(TargetingHeatingLevelState.OFF)
         elif self.widget == DeviceType.HEATER:
@@ -516,4 +540,31 @@ class CozytouchPlace(CozytouchObject):
     def __init__(self, data):
         super(CozytouchPlace, self).__init__(data)
 
+class CozytouchGateway:
 
+    def __init__(self, data: dict):
+        self.data = data
+
+    @property
+    def deviceUrl(self):
+        return self.data["deviceURL"]
+
+    @property
+    def id(self):
+        return self.data["placeOID"]
+
+    @property
+    def gatewayId(self):
+        return self.data["gatewayId"]
+
+    @property
+    def is_on(self):
+        return self.data["alive"]
+
+    @property
+    def version(self):
+        return self.data["connectivity"]["protocolVersion"]
+
+    @property
+    def status(self):
+        return self.data["connectivity"]["status"] == "OK"

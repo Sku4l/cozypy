@@ -1,6 +1,9 @@
-from cozypy.constant import DeviceType
-from cozypy.exception import CozytouchException
-from cozypy.objects import CozytouchDevice, CozytouchPlace
+import logging
+from .constant import DeviceType
+from .exception import CozytouchException
+from .objects import CozytouchDevice, CozytouchPlace, CozytouchGateway
+
+logger = logging.getLogger(__name__)
 
 
 class SetupHandler:
@@ -8,10 +11,12 @@ class SetupHandler:
     def __init__(self, data, client):
         self.client = client
         self.data = data
+        self.pods = []
         self.places = []
         self.heaters = []
         self.water_heaters = []
         self.__build_places(data["rootPlace"])
+        self.__build_gateways(data["gateways"])        
         self.__build_devices(data["devices"])
 
     def __build_places(self, place):
@@ -19,18 +24,35 @@ class SetupHandler:
             self.__build_places(subPlace)
         self.places.append(CozytouchPlace(place))
 
+    def __build_gateways(self, gateways):
+        self.gateways = []
+        for gateway in gateways:
+            self.gateways.append(CozytouchGateway(gateway))
+
+
     def __build_devices(self, devices):
+        pods = []
         sensors = []
         heaters = []
         water_heaters = []
+
         for device in devices:
             device_class = DeviceType.from_str(device["widget"])
-            if device_class in [DeviceType.HEATER, DeviceType.HEATER_PASV]:
+            if device_class == DeviceType.POD:
+                pods.append(device)
+            elif device_class in [DeviceType.HEATER, DeviceType.HEATER_PASV]:
                 heaters.append(device)
-            if device_class == DeviceType.WATER_HEATER:
+            elif device_class == DeviceType.WATER_HEATER:
                 water_heaters.append(device)
             else:
                 sensors.append(device)
+
+        for pod in pods:
+            place = self.__find_place(pod)
+            pod_url = self.__extract_id(pod["deviceURL"])
+            pod_sensors = self.__link_sensors(sensors, place, pod_url)
+            pod = CozytouchDevice.build(pod, self.client, place, sensors=pod_sensors)
+            self.pods.append(pod)
 
         for heater in heaters:
             place = self.__find_place(heater)
