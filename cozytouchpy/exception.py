@@ -1,0 +1,2 @@
+class CozytouchException(Exception):
+    pass
