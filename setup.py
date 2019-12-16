@@ -2,13 +2,13 @@ import setuptools
 from setuptools import setup
 
 setup(
-    name='cozypy',
+    name='cozytouchpy',
     version='1.3.0',
     packages=setuptools.find_packages(),
-    url='https://github.com/biker91620/cozypy/tree/master',
-    license='https://github.com/biker91620/cozypy/blob/master/LICENSE',
-    author='Snake',
-    author_email='biker91620@gmail.com',
+    url='https://github.com/cyr-ius/cozypy/tree/master',
+    license='https://github.com/cyr-ius/cozypy/blob/master/LICENSE',
+    author='Cyr-ius',
+    author_email='cyr-ius@ipocus.net',
     description='Cozytouch python client',
     classifiers=[
         "Programming Language :: Python :: 3"
