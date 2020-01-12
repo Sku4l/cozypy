@@ -1,13 +1,12 @@
 import logging
 
 from .constant import (
-COZYTOUCH_BASE_URL,
-COZYTOUCH_ENDPOINTS,
-USER_AGENT,
-DeviceType, DeviceState, DeviceCommand,
-OnOffState, AwayModeState,
-OperatingModeState,OperatingRangeState,
-InstallationState, TargetingHeatingLevelState
+DeviceType,
+DeviceState,
+DeviceCommand,
+AwayModeState,
+OperatingModeState,
+TargetingHeatingLevelState
 )
 from .exception import CozytouchException
 
