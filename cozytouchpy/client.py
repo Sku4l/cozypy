@@ -12,6 +12,7 @@ from .utils import CozytouchEncoder
 
 logger = logging.getLogger(__name__)
 
+
 class CozytouchClient:
     """Client session."""
 
@@ -42,6 +43,7 @@ class CozytouchClient:
         """ Make call to Cozytouch API"""
         if data is None:
             data = {}
+        logger.debug("Request : {}".format(data))
         if headers is None:
             headers = {}
 
@@ -96,8 +98,7 @@ class CozytouchClient:
         if response.status_code != 200:
             response_json = response.json()
             raise CozytouchException(
-                "Unable to retrieve setup: {error}[{code}] "
-                    .format(error=response_json["error"], code=response_json["errorCode"])
+                "Unable to retrieve setup: {error}[{code}]".format(error=response_json["error"], code=response_json["errorCode"])
             )
 
         return SetupHandler(response.json(), self)
@@ -146,6 +147,7 @@ class CozytouchClient:
     async def async_send_commands(self, commands, *args):
         """ Get devices states """
 
+        logger.debug("Request commands {}".format(vars(commands)))
         response = self.__make_request(
             "apply",
             method="POST",
@@ -161,4 +163,5 @@ class CozytouchClient:
                     .format(error=response_json["error"], code=response_json["errorCode"])
             )
 
+        logger.debug("Response commands {}".format(response.content))
         return response.json()

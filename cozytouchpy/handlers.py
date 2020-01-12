@@ -29,7 +29,6 @@ class SetupHandler:
         for gateway in gateways:
             self.gateways.append(CozytouchGateway(gateway))
 
-
     def __build_devices(self, devices):
         pods = []
         sensors = []

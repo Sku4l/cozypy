@@ -38,7 +38,7 @@ setup(
     long_description_content_type='text/markdown',
     install_requires=['requests>=2'],
     license='GPL-3',
-    include_package_data=True,   
+    include_package_data=True,
     url='https://github.com/cyr-ius/cozytouchpy/tree/master',
     author='cyr-ius (forked from biker91620)',
     author_email='cyr-ius@ipocus.net',

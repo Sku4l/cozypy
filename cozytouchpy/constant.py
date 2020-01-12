@@ -14,6 +14,7 @@ COZYTOUCH_ENDPOINTS = {
 
 USER_AGENT = "Home assistant/Cozytouch"
 
+
 class DeviceType(TextEnum):
     POD = "Pod"
     HEATER = "AtlanticElectricalHeaterWithAdjustableTemperatureSetpoint"
@@ -115,8 +116,8 @@ class OperatingModeState(TextEnum):
 
 
 class OperatingRangeState(TextEnum):
-	PAC24h = "pac24h_elec24h"
-	PACPROG = "pacProg_elecProg"
+    PAC24h = "pac24h_elec24h"
+    PACPROG = "pacProg_elecProg"
 
 
 class InstallationState(TextEnum):

@@ -1,5 +1,4 @@
 import logging
-from time import sleep
 
 from .constant import *
 from .exception import CozytouchException
@@ -62,7 +61,7 @@ class CozytouchObject:
 
 class CozytouchDevice(CozytouchObject):
 
-    def __init__(self, data:dict):
+    def __init__(self, data: dict):
         super(CozytouchDevice, self).__init__(data)
         self.states = data["states"]
         self.place = None
@@ -75,25 +74,25 @@ class CozytouchDevice(CozytouchObject):
     def widget(self):
         return DeviceType(self.data['widget'])
 
-    def get_state_definition(self, state:DeviceState):
+    def get_state_definition(self, state: DeviceState):
         for definition in self.data["definition"]["states"]:
             if definition["qualifiedName"] == state.value:
                 return definition
         return None
 
-    def get_state(self, state:DeviceState, value_only=True):
+    def get_state(self, state: DeviceState, value_only=True):
         for s in self.states:
             if s["name"] == state.value:
                 return s["value"] if value_only else s
         return None
 
-    def set_state(self, state:DeviceState, value):
+    def set_state(self, state: DeviceState, value):
         for s in self.states:
             if s["name"] == state.value:
                 s["value"]= value
                 break
 
-    def has_state(self, state:DeviceState):
+    def has_state(self, state: DeviceState):
         for s in self.states:
             if s["name"] == state.value:
                 return True
@@ -102,6 +101,7 @@ class CozytouchDevice(CozytouchObject):
     async def async_update(self):
         if self.client is None:
             raise CozytouchException("Unable to execute command")
+        logger.debug("Update states sensors")
         self.states = await self.client.async_get_device_info(self.deviceUrl)
 
     @staticmethod
@@ -139,7 +139,7 @@ class CozytouchDevice(CozytouchObject):
 
 class CozytouchPod(CozytouchDevice):
 
-    def __init__(self, data:dict):
+    def __init__(self, data: dict):
         super(CozytouchPod, self).__init__(data)
 
     @property
@@ -158,8 +158,9 @@ class CozytouchPod(CozytouchDevice):
                 continue
         return supported_state
 
-    def is_state_supported(self, state:DeviceState):
+    def is_state_supported(self, state: DeviceState):
         return state in self.supported_states
+
 
 class CozytouchContactSensor(CozytouchDevice):
     pass
@@ -193,11 +194,11 @@ class CozytouchOccupancySensor(CozytouchDevice):
 
 class CozytouchHeater(CozytouchDevice):
 
-    def __init__(self, data:dict):
+    def __init__(self, data: dict):
         super(CozytouchHeater, self).__init__(data)
         self.sensors = []
 
-    def __get_sensors(self, type:DeviceType):
+    def __get_sensors(self, type: DeviceType):
         for sensor in self.sensors:
             if sensor.widget == type:
                 return sensor
@@ -274,7 +275,7 @@ class CozytouchHeater(CozytouchDevice):
                     break
         return supported_state
 
-    def is_state_supported(self, state:DeviceState):
+    def is_state_supported(self, state: DeviceState):
         return state in self.supported_states
 
     async def async_set_operating_mode(self, mode):
@@ -412,17 +413,18 @@ class CozytouchHeater(CozytouchDevice):
         if self.client is None:
             raise CozytouchException("Unable to update heater")
         for sensor in self.sensors:
-            sensor.update()
-        super(CozytouchHeater, self).async_update()
+            logger.debug("Heater : Update sensor")
+            await sensor.async_update()
+        await super(CozytouchHeater, self).async_update()
 
 
 class CozytouchWaterHeater(CozytouchDevice):
 
-    def __init__(self, data:dict):
+    def __init__(self, data: dict):
         super(CozytouchWaterHeater, self).__init__(data)
         self.sensors = []
 
-    def __get_sensors(self, type:DeviceType):
+    def __get_sensors(self, type: DeviceType):
         for sensor in self.sensors:
             if sensor.widget == type:
                 return sensor
@@ -448,7 +450,7 @@ class CozytouchWaterHeater(CozytouchDevice):
                     break
         return supported_state
 
-    def is_state_supported(self, state:DeviceState):
+    def is_state_supported(self, state: DeviceState):
         return state in self.supported_states
 
     async def async_set_operating_mode(self, mode):
@@ -478,7 +480,7 @@ class CozytouchWaterHeater(CozytouchDevice):
             raise CozytouchException("Unable to execute command")
 
         commands = CozytouchCommands("Change operating mode")
-        action = CozytouchAction(device_url=self.deviceUrl)
+        action = CozytouchAction(device_url = self.deviceUrl)
         if  int(duration) == 0:
             action.add_command(CozytouchCommand(DeviceCommand.SET_CURRENT_OPERATION_MODE, {"relaunch":"off","absence":"off"}))
         else:
@@ -494,14 +496,18 @@ class CozytouchWaterHeater(CozytouchDevice):
     async def async_set_boost_mode(self, duration):
         if not self.has_state(DeviceState.BOOST_MODE_DURATION_STATE):
             raise CozytouchException(
-                "Unsupported command {command}".format(command=DeviceCommand.SET_BOOST_DURATION)
+                "Unsupported command {command}".format(command=DeviceCommand.SET_BOOST_MODE_DURATION)
             )
         if self.client is None:
             raise CozytouchException("Unable to execute command")
 
         commands = CozytouchCommands("Change Boost mode")
         action = CozytouchAction(device_url=self.deviceUrl)
-        action.add_command(CozytouchCommand(DeviceCommand.SET_BOOST_DURATION, duration))
+        if  int(duration) == 0:
+            action.add_command(CozytouchCommand(DeviceCommand.SET_CURRENT_OPERATION_MODE, {"relaunch":"off","absence":"off"}))
+        else:
+            action.add_command(CozytouchCommand(DeviceCommand.SET_CURRENT_OPERATION_MODE, {"relaunch":"on","absence":"off"}))
+            action.add_command(CozytouchCommand(DeviceCommand.SET_BOOST_MODE_DURATION, duration))
         action.add_command(CozytouchCommand(DeviceCommand.REFRESH_BOOST_MODE_DURATION))
         commands.add_action(action)
 
@@ -531,14 +537,16 @@ class CozytouchWaterHeater(CozytouchDevice):
         if self.client is None:
             raise CozytouchException("Unable to update heater")
         for sensor in self.sensors:
-            sensor.update()
-        super(CozytouchWaterHeater, self).async_update()
+            logger.debug("Water Heater : Update sensor")
+            await sensor.async_update()
+        await super(CozytouchWaterHeater, self).async_update()
 
 
 class CozytouchPlace(CozytouchObject):
 
     def __init__(self, data):
         super(CozytouchPlace, self).__init__(data)
+
 
 class CozytouchGateway:
 

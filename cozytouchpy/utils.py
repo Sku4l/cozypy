@@ -15,6 +15,7 @@ class TextEnum(enum.Enum):
                 return item
         return None
 
+
 class CozytouchEncoder(json.JSONEncoder):
     def default(self, obj):
         from .objects import CozytouchCommands, CozytouchAction, CozytouchCommand

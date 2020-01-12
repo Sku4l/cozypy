@@ -17,10 +17,11 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(messag
 ch.setFormatter(formatter)
 logger.addHandler(ch)
 
-username="my-username"
-password="my-password"
+username = "my-username"
+password = "my-password"
 
 client = CozytouchClient(username, password)
+
 
 async def async_demo():
     async def device_info(device):
@@ -31,7 +32,6 @@ async def async_demo():
         logger.info("\t Device url:{}".format(device.deviceUrl))
         logger.info("\t\t Id:{}".format(device.id))
         logger.info("\t\t Place:{}".format(device.place.name))
-        
         logger.info("\t\t Suported states:")
         for state in device.supported_states:
             logger.info("\t\t\t {}".format(state))

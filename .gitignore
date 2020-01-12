@@ -3,6 +3,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 example_home.py
+example_change.py
 
 # C extensions
 *.so
