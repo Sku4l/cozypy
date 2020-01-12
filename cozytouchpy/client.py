@@ -71,7 +71,7 @@ class CozytouchClient:
         response = self.__make_request(
             "login",
             method="POST",
-            data={'userId': self.username,'userPassword': self.password},
+            data={'userId': self.username, 'userPassword': self.password},
             json_encode=False
         )
 
@@ -98,7 +98,9 @@ class CozytouchClient:
         if response.status_code != 200:
             response_json = response.json()
             raise CozytouchException(
-                "Unable to retrieve setup: {error}[{code}]".format(error=response_json["error"], code=response_json["errorCode"])
+                "Unable to retrieve setup: {error}[{code}]".format(
+                    error=response_json["error"], code=response_json["errorCode"]
+                    )
             )
 
         return SetupHandler(response.json(), self)
@@ -110,7 +112,9 @@ class CozytouchClient:
         self.__retry(response, self.async_get_devices)
 
         if response.status_code != 200:
-            raise CozytouchException("Unable to retrieve devices: {response}".format(response=response.content))
+            raise CozytouchException("Unable to retrieve devices: {response}".format(
+                response=response.content)
+                )
 
         return DevicesHandler(response.json(), self)
 
@@ -123,8 +127,9 @@ class CozytouchClient:
         if response.status_code != 200:
             response_json = response.json()
             raise CozytouchException(
-                "Unable to retrieve device {device_url}: {error}[{code}] "
-                    .format(device_url=device_url, error=response_json["error"], code=response_json["errorCode"])
+                "Unable to retrieve device {device_url}: {error}[{code}]".format(
+                    device_url=device_url, error=response_json["error"], code=response_json["errorCode"]
+                    )
             )
         state = response.json()
         return state
@@ -138,8 +143,9 @@ class CozytouchClient:
 
         if response.status_code != 200:
             raise CozytouchException(
-                "Unable to retrieve state {state_name} from device {device_url} : {response}"
-                    .format(device_url=device_url, state_name=state_name, response=response.content)
+                "Unable to retrieve state {state_name} from device {device_url} : {response}".format(
+                    device_url=device_url, state_name=state_name, response=response.content
+                    )
             )
 
         return SetupHandler(response.json(), self)

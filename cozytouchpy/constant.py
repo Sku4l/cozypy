@@ -151,7 +151,7 @@ class DeviceCommand(TextEnum):
     SET_DWH_MODE = "setDHWMode"
     SET_ECO_TEMP = "setEcoTemperature"
     SET_ECO_TARGET_TEMP = "setEcoTargetTemperature"
-    SET_ELECTRICAL_EXTRA_MANAGEMENT  = "setElectricalExtraManagement"
+    SET_ELECTRICAL_EXTRA_MANAGEMENT = "setElectricalExtraManagement"
     SET_EXTRACTION_OPTION = "setExtractionOption"
     SET_FROST_PROTECT_TARGET_TEMP = "setFrostProtectionTargetTemperature"
     SET_HALTED_TARGET_TEMP = "setHaltedTargetTemperature"

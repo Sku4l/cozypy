@@ -1,6 +1,14 @@
 import logging
 
-from .constant import *
+from .constant import (
+COZYTOUCH_BASE_URL,
+COZYTOUCH_ENDPOINTS,
+USER_AGENT,
+DeviceType, DeviceState, DeviceCommand,
+OnOffState, AwayModeState,
+OperatingModeState,OperatingRangeState,
+InstallationState, TargetingHeatingLevelState
+)
 from .exception import CozytouchException
 
 logger = logging.getLogger(__name__)

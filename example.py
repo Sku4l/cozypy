@@ -39,9 +39,9 @@ async def async_demo():
         for state in device.supported_states:
             logger.info("\t\t\t {} {}".format(state.value, device.get_state(state)))
         logger.info("\t\t Is on: {}".format(device.is_on))
-        if hasattr(device,"operating_mode"):
+        if hasattr(device, "operating_mode"):
             logger.info("\t\t Operating mode:{}".format(device.operating_mode))
-        if hasattr(device,"sensors") and len(device.sensors) > 0:
+        if hasattr(device, "sensors") and len(device.sensors) > 0:
             logger.info("\t\t Sensors")
             for sensor in device.sensors:
                 logger.info("\t\t\t Id:{}".format(sensor.id))
@@ -56,7 +56,7 @@ async def async_demo():
         logger.info(place.id)
         logger.info(place.name)
 
-    logger.info("### WATER HEATERS ###")       
+    logger.info("### WATER HEATERS ###")
     for water_heater in setup.water_heaters:
         logger.info(water_heater.id)
         await device_info(water_heater)

@@ -16,7 +16,7 @@ class SetupHandler:
         self.heaters = []
         self.water_heaters = []
         self.__build_places(data["rootPlace"])
-        self.__build_gateways(data["gateways"])        
+        self.__build_gateways(data["gateways"])
         self.__build_devices(data["devices"])
 
     def __build_places(self, place):
