@@ -165,8 +165,9 @@ class CozytouchClient:
         if response.status_code != 200:
             response_json = response.json()
             raise CozytouchException(
-                "Unable to send command : {error}[{code}] "
-                    .format(error=response_json["error"], code=response_json["errorCode"])
+                "Unable to send command : {error}[{code}]".format(
+                    error=response_json["error"], code=response_json["errorCode"]
+                    )
             )
 
         logger.debug("Response commands {}".format(response.content))

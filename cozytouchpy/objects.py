@@ -96,7 +96,7 @@ class CozytouchDevice(CozytouchObject):
     def set_state(self, state: DeviceState, value):
         for s in self.states:
             if s["name"] == state.value:
-                s["value"]= value
+                s["value"] = value
                 break
 
     def has_state(self, state: DeviceState):
@@ -373,7 +373,7 @@ class CozytouchHeater(CozytouchDevice):
         self.set_state(DeviceState.TARGET_TEMPERATURE_STATE, temperature)
 
     async def async_turn_away_mode_off(self):
-        if not  self.has_state(DeviceState.AWAY_STATE):
+        if not self.has_state(DeviceState.AWAY_STATE):
             raise CozytouchException("Unsupported command {command}".format(command=DeviceCommand.SET_AWAY_MODE))
         if self.client is None:
             raise CozytouchException("Unable to execute command")
@@ -388,7 +388,7 @@ class CozytouchHeater(CozytouchDevice):
         self.set_state(DeviceState.AWAY_STATE, AwayModeState.OFF)
 
     async def async_turn_away_mode_on(self):
-        if not  self.has_state(DeviceState.AWAY_STATE):
+        if not self.has_state(DeviceState.AWAY_STATE):
             raise CozytouchException("Unsupported command {command}".format(command=DeviceCommand.SET_AWAY_MODE))
         if self.client is None:
             raise CozytouchException("Unable to execute command")
@@ -487,11 +487,11 @@ class CozytouchWaterHeater(CozytouchDevice):
             raise CozytouchException("Unable to execute command")
 
         commands = CozytouchCommands("Change operating mode")
-        action = CozytouchAction(device_url = self.deviceUrl)
-        if  int(duration) == 0:
-            action.add_command(CozytouchCommand(DeviceCommand.SET_CURRENT_OPERATION_MODE, {"relaunch":"off","absence":"off"}))
+        action = CozytouchAction(device_url=self.deviceUrl)
+        if int(duration) == 0:
+            action.add_command(CozytouchCommand(DeviceCommand.SET_CURRENT_OPERATION_MODE, {"relaunch": "off","absence": "off"}))
         else:
-            action.add_command(CozytouchCommand(DeviceCommand.SET_CURRENT_OPERATION_MODE, {"relaunch":"off","absence":"on"}))
+            action.add_command(CozytouchCommand(DeviceCommand.SET_CURRENT_OPERATION_MODE, {"relaunch": "off","absence": "on"}))
         action.add_command(CozytouchCommand(DeviceCommand.SET_ALWAYS_MODE_DURATION, duration))
         action.add_command(CozytouchCommand(DeviceCommand.REFRESH_ALWAYS_MODE_DURATION))
         commands.add_action(action)
@@ -510,10 +510,10 @@ class CozytouchWaterHeater(CozytouchDevice):
 
         commands = CozytouchCommands("Change Boost mode")
         action = CozytouchAction(device_url=self.deviceUrl)
-        if  int(duration) == 0:
-            action.add_command(CozytouchCommand(DeviceCommand.SET_CURRENT_OPERATION_MODE, {"relaunch":"off","absence":"off"}))
+        if int(duration) == 0:
+            action.add_command(CozytouchCommand(DeviceCommand.SET_CURRENT_OPERATION_MODE, {"relaunch": "off","absence": "off"}))
         else:
-            action.add_command(CozytouchCommand(DeviceCommand.SET_CURRENT_OPERATION_MODE, {"relaunch":"on","absence":"off"}))
+            action.add_command(CozytouchCommand(DeviceCommand.SET_CURRENT_OPERATION_MODE, {"relaunch": "on","absence": "off"}))
             action.add_command(CozytouchCommand(DeviceCommand.SET_BOOST_MODE_DURATION, duration))
         action.add_command(CozytouchCommand(DeviceCommand.REFRESH_BOOST_MODE_DURATION))
         commands.add_action(action)
