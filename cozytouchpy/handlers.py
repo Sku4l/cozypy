@@ -29,7 +29,7 @@ class SetupHandler:
         self.gateways = []
         for gateway in gateways:
             place = self.__find_place(gateway)
-            self.gateways.append(CozytouchGateway(gateway))
+            self.gateways.append(CozytouchGateway(gateway, place))
 
     def __build_devices(self, devices):
         sensors = []
