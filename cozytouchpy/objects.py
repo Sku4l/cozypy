@@ -46,6 +46,7 @@ class CozytouchCommand:
 class CozytouchObject:
 
     def __init__(self, data: dict):
+        super(CozytouchObject, self).__init__(data)
         self.client = None
         self.data = data
 
@@ -205,9 +206,9 @@ class CozytouchHeater(CozytouchDevice):
         super(CozytouchHeater, self).__init__(data)
         self.sensors = []
 
-    def __get_sensors(self, type: DeviceType):
+    def __get_sensors(self, device_type: DeviceType):
         for sensor in self.sensors:
-            if sensor.widget == type:
+            if sensor.widget == device_type:
                 return sensor
         return None
 
@@ -429,9 +430,9 @@ class CozytouchWaterHeater(CozytouchDevice):
         super(CozytouchWaterHeater, self).__init__(data)
         self.sensors = []
 
-    def __get_sensors(self, type: DeviceType):
+    def __get_sensors(self, device_type: DeviceType):
         for sensor in self.sensors:
-            if sensor.widget == type:
+            if sensor.widget == device_type:
                 return sensor
         return None
 

@@ -24,7 +24,7 @@ class CozytouchEncoder(json.JSONEncoder):
         if isinstance(obj, CozytouchCommands):
             return {"label": obj.label, "actions": obj.actions}
         if isinstance(obj, CozytouchAction):
-            return {"deviceURL": obj.device_url, "commands": obj._commands}
+            return {"deviceURL": obj.device_url, "commands": obj.commands}
         if isinstance(obj, CozytouchCommand):
             data = {"name": obj.name}
             if obj.parameters is not None:
