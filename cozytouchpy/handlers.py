@@ -1,7 +1,7 @@
 import logging
 from .constant import DeviceType
 from .exception import CozytouchException
-from .objects import CozytouchDevice, CozytouchPlace, CozytouchGateway
+from .objects import CozytouchDevice, CozytouchPlace, CozytouchGateway, DeviceMetadata
 
 logger = logging.getLogger(__name__)
 
