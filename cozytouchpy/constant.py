@@ -31,7 +31,7 @@ class DeviceType(TextEnum):
             cls.TEMPERATURE,
             cls.CONTACT,
             cls.OCCUPANCY,
-            cls.ELECTRICITY
+            cls.ELECTRECITY
         ]
 
 

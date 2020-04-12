@@ -168,7 +168,7 @@ class CozytouchDevice(CozytouchObject):
         elif device_class == DeviceType.OCCUPANCY:
             device = CozytouchOccupancySensor(data)
         elif device_class == DeviceType.ELECTRECITY:
-            device = CozytouchElectricitySensor(data)
+            device = CozytouchElectrecitySensor(data)
         elif device_class == DeviceType.CONTACT:
             device = CozytouchContactSensor(data)
         elif device_class in [DeviceType.HEATER, DeviceType.PILOT_WIRE_INTERFACE]:
@@ -249,11 +249,11 @@ class CozytouchContactSensor(CozytouchSensor):
         return state != "closed"
 
 
-class CozytouchElectricitySensor(CozytouchDevice):
+class CozytouchElectrecitySensor(CozytouchDevice):
 
     @property
     def sensor_class(self):
-        return "electricity"
+        return "electrecity"
 
     @property
     def consumption(self):
