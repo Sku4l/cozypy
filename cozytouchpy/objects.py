@@ -1,16 +1,36 @@
 import logging
 
 from .constant import (
-DeviceType,
-DeviceState,
-DeviceCommand,
-AwayModeState,
-OperatingModeState,
-TargetingHeatingLevelState
+    DeviceType,
+    DeviceState,
+    DeviceCommand,
+    AwayModeState,
+    OperatingModeState,
+    TargetingHeatingLevelState
 )
 from .exception import CozytouchException
 
 logger = logging.getLogger(__name__)
+
+
+class DeviceMetadata:
+
+    def __init__(self):
+        self.scheme = None
+        self.device_id = None
+        self.gateway_id = None
+        self.entity_id = None
+
+    @property
+    def base_url(self):
+        url = self.scheme + "://" + self.gateway_id + "/" + self.device_id
+        if self.entity_id is not None:
+            url += "#" + self.entity_id
+        return url
+
+    def __str__(self):
+        return "DeviceMetadata(scheme={scheme}, device={device}, gateway={gateway},entity={entity})".\
+            format(scheme=self.scheme, device=self.device_id, gateway=self.gateway_id, entity=self.entity_id)
 
 
 class CozytouchCommands:
@@ -71,15 +91,34 @@ class CozytouchDevice(CozytouchObject):
     def __init__(self, data: dict):
         super(CozytouchDevice, self).__init__(data)
         self.states = data["states"]
-        self.place = None
+        self.metadata:DeviceMetadata = None
+        self.gateway:CozytouchGateway = None
+        self.place:CozytouchPlace = None
+        self.parent:CozytouchDevice = None
 
     @property
     def deviceUrl(self):
-        return self.data["deviceURL"]
+        return self.metadata.base_url
 
     @property
     def widget(self):
         return DeviceType(self.data['widget'])
+
+    @property
+    def manufacturer(self):
+        return self.get_state(DeviceState.MANUFACTURER_NAME_STATE)
+
+    @property
+    def model(self):
+        return self.get_state(DeviceState.MODEL_STATE)
+
+    @property
+    def name(self):
+        return self.place.name + " " + self.widget.name.replace("_", " ").capitalize()
+
+    @property
+    def version(self):
+        return self.get_state(DeviceState.VERSION_STATE)
 
     def get_state_definition(self, state: DeviceState):
         for definition in self.data["definition"]["states"]:
@@ -112,7 +151,9 @@ class CozytouchDevice(CozytouchObject):
         self.states = await self.client.async_get_device_info(self.deviceUrl)
 
     @staticmethod
-    def build(data, client, place=None, sensors=None):
+    def build(data, client, metadata=None, gateway=None, place=None, sensors=None, parent=None):
+        if sensors is None:
+            sensors = []
         device = None
         if "widget" not in data or "uiClass" not in data:
             raise CozytouchException("Unable to identify device")
@@ -130,7 +171,7 @@ class CozytouchDevice(CozytouchObject):
             device = CozytouchElectricitySensor(data)
         elif device_class == DeviceType.CONTACT:
             device = CozytouchContactSensor(data)
-        elif device_class in [DeviceType.HEATER, DeviceType.HEATER_PASV]:
+        elif device_class in [DeviceType.HEATER, DeviceType.PILOT_WIRE_INTERFACE]:
             device = CozytouchHeater(data)
             device.sensors = sensors
         elif device_class in [DeviceType.WATER_HEATER]:
@@ -140,8 +181,21 @@ class CozytouchDevice(CozytouchObject):
             raise CozytouchException("Unknown device {type}".format(type=device_class))
 
         device.client = client
+        device.metadata = metadata
+        device.gateway = gateway
         device.place = place
+        device.parent = parent
         return device
+
+    def __str__(self):
+        return "{widget} (name={name}, model={model}, manufacturer={manufacturer}, version={version})"\
+            .format(
+                widget=self.widget.name.capitalize(),
+                name=self.name,
+                model=self.model,
+                manufacturer=self.manufacturer,
+                version=self.version
+            )
 
 
 class CozytouchPod(CozytouchDevice):
@@ -166,11 +220,40 @@ class CozytouchPod(CozytouchDevice):
         return state in self.supported_states
 
 
-class CozytouchContactSensor(CozytouchDevice):
-    pass
+class CozytouchSensor(CozytouchDevice):
+
+
+    @property
+    def id(self):
+        return self.parent.id + "_" + self.sensor_class
+
+    @property
+    def name(self):
+        name = self.parent.name if self.parent is not None else self.name
+        return name + " " + self.sensor_class
+
+    @property
+    def sensor_class(self):
+        return "unknown"
+
+
+class CozytouchContactSensor(CozytouchSensor):
+
+    @property
+    def sensor_class(self):
+        return "contact"
+
+    @property
+    def is_opened(self):
+        state = self.get_state(DeviceState.CONTACT_STATE)
+        return state != "closed"
 
 
 class CozytouchElectricitySensor(CozytouchDevice):
+
+    @property
+    def sensor_class(self):
+        return "electricity"
 
     @property
     def consumption(self):
@@ -178,6 +261,10 @@ class CozytouchElectricitySensor(CozytouchDevice):
 
 
 class CozytouchTemperatureSensor(CozytouchDevice):
+
+   @property
+    def sensor_class(self):
+        return "temperature"
 
     @property
     def temperature(self):
@@ -187,13 +274,13 @@ class CozytouchTemperatureSensor(CozytouchDevice):
 class CozytouchOccupancySensor(CozytouchDevice):
 
     @property
+    def sensor_class(self):
+        return "occupancy"
+
+    @property
     def is_occupied(self):
         state = self.get_state(DeviceState.OCCUPANCY_STATE)
-        if state == "noPersonInside":
-            return False
-        elif state == "personInside":
-            return True
-        return False
+        return state == "personInside"
 
 
 class CozytouchHeater(CozytouchDevice):
@@ -210,7 +297,7 @@ class CozytouchHeater(CozytouchDevice):
 
     @property
     def is_on(self):
-        if self.widget == DeviceType.HEATER_PASV:
+        if self.widget == DeviceType.PILOT_WIRE_INTERFACE:
             return self.target_heating_level != TargetingHeatingLevelState.OFF
         elif self.widget == DeviceType.HEATER:
             return self.operating_mode != OperatingModeState.STANDBY
@@ -400,13 +487,13 @@ class CozytouchHeater(CozytouchDevice):
         self.set_state(DeviceState.AWAY_STATE, AwayModeState.ON)
 
     def turn_on(self):
-        if self.widget == DeviceType.HEATER_PASV:
+        if self.widget == DeviceType.PILOT_WIRE_INTERFACE:
             self.async_set_targeting_heating_level(TargetingHeatingLevelState.COMFORT)
         elif self.widget == DeviceType.HEATER:
             self.async_set_operating_mode(OperatingModeState.INTERNAL)
 
     def turn_off(self):
-        if self.widget == DeviceType.HEATER_PASV:
+        if self.widget == DeviceType.PILOT_WIRE_INTERFACE:
             self.async_set_targeting_heating_level(TargetingHeatingLevelState.OFF)
         elif self.widget == DeviceType.HEATER:
             self.async_set_operating_mode(OperatingModeState.STANDBY)
@@ -545,13 +632,20 @@ class CozytouchWaterHeater(CozytouchDevice):
 
 
 class CozytouchPlace(CozytouchObject):
-    pass
+
+    def __init__(self, data):
+        super(CozytouchPlace, self).__init__(data)
+
+    def __str__(self):
+        return "Place(id={id},name={name})"\
+            .format(id=self.id, name=self.name)
 
 
 class CozytouchGateway:
 
-    def __init__(self, data: dict):
+    def __init__(self, data: dict, place: CozytouchPlace):
         self.data = data
+        self.place = place
 
     @property
     def deviceUrl(self):
@@ -559,10 +653,6 @@ class CozytouchGateway:
 
     @property
     def id(self):
-        return self.data["placeOID"]
-
-    @property
-    def gatewayId(self):
         return self.data["gatewayId"]
 
     @property
@@ -576,3 +666,7 @@ class CozytouchGateway:
     @property
     def status(self):
         return self.data["connectivity"]["status"] == "OK"
+
+    def __str__(self):
+        return "Gateway(id={id},is_on={is_on},status={status}, version={version})"\
+            .format(id=self.id, is_on=self.is_on, version=self.version, status=self.status)

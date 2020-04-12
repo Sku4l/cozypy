@@ -14,6 +14,7 @@ class SetupHandler:
         self.pods = []
         self.places = []
         self.heaters = []
+        self.sensors = []
         self.water_heaters = []
         self.__build_places(data["rootPlace"])
         self.__build_gateways(data["gateways"])
@@ -27,56 +28,78 @@ class SetupHandler:
     def __build_gateways(self, gateways):
         self.gateways = []
         for gateway in gateways:
+            place = self.__find_place(gateway)
             self.gateways.append(CozytouchGateway(gateway))
 
     def __build_devices(self, devices):
-        pods = []
         sensors = []
-        heaters = []
-        water_heaters = []
+
+        for idx in range(len(devices) - 1, -1, -1):
+            device_type = DeviceType.from_str(devices[idx]["widget"])
+            if device_type not in DeviceType.sensors():
+                continue
+            sensors.append(devices[idx])
+            del devices[idx]
 
         for device in devices:
-            device_class = DeviceType.from_str(device["widget"])
-            if device_class == DeviceType.POD:
-                pods.append(device)
-            elif device_class in [DeviceType.HEATER, DeviceType.HEATER_PASV]:
-                heaters.append(device)
-            elif device_class == DeviceType.WATER_HEATER:
-                water_heaters.append(device)
-            else:
-                sensors.append(device)
+            device_type = DeviceType.from_str(device["widget"])
+            metadata = self.__parse_url(device["deviceURL"])
+            gateway = self.__find_gateway(metadata.gateway_id)
+            place = self.__find_place(device)
+            cozyouch_device = CozytouchDevice.build(
+                data=device,
+                client=self.client,
+                metadata=metadata,
+                gateway=gateway,
+                place=place
+            )
+            device_sensors = self.__link_sensors(sensors, place, gateway, cozyouch_device)
+            cozyouch_device.sensors = device_sensors
 
-        for pod in pods:
-            place = self.__find_place(pod)
-            pod_url = self.__extract_id(pod["deviceURL"])
-            pod_sensors = self.__link_sensors(sensors, place, pod_url)
-            pod = CozytouchDevice.build(pod, self.client, place, sensors=pod_sensors)
-            self.pods.append(pod)
+            if device_type == DeviceType.POD:
+                self.pods.append(cozyouch_device)
+            elif device_type in [DeviceType.HEATER, DeviceType.PILOT_WIRE_INTERFACE]:
+                self.heaters.append(cozyouch_device)
+            elif device_type == DeviceType.WATER_HEATER:
+                self.water_heaters.append(cozyouch_device)
 
-        for heater in heaters:
-            place = self.__find_place(heater)
-            heater_url = self.__extract_id(heater["deviceURL"])
-            heater_sensors = self.__link_sensors(sensors, place, heater_url)
-            heater = CozytouchDevice.build(heater, self.client, place, sensors=heater_sensors)
-            self.heaters.append(heater)
+    def __parse_url(self, url):
+        scheme = url[0:url.find('://')]
+        if scheme not in ["io", "internal"]:
+            raise CozytouchException("Invalid url {url}".format(url=url))
+        metadata = DeviceMetadata()
+        metadata.scheme = scheme
+        parts = url.replace(scheme + "://", "").replace("#", "/").split("/")
+        parts_len = len(parts)
+        if parts_len < 2:
+            raise CozytouchException("Invalid url {url}".format(url=url))
+        metadata.gateway_id = parts[0]
+        metadata.device_id = parts[1]
+        if parts_len == 3:
+            metadata.entity_id = parts[2]
+        return metadata
 
-        for water_heater in water_heaters:
-            place = self.__find_place(water_heater)
-            water_heater_url = self.__extract_id(water_heater["deviceURL"])
-            wh_sensors = self.__link_sensors(sensors, place, water_heater_url)
-            water_heater = CozytouchDevice.build(water_heater, self.client, place, sensors=wh_sensors)
-            self.water_heaters.append(water_heater)
-
-    def __extract_id(self, url):
+    def __extract_gateway(self, url):
         if '#' not in url:
             return url
         return url[0:url.index("#")]
 
-    def __link_sensors(self, sensors, place, device_url):
+    def __link_sensors(self, sensors, place:CozytouchPlace, gateway:CozytouchGateway, parent:CozytouchDevice):
         device_sensors = []
         for sensor in sensors:
-            if self.__extract_id(sensor["deviceURL"]) == device_url:
-                device_sensors.append(CozytouchDevice.build(sensor, self.client, place))
+            metadata = self.__parse_url(sensor["deviceURL"])
+            if metadata.device_id == parent.metadata.device_id:
+                device_sensors.append(
+                    CozytouchDevice.build(
+                        data=sensor,
+                        client=self.client,
+                        metadata=metadata,
+                        gateway=gateway,
+                        place=place,
+                        parent=parent
+                    )
+                )
+        self.sensors += device_sensors
         return device_sensors
 
     def __find_place(self, device):
@@ -85,6 +108,14 @@ class SetupHandler:
                 return place
         raise CozytouchException(
             "Place {name} not found".format(name=device["placeOID"])
+        )
+
+    def __find_gateway(self, gateway_id):
+        for gateway in self.gateways:
+            if gateway.id == gateway_id:
+                return gateway
+        raise CozytouchException(
+            "Gateway {id} not found".format(id=gateway_id)
         )
 
 

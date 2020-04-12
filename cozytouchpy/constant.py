@@ -18,12 +18,21 @@ USER_AGENT = "Home assistant/Cozytouch"
 class DeviceType(TextEnum):
     POD = "Pod"
     HEATER = "AtlanticElectricalHeaterWithAdjustableTemperatureSetpoint"
-    HEATER_PASV = "AtlanticElectricalHeater"
+    PILOT_WIRE_INTERFACE = "AtlanticElectricalHeater"
     WATER_HEATER = "DomesticHotWaterProduction"
     TEMPERATURE = "TemperatureSensor"
     CONTACT = "ContactSensor"
     OCCUPANCY = "OccupancySensor"
     ELECTRECITY = "CumulativeElectricPowerConsumptionSensor"
+
+    @classmethod
+    def sensors(cls):
+        return [
+            cls.TEMPERATURE,
+            cls.CONTACT,
+            cls.OCCUPANCY,
+            cls.ELECTRICITY
+        ]
 
 
 class DeviceState(TextEnum):
