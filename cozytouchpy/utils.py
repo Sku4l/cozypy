@@ -19,7 +19,7 @@ class TextEnum(enum.Enum):
 
 class CozytouchEncoder(json.JSONEncoder):
     
-    def default(self, obj):
+    def default(self, obj):  # pylint: disable=arguments-differ 
         if isinstance(obj, Enum):
             return obj.value
         if isinstance(obj, CozytouchCommands):
