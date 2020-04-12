@@ -403,14 +403,12 @@ class CozytouchHeater(CozytouchDevice):
         self.set_state(DeviceState.AWAY_STATE, AwayModeState.ON)
 
     def turn_on(self):
-        from .constant import DeviceType, OperatingModeState, TargetingHeatingLevelState
         if self.widget == DeviceType.HEATER_PASV:
             self.async_set_targeting_heating_level(TargetingHeatingLevelState.COMFORT)
         elif self.widget == DeviceType.HEATER:
             self.async_set_operating_mode(OperatingModeState.INTERNAL)
 
     def turn_off(self):
-        from .constant import DeviceType, OperatingModeState, TargetingHeatingLevelState
         if self.widget == DeviceType.HEATER_PASV:
             self.async_set_targeting_heating_level(TargetingHeatingLevelState.OFF)
         elif self.widget == DeviceType.HEATER:
