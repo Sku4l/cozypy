@@ -262,7 +262,7 @@ class CozytouchElectricitySensor(CozytouchDevice):
 
 class CozytouchTemperatureSensor(CozytouchDevice):
 
-   @property
+    @property
     def sensor_class(self):
         return "temperature"
 
