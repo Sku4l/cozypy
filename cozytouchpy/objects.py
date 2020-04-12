@@ -633,9 +633,6 @@ class CozytouchWaterHeater(CozytouchDevice):
 
 class CozytouchPlace(CozytouchObject):
 
-    #~ def __init__(self, data):
-        #~ super(CozytouchPlace, self).__init__(data)
-
     def __str__(self):
         return "Place(id={id},name={name})"\
             .format(id=self.id, name=self.name)
