@@ -64,7 +64,7 @@ class DeviceState(TextEnum):
     NUM_SHOWER_REMAINING_STATE = 'core:NumberOfShowerRemainingState'
     OPERATING_MODE_STATE = 'core:OperatingModeState'
     OCCUPANCY_STATE = "core:OccupancyState"
-   CONTACT_STATE = "core:ContactState"    
+    CONTACT_STATE = "core:ContactState"
     ON_OFF_STATE = "core:OnOffState"
     PRIORITY_LOCK_TIMER_STATE = 'core:PriorityLockTimerState'
     RSSI_LEVEL_STATE = 'core:RSSILevelState'
