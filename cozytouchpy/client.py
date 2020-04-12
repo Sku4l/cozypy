@@ -43,7 +43,7 @@ class CozytouchClient:
         """ Make call to Cozytouch API"""
         if data is None:
             data = {}
-        logger.debug("Request : {}".format(data))
+        logger.debug("Request : %s".format(data))
         if headers is None:
             headers = {}
 
@@ -87,12 +87,9 @@ class CozytouchClient:
         else:
             self.retry = 0
 
-    async def async_get_setup(self, *args):
+    async def async_get_setup(self):
         """ Get cozytouch setup (devices, places) """
-        response = self.__make_request(
-            "setup",
-            method="GET"
-        )
+        response = self.__make_request("setup", method="GET")
         self.__retry(response, self.async_get_setup)
 
         if response.status_code != 200:
@@ -105,7 +102,7 @@ class CozytouchClient:
 
         return SetupHandler(response.json(), self)
 
-    async def async_get_devices(self, *args):
+    async def async_get_devices(self):
         """ Get cozytouch setup (devices, places) """
 
         response = self.__make_request("devices")
@@ -118,7 +115,7 @@ class CozytouchClient:
 
         return DevicesHandler(response.json(), self)
 
-    async def async_get_device_info(self, device_url, *args):
+    async def async_get_device_info(self, device_url):
         """ Get cozytouch setup (devices, places) """
 
         response = self.__make_request("deviceInfo", data={"device_url": device_url})
@@ -134,7 +131,7 @@ class CozytouchClient:
         state = response.json()
         return state
 
-    async def async_get_device_state(self, device_url, state_name, *args):
+    async def async_get_device_state(self, device_url, state_name):
         """ Get cozytouch setup (devices, places) """
 
         response = self.__make_request("stateInfo", data={"device_url": device_url, "state_name": state_name})
@@ -153,7 +150,7 @@ class CozytouchClient:
     async def async_send_commands(self, commands, *args):
         """ Get devices states """
 
-        logger.debug("Request commands {}".format(vars(commands)))
+        logger.debug("Request commands %s".format(vars(commands)))
         response = self.__make_request(
             "apply",
             method="POST",
@@ -170,5 +167,5 @@ class CozytouchClient:
                     )
             )
 
-        logger.debug("Response commands {}".format(response.content))
+        logger.debug("Response commands %s".format(response.content))
         return response.json()

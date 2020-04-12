@@ -356,7 +356,7 @@ class CozytouchHeater(CozytouchDevice):
 
     async def async_set_target_temperature(self, temperature):
         if not self.has_state(DeviceState.TARGET_TEMPERATURE_STATE):
-            raise CozytouchException("Unsupported command {command}".format(command=DeviceCommand.TARGET_TEMPERATURE_STATE))
+            raise CozytouchException("Unsupported command {command}".format(command=DeviceCommand.SET_TARGET_TEMP))
         if self.client is None:
             raise CozytouchException("Unable to execute command")
 
@@ -405,16 +405,16 @@ class CozytouchHeater(CozytouchDevice):
     def turn_on(self):
         from .constant import DeviceType, OperatingModeState, TargetingHeatingLevelState
         if self.widget == DeviceType.HEATER_PASV:
-            self.set_targeting_heating_level(TargetingHeatingLevelState.COMFORT)
+            self.async_set_targeting_heating_level(TargetingHeatingLevelState.COMFORT)
         elif self.widget == DeviceType.HEATER:
-            self.set_operating_mode(OperatingModeState.INTERNAL)
+            self.async_set_operating_mode(OperatingModeState.INTERNAL)
 
     def turn_off(self):
         from .constant import DeviceType, OperatingModeState, TargetingHeatingLevelState
         if self.widget == DeviceType.HEATER_PASV:
-            self.set_targeting_heating_level(TargetingHeatingLevelState.OFF)
+            self.async_set_targeting_heating_level(TargetingHeatingLevelState.OFF)
         elif self.widget == DeviceType.HEATER:
-            self.set_operating_mode(OperatingModeState.STANDBY)
+            self.async_set_operating_mode(OperatingModeState.STANDBY)
 
     async def async_update(self):
         if self.client is None:
