@@ -64,6 +64,7 @@ class DeviceState(TextEnum):
     NUM_SHOWER_REMAINING_STATE = 'core:NumberOfShowerRemainingState'
     OPERATING_MODE_STATE = 'core:OperatingModeState'
     OCCUPANCY_STATE = "core:OccupancyState"
+   CONTACT_STATE = "core:ContactState"    
     ON_OFF_STATE = "core:OnOffState"
     PRIORITY_LOCK_TIMER_STATE = 'core:PriorityLockTimerState'
     RSSI_LEVEL_STATE = 'core:RSSILevelState'
@@ -74,6 +75,7 @@ class DeviceState(TextEnum):
     TEMPERATURE_STATE = "core:TemperatureState"
     V40_WATER_VOLUME_ESTIMATION_STATE = 'core:V40WaterVolumeEstimationState'
     VERSION_STATE = 'core:VersionState'
+    MODEL_STATE = 'io:ModelState'
     WATER_CONSUMPTION_STATE = 'core:WaterConsumptionState'
 
     ANTI_LEGIONELLOSIS_STATE = 'io:AntiLegionellosisState'
