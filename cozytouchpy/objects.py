@@ -46,7 +46,6 @@ class CozytouchCommand:
 class CozytouchObject:
 
     def __init__(self, data: dict):
-        super(CozytouchObject, self).__init__(data)
         self.client = None
         self.data = data
 
@@ -146,9 +145,6 @@ class CozytouchDevice(CozytouchObject):
 
 
 class CozytouchPod(CozytouchDevice):
-
-    def __init__(self, data: dict):
-        super(CozytouchPod, self).__init__(data)
 
     @property
     def available(self):
@@ -549,9 +545,7 @@ class CozytouchWaterHeater(CozytouchDevice):
 
 
 class CozytouchPlace(CozytouchObject):
-
-    def __init__(self, data):
-        super(CozytouchPlace, self).__init__(data)
+    pass
 
 
 class CozytouchGateway:
