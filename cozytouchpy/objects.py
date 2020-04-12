@@ -16,22 +16,22 @@ logger = logging.getLogger(__name__)
 class CozytouchCommands:
 
     def __init__(self, label):
-        self._label = label
-        self._actions = []
+        self.label = label
+        self.actions = []
 
     def add_action(self, action):
         """add_action"""
-        self._actions.append(action)
+        self.actions.append(action)
 
 
 class CozytouchAction:
 
     def __init__(self, device_url):
-        self._device_url = device_url
-        self._commands = []
+        self.device_url = device_url
+        self.commands = []
 
     def add_command(self, command):
-        self._commands.append(command)
+        self.commands.append(command)
 
 
 class CozytouchCommand:
