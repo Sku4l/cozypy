@@ -43,7 +43,7 @@ class CozytouchClient:
         """ Make call to Cozytouch API"""
         if data is None:
             data = {}
-        logger.debug("Request : %s".format(data))
+        logger.debug("Request : %s",data)
         if headers is None:
             headers = {}
 
@@ -150,7 +150,7 @@ class CozytouchClient:
     async def async_send_commands(self, commands, *args):
         """ Get devices states """
 
-        logger.debug("Request commands %s".format(vars(commands)))
+        logger.debug("Request commands %s",vars(commands))
         response = self.__make_request(
             "apply",
             method="POST",
@@ -167,5 +167,5 @@ class CozytouchClient:
                     )
             )
 
-        logger.debug("Response commands %s".format(response.content))
+        logger.debug("Response commands %s",response.content)
         return response.json()
