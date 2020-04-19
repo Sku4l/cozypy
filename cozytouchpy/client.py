@@ -87,10 +87,10 @@ class CozytouchClient:
         else:
             self.retry = 0
 
-    async def async_get_setup(self):
+    def get_setup(self):
         """ Get cozytouch setup (devices, places) """
         response = self.__make_request("setup", method="GET")
-        self.__retry(response, self.async_get_setup)
+        self.__retry(response, self.get_setup)
 
         if response.status_code != 200:
             response_json = response.json()
@@ -102,11 +102,11 @@ class CozytouchClient:
 
         return SetupHandler(response.json(), self)
 
-    async def async_get_devices(self):
+    def get_devices(self):
         """ Get cozytouch setup (devices, places) """
 
         response = self.__make_request("devices")
-        self.__retry(response, self.async_get_devices)
+        self.__retry(response, self.get_devices)
 
         if response.status_code != 200:
             raise CozytouchException("Unable to retrieve devices: {response}".format(
@@ -115,11 +115,11 @@ class CozytouchClient:
 
         return DevicesHandler(response.json(), self)
 
-    async def async_get_device_info(self, device_url):
+    def get_device_info(self, device_url):
         """ Get cozytouch setup (devices, places) """
 
         response = self.__make_request("deviceInfo", data={"device_url": device_url})
-        self.__retry(response, self.async_get_devices, {"device_url": device_url})
+        self.__retry(response, self.get_devices, {"device_url": device_url})
 
         if response.status_code != 200:
             response_json = response.json()
@@ -131,12 +131,12 @@ class CozytouchClient:
         state = response.json()
         return state
 
-    async def async_get_device_state(self, device_url, state_name):
+    def get_device_state(self, device_url, state_name):
         """ Get cozytouch setup (devices, places) """
 
         response = self.__make_request("stateInfo", data={"device_url": device_url, "state_name": state_name})
         kwargs = {"device_url": device_url, "state_name": state_name}
-        self.__retry(response, self.async_get_devices, kwargs)
+        self.__retry(response, self.get_devices, kwargs)
 
         if response.status_code != 200:
             raise CozytouchException(
@@ -147,7 +147,7 @@ class CozytouchClient:
 
         return SetupHandler(response.json(), self)
 
-    async def async_send_commands(self, commands, *args):
+    def send_commands(self, commands, *args):
         """ Get devices states """
 
         logger.debug("Request commands %s",vars(commands))
@@ -157,7 +157,7 @@ class CozytouchClient:
             data=commands,
             headers={'Content-type': 'application/json'}
         )
-        self.__retry(response, self.async_send_commands, *args)
+        self.__retry(response, self.send_commands, *args)
 
         if response.status_code != 200:
             response_json = response.json()
