@@ -20,6 +20,7 @@ Used to obtain information from the following sensors:
      password="my-password"
      
      client = CozytouchClient(username, password)
+     client.connect()
      setup = await client.async_get_setup() 
      for place in setup.places:  
          print(place.id)

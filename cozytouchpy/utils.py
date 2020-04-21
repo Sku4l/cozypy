@@ -7,7 +7,6 @@ logger = logging.getLogger(__name__)
 
 
 class TextEnum(enum.Enum):
-
     @classmethod
     def from_str(cls, name):
         for item in cls:
@@ -17,9 +16,9 @@ class TextEnum(enum.Enum):
 
 
 class CozytouchEncoder(json.JSONEncoder):
-    
     def default(self, obj):  # pylint: disable=arguments-differ, method-hidden
         from .objects import CozytouchCommands, CozytouchAction, CozytouchCommand
+
         if isinstance(obj, Enum):
             return obj.value
         if isinstance(obj, CozytouchCommands):

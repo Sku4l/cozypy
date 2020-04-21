@@ -19,6 +19,7 @@ username = "my-username"
 password = "my-password"
 
 client = CozytouchClient(username, password)
+client.connect()
 
 def device_info(device):
     logger.info("\t Name:{}".format(device.name))

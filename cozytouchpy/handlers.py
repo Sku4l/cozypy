@@ -7,7 +7,6 @@ logger = logging.getLogger(__name__)
 
 
 class SetupHandler:
-
     def __init__(self, data, client):
         self.client = client
         self.data = data
@@ -51,9 +50,11 @@ class SetupHandler:
                 client=self.client,
                 metadata=metadata,
                 gateway=gateway,
-                place=place
+                place=place,
             )
-            device_sensors = self.__link_sensors(sensors, place, gateway, cozyouch_device)
+            device_sensors = self.__link_sensors(
+                sensors, place, gateway, cozyouch_device
+            )
             cozyouch_device.sensors = device_sensors
 
             if device_type == DeviceType.POD:
@@ -64,7 +65,7 @@ class SetupHandler:
                 self.water_heaters.append(cozyouch_device)
 
     def __parse_url(self, url):
-        scheme = url[0:url.find('://')]
+        scheme = url[0 : url.find("://")]
         if scheme not in ["io", "internal"]:
             raise CozytouchException("Invalid url {url}".format(url=url))
         metadata = DeviceMetadata()
@@ -80,11 +81,17 @@ class SetupHandler:
         return metadata
 
     def __extract_gateway(self, url):
-        if '#' not in url:
+        if "#" not in url:
             return url
-        return url[0:url.index("#")]
+        return url[0 : url.index("#")]
 
-    def __link_sensors(self, sensors, place:CozytouchPlace, gateway:CozytouchGateway, parent:CozytouchDevice):
+    def __link_sensors(
+        self,
+        sensors,
+        place: CozytouchPlace,
+        gateway: CozytouchGateway,
+        parent: CozytouchDevice,
+    ):
         device_sensors = []
         for sensor in sensors:
             metadata = self.__parse_url(sensor["deviceURL"])
@@ -96,7 +103,7 @@ class SetupHandler:
                         metadata=metadata,
                         gateway=gateway,
                         place=place,
-                        parent=parent
+                        parent=parent,
                     )
                 )
         self.sensors += device_sensors
@@ -114,13 +121,10 @@ class SetupHandler:
         for gateway in self.gateways:
             if gateway.id == gateway_id:
                 return gateway
-        raise CozytouchException(
-            "Gateway {id} not found".format(id=gateway_id)
-        )
+        raise CozytouchException("Gateway {id} not found".format(id=gateway_id))
 
 
 class DevicesHandler:
-
     def __init__(self, data, client):
         self.client = client
         self.data = data

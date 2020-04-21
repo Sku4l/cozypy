@@ -6,7 +6,7 @@ import requests
 import urllib.parse
 
 from .constant import USER_AGENT, COZYTOUCH_ENDPOINTS
-from .exception import CozytouchException
+from .exception import CozytouchException, CozytouchAuthentificationFailed
 from .handlers import SetupHandler, DevicesHandler
 from .utils import CozytouchEncoder
 
@@ -24,13 +24,15 @@ class CozytouchClient:
         self.username = username
         self.password = password
         self.timeout = timeout
-        self.__authenticate()
+        self.is_connected = False
 
     @classmethod
     def build_url(cls, resource, data):
         """ Build url"""
         if resource not in COZYTOUCH_ENDPOINTS:
-            raise CozytouchException("Bad resource: {resource}".format(resource=resource))
+            raise CozytouchException(
+                "Bad resource: {resource}".format(resource=resource)
+            )
         url = COZYTOUCH_ENDPOINTS[resource]
 
         matches = re.findall("(?P<text>\\[(?P<param>[^] ]+)\\])", url)
@@ -39,11 +41,16 @@ class CozytouchClient:
 
         return url
 
-    def __make_request(self, resource, method="GET", data=None, headers=None, json_encode=True):
+    def __make_request(
+        self, resource, method="GET", data=None, headers=None, json_encode=True
+    ):
         """ Make call to Cozytouch API"""
+        if not self.is_connected and resource != "login":
+            raise CozytouchAuthentificationFailed
+
         if data is None:
             data = {}
-        logger.debug("Request : %s",data)
+        logger.debug("Request : %s", data)
         if headers is None:
             headers = {}
 
@@ -54,36 +61,33 @@ class CozytouchClient:
             response = self.session.get(url, timeout=self.timeout)
         else:
             if json_encode:
-                data = json.dumps(data,  cls=CozytouchEncoder)
+                data = json.dumps(data, cls=CozytouchEncoder)
                 headers["Content-Type"] = "application/json"
 
             response = self.session.post(
-                url,
-                headers=headers,
-                data=data,
-                timeout=self.timeout
+                url, headers=headers, data=data, timeout=self.timeout
             )
 
         return response
 
-    def __authenticate(self):
+    def connect(self):
         """ Authenticate using username and userPassword """
         response = self.__make_request(
             "login",
             method="POST",
-            data={'userId': self.username, 'userPassword': self.password},
-            json_encode=False
+            data={"userId": self.username, "userPassword": self.password},
+            json_encode=False,
         )
-
         logger.debug(response.cookies.get_dict())
         if response.status_code != 200:
-            raise CozytouchException("Authentication failed")
+            raise CozytouchAuthentificationFailed(response.status_code)
+        self.is_connected = True
 
     def __retry(self, response, callback, *kwargs):
         if response.status_code == 401 and self.retry < self.max_retry:
             self.retry += 1
-            self.__authenticate()
-            callback(kwargs)
+            self.connect()
+            callback(*kwargs)
         else:
             self.retry = 0
 
@@ -97,9 +101,8 @@ class CozytouchClient:
             raise CozytouchException(
                 "Unable to retrieve setup: {error}[{code}]".format(
                     error=response_json["error"], code=response_json["errorCode"]
-                    )
+                )
             )
-
         return SetupHandler(response.json(), self)
 
     def get_devices(self):
@@ -109,9 +112,11 @@ class CozytouchClient:
         self.__retry(response, self.get_devices)
 
         if response.status_code != 200:
-            raise CozytouchException("Unable to retrieve devices: {response}".format(
-                response=response.content)
+            raise CozytouchException(
+                "Unable to retrieve devices: {response}".format(
+                    response=response.content
                 )
+            )
 
         return DevicesHandler(response.json(), self)
 
@@ -125,8 +130,10 @@ class CozytouchClient:
             response_json = response.json()
             raise CozytouchException(
                 "Unable to retrieve device {device_url}: {error}[{code}]".format(
-                    device_url=device_url, error=response_json["error"], code=response_json["errorCode"]
-                    )
+                    device_url=device_url,
+                    error=response_json["error"],
+                    code=response_json["errorCode"],
+                )
             )
         state = response.json()
         return state
@@ -134,15 +141,19 @@ class CozytouchClient:
     def get_device_state(self, device_url, state_name):
         """ Get cozytouch setup (devices, places) """
 
-        response = self.__make_request("stateInfo", data={"device_url": device_url, "state_name": state_name})
+        response = self.__make_request(
+            "stateInfo", data={"device_url": device_url, "state_name": state_name}
+        )
         kwargs = {"device_url": device_url, "state_name": state_name}
         self.__retry(response, self.get_devices, kwargs)
 
         if response.status_code != 200:
             raise CozytouchException(
                 "Unable to retrieve state {state_name} from device {device_url} : {response}".format(
-                    device_url=device_url, state_name=state_name, response=response.content
-                    )
+                    device_url=device_url,
+                    state_name=state_name,
+                    response=response.content,
+                )
             )
 
         return SetupHandler(response.json(), self)
@@ -150,12 +161,12 @@ class CozytouchClient:
     def send_commands(self, commands, *args):
         """ Get devices states """
 
-        logger.debug("Request commands %s",vars(commands))
+        logger.debug("Request commands %s", vars(commands))
         response = self.__make_request(
             "apply",
             method="POST",
             data=commands,
-            headers={'Content-type': 'application/json'}
+            headers={"Content-type": "application/json"},
         )
         self.__retry(response, self.send_commands, *args)
 
@@ -164,8 +175,8 @@ class CozytouchClient:
             raise CozytouchException(
                 "Unable to send command : {error}[{code}]".format(
                     error=response_json["error"], code=response_json["errorCode"]
-                    )
+                )
             )
 
-        logger.debug("Response commands %s",response.content)
+        logger.debug("Response commands %s", response.content)
         return response.json()

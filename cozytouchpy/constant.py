@@ -7,9 +7,13 @@ COZYTOUCH_ENDPOINTS = {
     "setup": "{base_url}/setup".format(base_url=COZYTOUCH_BASE_URL),
     "gateways": "{base_url}/setup/gateways".format(base_url=COZYTOUCH_BASE_URL),
     "devices": "{base_url}/setup/devices".format(base_url=COZYTOUCH_BASE_URL),
-    "deviceInfo": "{base_url}/setup/devices/[device_url]/states".format(base_url=COZYTOUCH_BASE_URL),
-    "stateInfo": "{base_url}/setup/devices/[device_url]/states/[state_name]".format(base_url=COZYTOUCH_BASE_URL),
-    "apply": "{base_url}/exec/apply".format(base_url=COZYTOUCH_BASE_URL)
+    "deviceInfo": "{base_url}/setup/devices/[device_url]/states".format(
+        base_url=COZYTOUCH_BASE_URL
+    ),
+    "stateInfo": "{base_url}/setup/devices/[device_url]/states/[state_name]".format(
+        base_url=COZYTOUCH_BASE_URL
+    ),
+    "apply": "{base_url}/exec/apply".format(base_url=COZYTOUCH_BASE_URL),
 }
 
 USER_AGENT = "Home assistant/Cozytouch"
@@ -27,80 +31,77 @@ class DeviceType(TextEnum):
 
     @classmethod
     def sensors(cls):
-        return [
-            cls.TEMPERATURE,
-            cls.CONTACT,
-            cls.OCCUPANCY,
-            cls.ELECTRECITY
-        ]
+        return [cls.TEMPERATURE, cls.CONTACT, cls.OCCUPANCY, cls.ELECTRECITY]
 
 
 class DeviceState(TextEnum):
-    BOOST_MODE_DURATION_STATE = 'core:BoostModeDurationState'
+    BOOST_MODE_DURATION_STATE = "core:BoostModeDurationState"
 
-    CONNECTIVITY_STATE = 'core:ConnectivityState'
-    COUNTRY_CODE_STATE = 'core:CountryCodeState'
-    LAST_ACTION_CONF_BUTTON_STATE = 'internal:LastActionConfigButtonState'
-    LIGHTING_LED_POD_MODE_STATE = 'internal:LightingLedPodModeState'
+    CONNECTIVITY_STATE = "core:ConnectivityState"
+    COUNTRY_CODE_STATE = "core:CountryCodeState"
+    LAST_ACTION_CONF_BUTTON_STATE = "internal:LastActionConfigButtonState"
+    LIGHTING_LED_POD_MODE_STATE = "internal:LightingLedPodModeState"
 
-    COMFORT_TARGET_TEMPERATURE_STATE = 'core:ComfortTargetTemperatureState'
+    COMFORT_TARGET_TEMPERATURE_STATE = "core:ComfortTargetTemperatureState"
     COMFORT_TEMPERATURE_STATE = "core:ComfortRoomTemperatureState"
-    DHWP_SOFTWARE_VERSION_STATE = 'core:DHWPSoftwareVersionState'
-    DATE_TIME_STATE = 'core:DateTimeState'
-    ECO_TARGET_TEMPERATURE_STATE = 'core:EcoTargetTemperatureState'
+    DHWP_SOFTWARE_VERSION_STATE = "core:DHWPSoftwareVersionState"
+    DATE_TIME_STATE = "core:DateTimeState"
+    ECO_TARGET_TEMPERATURE_STATE = "core:EcoTargetTemperatureState"
     ECO_TEMPERATURE_STATE = "core:EcoRoomTemperatureState"
     ELECTRIC_ENERGY_CONSUMPTION_STATE = "core:ElectricEnergyConsumptionState"
-    EXPECTED_NUM_SHOWER_STATE = 'core:ExpectedNumberOfShowerState'
-    FROST_PROTECTION_TARGET_TEMPERATURE_STATE = 'core:FrostProtectionTargetTemperatureState'
-    HALTED_TARGET_TEMPERATURE_STATE = 'core:HaltedTargetTemperatureState'
-    HEATING_STATUS_STATE = 'core:HeatingStatusState'
-    AWAY_STATE = 'core:HolidaysModeState'
-    MANUFACTURER_NAME_STATE = 'core:ManufacturerNameState'
-    MAX_SHOWER_MANUEL_MODE_STATE = 'core:MaximalShowerManualModeState'
-    MAX_TEMPERATURE_MANUEL_MODE_STATE = 'core:MaximalTemperatureManualModeState'
-    MIN_SHOWER_MANUEL_MODE_STATE = 'core:MinimalShowerManualModeState'
-    NAME_STATE = 'core:NameState'
-    NUM_TANK_STATE = 'core:NumberOfTankState'
-    NUM_SHOWER_REMAINING_STATE = 'core:NumberOfShowerRemainingState'
-    OPERATING_MODE_STATE = 'core:OperatingModeState'
+    EXPECTED_NUM_SHOWER_STATE = "core:ExpectedNumberOfShowerState"
+    FROST_PROTECTION_TARGET_TEMPERATURE_STATE = (
+        "core:FrostProtectionTargetTemperatureState"
+    )
+    HALTED_TARGET_TEMPERATURE_STATE = "core:HaltedTargetTemperatureState"
+    HEATING_STATUS_STATE = "core:HeatingStatusState"
+    AWAY_STATE = "core:HolidaysModeState"
+    MANUFACTURER_NAME_STATE = "core:ManufacturerNameState"
+    MAX_SHOWER_MANUEL_MODE_STATE = "core:MaximalShowerManualModeState"
+    MAX_TEMPERATURE_MANUEL_MODE_STATE = "core:MaximalTemperatureManualModeState"
+    MIN_SHOWER_MANUEL_MODE_STATE = "core:MinimalShowerManualModeState"
+    NAME_STATE = "core:NameState"
+    NUM_TANK_STATE = "core:NumberOfTankState"
+    NUM_SHOWER_REMAINING_STATE = "core:NumberOfShowerRemainingState"
+    OPERATING_MODE_STATE = "core:OperatingModeState"
     OCCUPANCY_STATE = "core:OccupancyState"
     CONTACT_STATE = "core:ContactState"
     ON_OFF_STATE = "core:OnOffState"
-    PRIORITY_LOCK_TIMER_STATE = 'core:PriorityLockTimerState'
-    RSSI_LEVEL_STATE = 'core:RSSILevelState'
-    SECURED_POSITION_TEMPERATURE_STATE = 'core:SecuredPositionTemperatureState'
-    STATUS_STATE = 'core:StatusState'
+    PRIORITY_LOCK_TIMER_STATE = "core:PriorityLockTimerState"
+    RSSI_LEVEL_STATE = "core:RSSILevelState"
+    SECURED_POSITION_TEMPERATURE_STATE = "core:SecuredPositionTemperatureState"
+    STATUS_STATE = "core:StatusState"
     TARGET_TEMPERATURE_STATE = "core:TargetTemperatureState"
-    TARGETING_HEATING_LEVEL_STATE = 'io:TargetHeatingLevelState'
+    TARGETING_HEATING_LEVEL_STATE = "io:TargetHeatingLevelState"
     TEMPERATURE_STATE = "core:TemperatureState"
-    V40_WATER_VOLUME_ESTIMATION_STATE = 'core:V40WaterVolumeEstimationState'
-    VERSION_STATE = 'core:VersionState'
-    MODEL_STATE = 'io:ModelState'
-    WATER_CONSUMPTION_STATE = 'core:WaterConsumptionState'
+    V40_WATER_VOLUME_ESTIMATION_STATE = "core:V40WaterVolumeEstimationState"
+    VERSION_STATE = "core:VersionState"
+    MODEL_STATE = "io:ModelState"
+    WATER_CONSUMPTION_STATE = "core:WaterConsumptionState"
 
-    ANTI_LEGIONELLOSIS_STATE = 'io:AntiLegionellosisState'
-    AWAY_MODE_DURATION_STATE = 'io:AwayModeDurationState'
-    BOILER_INSTALLATION_OPTION_STATE = 'io:BoilerInstallationOptionState'
-    DHW_AWAY_STATE = 'io:DHWAbsenceModeState'
-    DHW_BOOST_MODE_STATE = 'io:DHWBoostModeState'
-    DHW_CAPACITY_STATE = 'io:DHWCapacityState'
-    DHW_ERROR_STATE = 'io:DHWErrorState'
-    DHW_MODE_STATE = 'io:DHWModeState'
-    ELECTRIC_BOOSTER_OPERATING_TIME_STATE = 'io:ElectricBoosterOperatingTimeState'
-    ELECTRIC_EXTRA_MANAGEMENT_STATE = 'io:ElectricalExtraManagementState'
-    HEAT_PUMP_OPERATING_TIME_STATE = 'io:HeatPumpOperatingTimeState'
-    INSTALLATION_STATE = 'io:InstallationState'
-    MIDDLE_WATER_TEMPERATURE_STATE = 'io:MiddleWaterTemperatureState'
-    OPERATING_MODE_CAPABILITIES_STATE = 'io:OperatingModeCapabilitiesState'
-    OPERATING_RANGE_STATE = 'io:OperatingRangeState'
-    POWER_CONSUMPTION_FAN_STATE = 'io:PowerConsumptionFanState'
+    ANTI_LEGIONELLOSIS_STATE = "io:AntiLegionellosisState"
+    AWAY_MODE_DURATION_STATE = "io:AwayModeDurationState"
+    BOILER_INSTALLATION_OPTION_STATE = "io:BoilerInstallationOptionState"
+    DHW_AWAY_STATE = "io:DHWAbsenceModeState"
+    DHW_BOOST_MODE_STATE = "io:DHWBoostModeState"
+    DHW_CAPACITY_STATE = "io:DHWCapacityState"
+    DHW_ERROR_STATE = "io:DHWErrorState"
+    DHW_MODE_STATE = "io:DHWModeState"
+    ELECTRIC_BOOSTER_OPERATING_TIME_STATE = "io:ElectricBoosterOperatingTimeState"
+    ELECTRIC_EXTRA_MANAGEMENT_STATE = "io:ElectricalExtraManagementState"
+    HEAT_PUMP_OPERATING_TIME_STATE = "io:HeatPumpOperatingTimeState"
+    INSTALLATION_STATE = "io:InstallationState"
+    MIDDLE_WATER_TEMPERATURE_STATE = "io:MiddleWaterTemperatureState"
+    OPERATING_MODE_CAPABILITIES_STATE = "io:OperatingModeCapabilitiesState"
+    OPERATING_RANGE_STATE = "io:OperatingRangeState"
+    POWER_CONSUMPTION_FAN_STATE = "io:PowerConsumptionFanState"
     POWER_HEAT_ELECTRICAL_STATE = "io:PowerHeatElectricalState"
     POWER_HEAT_PUMP_STATE = "io:PowerHeatPumpState"
-    PRIORITY_LOCK_LEVEL_STATE = 'io:PriorityLockLevelState'
-    PRIORITY_LOCK_ORIGINATOR_STATE = 'io:PriorityLockOriginatorState'
-    PROGRAMMING_SLOTS_STATE = 'io:ProgrammingSlotsState'
-    RATE_MANAGEMENT_STATE = 'io:RateManagementState'
-    SMART_GRID_OPTION_STATE = 'io:SmartGridOptionState'
+    PRIORITY_LOCK_LEVEL_STATE = "io:PriorityLockLevelState"
+    PRIORITY_LOCK_ORIGINATOR_STATE = "io:PriorityLockOriginatorState"
+    PROGRAMMING_SLOTS_STATE = "io:ProgrammingSlotsState"
+    RATE_MANAGEMENT_STATE = "io:RateManagementState"
+    SMART_GRID_OPTION_STATE = "io:SmartGridOptionState"
 
 
 class OnOffState(TextEnum):

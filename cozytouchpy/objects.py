@@ -6,7 +6,7 @@ from .constant import (
     DeviceCommand,
     AwayModeState,
     OperatingModeState,
-    TargetingHeatingLevelState
+    TargetingHeatingLevelState,
 )
 from .exception import CozytouchException
 
@@ -14,7 +14,6 @@ logger = logging.getLogger(__name__)
 
 
 class DeviceMetadata:
-
     def __init__(self):
         self.scheme = None
         self.device_id = None
@@ -29,12 +28,15 @@ class DeviceMetadata:
         return url
 
     def __str__(self):
-        return "DeviceMetadata(scheme={scheme}, device={device}, gateway={gateway},entity={entity})".\
-            format(scheme=self.scheme, device=self.device_id, gateway=self.gateway_id, entity=self.entity_id)
+        return "DeviceMetadata(scheme={scheme}, device={device}, gateway={gateway},entity={entity})".format(
+            scheme=self.scheme,
+            device=self.device_id,
+            gateway=self.gateway_id,
+            entity=self.entity_id,
+        )
 
 
 class CozytouchCommands:
-
     def __init__(self, label):
         self.label = label
         self.actions = []
@@ -45,7 +47,6 @@ class CozytouchCommands:
 
 
 class CozytouchAction:
-
     def __init__(self, device_url):
         self.device_url = device_url
         self.commands = []
@@ -55,7 +56,6 @@ class CozytouchAction:
 
 
 class CozytouchCommand:
-
     def __init__(self, name, parameters=None):
         self.name = name
         self.parameters = parameters
@@ -64,7 +64,6 @@ class CozytouchCommand:
 
 
 class CozytouchObject:
-
     def __init__(self, data: dict):
         self.client = None
         self.data = data
@@ -87,14 +86,13 @@ class CozytouchObject:
 
 
 class CozytouchDevice(CozytouchObject):
-
     def __init__(self, data: dict):
         super(CozytouchDevice, self).__init__(data)
         self.states = data["states"]
-        self.metadata:DeviceMetadata = None
-        self.gateway:CozytouchGateway = None
-        self.place:CozytouchPlace = None
-        self.parent:CozytouchDevice = None
+        self.metadata: DeviceMetadata = None
+        self.gateway: CozytouchGateway = None
+        self.place: CozytouchPlace = None
+        self.parent: CozytouchDevice = None
 
     @property
     def deviceUrl(self):
@@ -102,7 +100,7 @@ class CozytouchDevice(CozytouchObject):
 
     @property
     def widget(self):
-        return DeviceType(self.data['widget'])
+        return DeviceType(self.data["widget"])
 
     @property
     def manufacturer(self):
@@ -151,13 +149,17 @@ class CozytouchDevice(CozytouchObject):
         self.states = self.client.get_device_info(self.deviceUrl)
 
     @staticmethod
-    def build(data, client, metadata=None, gateway=None, place=None, sensors=None, parent=None):
+    def build(
+        data, client, metadata=None, gateway=None, place=None, sensors=None, parent=None
+    ):
         if sensors is None:
             sensors = []
         device = None
         if "widget" not in data or "uiClass" not in data:
             raise CozytouchException("Unable to identify device")
-        device_class = DeviceType.from_str(data["widget"] if "widget" in data else data["uiClass"])
+        device_class = DeviceType.from_str(
+            data["widget"] if "widget" in data else data["uiClass"]
+        )
         logger.debug(device_class)
         if device_class == DeviceType.OCCUPANCY:
             device = CozytouchOccupancySensor(data)
@@ -188,18 +190,16 @@ class CozytouchDevice(CozytouchObject):
         return device
 
     def __str__(self):
-        return "{widget} (name={name}, model={model}, manufacturer={manufacturer}, version={version})"\
-            .format(
-                widget=self.widget.name.capitalize(),
-                name=self.name,
-                model=self.model,
-                manufacturer=self.manufacturer,
-                version=self.version
-            )
+        return "{widget} (name={name}, model={model}, manufacturer={manufacturer}, version={version})".format(
+            widget=self.widget.name.capitalize(),
+            name=self.name,
+            model=self.model,
+            manufacturer=self.manufacturer,
+            version=self.version,
+        )
 
 
 class CozytouchPod(CozytouchDevice):
-
     @property
     def available(self):
         return self.data["available"]
@@ -221,8 +221,6 @@ class CozytouchPod(CozytouchDevice):
 
 
 class CozytouchSensor(CozytouchDevice):
-
-
     @property
     def id(self):
         return self.parent.id + "_" + self.sensor_class
@@ -238,7 +236,6 @@ class CozytouchSensor(CozytouchDevice):
 
 
 class CozytouchContactSensor(CozytouchSensor):
-
     @property
     def sensor_class(self):
         return "contact"
@@ -250,7 +247,6 @@ class CozytouchContactSensor(CozytouchSensor):
 
 
 class CozytouchElectrecitySensor(CozytouchDevice):
-
     @property
     def sensor_class(self):
         return "electrecity"
@@ -261,7 +257,6 @@ class CozytouchElectrecitySensor(CozytouchDevice):
 
 
 class CozytouchTemperatureSensor(CozytouchDevice):
-
     @property
     def sensor_class(self):
         return "temperature"
@@ -272,7 +267,6 @@ class CozytouchTemperatureSensor(CozytouchDevice):
 
 
 class CozytouchOccupancySensor(CozytouchDevice):
-
     @property
     def sensor_class(self):
         return "occupancy"
@@ -284,7 +278,6 @@ class CozytouchOccupancySensor(CozytouchDevice):
 
 
 class CozytouchHeater(CozytouchDevice):
-
     def __init__(self, data: dict):
         super(CozytouchHeater, self).__init__(data)
         self.sensors = []
@@ -334,24 +327,35 @@ class CozytouchHeater(CozytouchDevice):
 
     @property
     def operating_mode(self):
-        return OperatingModeState.from_str(self.get_state(DeviceState.OPERATING_MODE_STATE))
+        return OperatingModeState.from_str(
+            self.get_state(DeviceState.OPERATING_MODE_STATE)
+        )
 
     @property
     def operating_mode_list(self):
         definition = self.get_state_definition(DeviceState.OPERATING_MODE_STATE)
         if definition is not None:
-            return [OperatingModeState.from_str(value) for value in definition["values"]]
+            return [
+                OperatingModeState.from_str(value) for value in definition["values"]
+            ]
         return []
 
     @property
     def target_heating_level(self):
-        return TargetingHeatingLevelState.from_str(self.get_state(DeviceState.TARGETING_HEATING_LEVEL_STATE))
+        return TargetingHeatingLevelState.from_str(
+            self.get_state(DeviceState.TARGETING_HEATING_LEVEL_STATE)
+        )
 
     @property
     def target_heating_level_list(self):
-        definition = self.get_state_definition(DeviceState.TARGETING_HEATING_LEVEL_STATE)
+        definition = self.get_state_definition(
+            DeviceState.TARGETING_HEATING_LEVEL_STATE
+        )
         if definition is not None:
-            return [TargetingHeatingLevelState.from_str(value) for value in definition["values"]]
+            return [
+                TargetingHeatingLevelState.from_str(value)
+                for value in definition["values"]
+            ]
         return []
 
     @property
@@ -371,7 +375,11 @@ class CozytouchHeater(CozytouchDevice):
 
     def set_operating_mode(self, mode):
         if not self.has_state(DeviceState.OPERATING_MODE_STATE):
-            raise CozytouchException("Unsupported command {command}".format(command=DeviceCommand.SET_OPERATION_MODE))
+            raise CozytouchException(
+                "Unsupported command {command}".format(
+                    command=DeviceCommand.SET_OPERATION_MODE
+                )
+            )
         if self.client is None:
             raise CozytouchException("Unable to execute command")
 
@@ -387,7 +395,11 @@ class CozytouchHeater(CozytouchDevice):
 
     def set_targeting_heating_level(self, level):
         if not self.has_state(DeviceState.TARGETING_HEATING_LEVEL_STATE):
-            raise CozytouchException("Unsupported command {command}".format(command=DeviceCommand.SET_HEATING_LEVEL))
+            raise CozytouchException(
+                "Unsupported command {command}".format(
+                    command=DeviceCommand.SET_HEATING_LEVEL
+                )
+            )
         if self.client is None:
             raise CozytouchException("Unable to execute command")
 
@@ -402,7 +414,11 @@ class CozytouchHeater(CozytouchDevice):
 
     def set_eco_temperature(self, temp):
         if not self.has_state(DeviceState.ECO_TEMPERATURE_STATE):
-            raise CozytouchException("Unsupported command {command}".format(command=DeviceCommand.SET_ECO_TEMP))
+            raise CozytouchException(
+                "Unsupported command {command}".format(
+                    command=DeviceCommand.SET_ECO_TEMP
+                )
+            )
         if self.client is None:
             raise CozytouchException("Unable to execute command")
         temperature = self.comfort_temperature - temp
@@ -419,7 +435,11 @@ class CozytouchHeater(CozytouchDevice):
 
     def set_comfort_temperature(self, temperature):
         if not self.has_state(DeviceState.COMFORT_TEMPERATURE_STATE):
-            raise CozytouchException("Unsupported command {command}".format(command=DeviceCommand.SET_COMFORT_TEMP))
+            raise CozytouchException(
+                "Unsupported command {command}".format(
+                    command=DeviceCommand.SET_COMFORT_TEMP
+                )
+            )
         if self.client is None:
             raise CozytouchException("Unable to execute command")
 
@@ -427,7 +447,9 @@ class CozytouchHeater(CozytouchDevice):
 
         commands = CozytouchCommands("Set comfort temperature")
         action = CozytouchAction(device_url=self.deviceUrl)
-        action.add_command(CozytouchCommand(DeviceCommand.SET_COMFORT_TEMP, temperature))
+        action.add_command(
+            CozytouchCommand(DeviceCommand.SET_COMFORT_TEMP, temperature)
+        )
         action.add_command(CozytouchCommand(DeviceCommand.SET_ECO_TEMP, eco_temp))
         action.add_command(CozytouchCommand(DeviceCommand.REFRESH_LOWERING_TEMP_PROG))
         action.add_command(CozytouchCommand(DeviceCommand.REFRESH_TARGET_TEMPERATURE))
@@ -440,7 +462,11 @@ class CozytouchHeater(CozytouchDevice):
 
     def set_target_temperature(self, temperature):
         if not self.has_state(DeviceState.TARGET_TEMPERATURE_STATE):
-            raise CozytouchException("Unsupported command {command}".format(command=DeviceCommand.SET_TARGET_TEMP))
+            raise CozytouchException(
+                "Unsupported command {command}".format(
+                    command=DeviceCommand.SET_TARGET_TEMP
+                )
+            )
         if self.client is None:
             raise CozytouchException("Unable to execute command")
 
@@ -458,13 +484,19 @@ class CozytouchHeater(CozytouchDevice):
 
     def turn_away_mode_off(self):
         if not self.has_state(DeviceState.AWAY_STATE):
-            raise CozytouchException("Unsupported command {command}".format(command=DeviceCommand.SET_AWAY_MODE))
+            raise CozytouchException(
+                "Unsupported command {command}".format(
+                    command=DeviceCommand.SET_AWAY_MODE
+                )
+            )
         if self.client is None:
             raise CozytouchException("Unable to execute command")
 
         commands = CozytouchCommands("Set away mode OFF")
         action = CozytouchAction(device_url=self.deviceUrl)
-        action.add_command(CozytouchCommand(DeviceCommand.SET_AWAY_MODE, AwayModeState.OFF))
+        action.add_command(
+            CozytouchCommand(DeviceCommand.SET_AWAY_MODE, AwayModeState.OFF)
+        )
         commands.add_action(action)
 
         self.client.send_commands(commands)
@@ -473,13 +505,19 @@ class CozytouchHeater(CozytouchDevice):
 
     def turn_away_mode_on(self):
         if not self.has_state(DeviceState.AWAY_STATE):
-            raise CozytouchException("Unsupported command {command}".format(command=DeviceCommand.SET_AWAY_MODE))
+            raise CozytouchException(
+                "Unsupported command {command}".format(
+                    command=DeviceCommand.SET_AWAY_MODE
+                )
+            )
         if self.client is None:
             raise CozytouchException("Unable to execute command")
 
         commands = CozytouchCommands("Set away mode ON")
         action = CozytouchAction(device_url=self.deviceUrl)
-        action.add_command(CozytouchCommand(DeviceCommand.SET_AWAY_MODE, AwayModeState.ON))
+        action.add_command(
+            CozytouchCommand(DeviceCommand.SET_AWAY_MODE, AwayModeState.ON)
+        )
         commands.add_action(action)
 
         self.client.send_commands(commands)
@@ -508,7 +546,6 @@ class CozytouchHeater(CozytouchDevice):
 
 
 class CozytouchWaterHeater(CozytouchDevice):
-
     def __init__(self, data: dict):
         super(CozytouchWaterHeater, self).__init__(data)
         self.sensors = []
@@ -525,7 +562,9 @@ class CozytouchWaterHeater(CozytouchDevice):
 
     @property
     def operating_mode(self):
-        return OperatingModeState.from_str(self.get_state(DeviceState.OPERATING_MODE_STATE))
+        return OperatingModeState.from_str(
+            self.get_state(DeviceState.OPERATING_MODE_STATE)
+        )
 
     @property
     def supported_states(self):
@@ -545,7 +584,9 @@ class CozytouchWaterHeater(CozytouchDevice):
     def set_operating_mode(self, mode):
         if not self.has_state(DeviceState.OPERATING_MODE_STATE):
             raise CozytouchException(
-                "Unsupported command {command}".format(command=DeviceCommand.SET_DWH_MODE)
+                "Unsupported command {command}".format(
+                    command=DeviceCommand.SET_DWH_MODE
+                )
             )
         if self.client is None:
             raise CozytouchException("Unable to execute command")
@@ -563,7 +604,9 @@ class CozytouchWaterHeater(CozytouchDevice):
     def set_away_mode(self, duration):
         if not self.has_state(DeviceState.AWAY_MODE_DURATION_STATE):
             raise CozytouchException(
-                "Unsupported command {command}".format(command=DeviceCommand.SET_DWH_MODE)
+                "Unsupported command {command}".format(
+                    command=DeviceCommand.SET_DWH_MODE
+                )
             )
         if self.client is None:
             raise CozytouchException("Unable to execute command")
@@ -571,10 +614,22 @@ class CozytouchWaterHeater(CozytouchDevice):
         commands = CozytouchCommands("Change operating mode")
         action = CozytouchAction(device_url=self.deviceUrl)
         if int(duration) == 0:
-            action.add_command(CozytouchCommand(DeviceCommand.SET_CURRENT_OPERATION_MODE, {"relaunch": "off","absence": "off"}))
+            action.add_command(
+                CozytouchCommand(
+                    DeviceCommand.SET_CURRENT_OPERATION_MODE,
+                    {"relaunch": "off", "absence": "off"},
+                )
+            )
         else:
-            action.add_command(CozytouchCommand(DeviceCommand.SET_CURRENT_OPERATION_MODE, {"relaunch": "off","absence": "on"}))
-        action.add_command(CozytouchCommand(DeviceCommand.SET_ALWAYS_MODE_DURATION, duration))
+            action.add_command(
+                CozytouchCommand(
+                    DeviceCommand.SET_CURRENT_OPERATION_MODE,
+                    {"relaunch": "off", "absence": "on"},
+                )
+            )
+        action.add_command(
+            CozytouchCommand(DeviceCommand.SET_ALWAYS_MODE_DURATION, duration)
+        )
         action.add_command(CozytouchCommand(DeviceCommand.REFRESH_ALWAYS_MODE_DURATION))
         commands.add_action(action)
 
@@ -585,7 +640,9 @@ class CozytouchWaterHeater(CozytouchDevice):
     def set_boost_mode(self, duration):
         if not self.has_state(DeviceState.BOOST_MODE_DURATION_STATE):
             raise CozytouchException(
-                "Unsupported command {command}".format(command=DeviceCommand.SET_BOOST_MODE_DURATION)
+                "Unsupported command {command}".format(
+                    command=DeviceCommand.SET_BOOST_MODE_DURATION
+                )
             )
         if self.client is None:
             raise CozytouchException("Unable to execute command")
@@ -593,10 +650,22 @@ class CozytouchWaterHeater(CozytouchDevice):
         commands = CozytouchCommands("Change Boost mode")
         action = CozytouchAction(device_url=self.deviceUrl)
         if int(duration) == 0:
-            action.add_command(CozytouchCommand(DeviceCommand.SET_CURRENT_OPERATION_MODE, {"relaunch": "off","absence": "off"}))
+            action.add_command(
+                CozytouchCommand(
+                    DeviceCommand.SET_CURRENT_OPERATION_MODE,
+                    {"relaunch": "off", "absence": "off"},
+                )
+            )
         else:
-            action.add_command(CozytouchCommand(DeviceCommand.SET_CURRENT_OPERATION_MODE, {"relaunch": "on","absence": "off"}))
-            action.add_command(CozytouchCommand(DeviceCommand.SET_BOOST_MODE_DURATION, duration))
+            action.add_command(
+                CozytouchCommand(
+                    DeviceCommand.SET_CURRENT_OPERATION_MODE,
+                    {"relaunch": "on", "absence": "off"},
+                )
+            )
+            action.add_command(
+                CozytouchCommand(DeviceCommand.SET_BOOST_MODE_DURATION, duration)
+            )
         action.add_command(CozytouchCommand(DeviceCommand.REFRESH_BOOST_MODE_DURATION))
         commands.add_action(action)
 
@@ -607,7 +676,9 @@ class CozytouchWaterHeater(CozytouchDevice):
     def set_temperature(self, temp):
         if not self.has_state(DeviceState.TARGET_TEMPERATURE_STATE):
             raise CozytouchException(
-                "Unsupported command {command}".format(command=DeviceCommand.SET_TARGET_TEMP)
+                "Unsupported command {command}".format(
+                    command=DeviceCommand.SET_TARGET_TEMP
+                )
             )
         if self.client is None:
             raise CozytouchException("Unable to execute command")
@@ -632,14 +703,11 @@ class CozytouchWaterHeater(CozytouchDevice):
 
 
 class CozytouchPlace(CozytouchObject):
-
     def __str__(self):
-        return "Place(id={id},name={name})"\
-            .format(id=self.id, name=self.name)
+        return "Place(id={id},name={name})".format(id=self.id, name=self.name)
 
 
 class CozytouchGateway:
-
     def __init__(self, data: dict, place: CozytouchPlace):
         self.data = data
         self.place = place
@@ -665,5 +733,6 @@ class CozytouchGateway:
         return self.data["connectivity"]["status"] == "OK"
 
     def __str__(self):
-        return "Gateway(id={id},is_on={is_on},status={status}, version={version})"\
-            .format(id=self.id, is_on=self.is_on, version=self.version, status=self.status)
+        return "Gateway(id={id},is_on={is_on},status={status}, version={version})".format(
+            id=self.id, is_on=self.is_on, version=self.version, status=self.status
+        )
