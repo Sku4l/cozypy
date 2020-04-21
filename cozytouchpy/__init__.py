@@ -3,7 +3,7 @@
 Provides authentification and row access to Cozytouch modules.
 """
 name = "cozytouchpy"
-__version__ = "1.5.1"
+__version__ = "1.5.2"
 
 from .client import CozytouchClient
 from .exception import CozytouchException
