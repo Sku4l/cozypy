@@ -5,6 +5,8 @@ import re
 import requests
 import urllib.parse
 
+from requests.exceptions import ConnectTimeout
+
 from .constant import USER_AGENT, COZYTOUCH_ENDPOINTS
 from .exception import CozytouchException, CozytouchAuthentificationFailed
 from .handlers import SetupHandler, DevicesHandler
@@ -17,7 +19,7 @@ class CozytouchClient:
     """Client session."""
 
     def __init__(self, username, password, timeout=60, max_retry=3):
-        """ Initialization."""
+        """Initializate session."""
         self.session = requests.Session()
         self.retry = 0
         self.max_retry = max_retry
@@ -28,7 +30,7 @@ class CozytouchClient:
 
     @classmethod
     def build_url(cls, resource, data):
-        """ Build url"""
+        """Build url."""
         if resource not in COZYTOUCH_ENDPOINTS:
             raise CozytouchException(
                 "Bad resource: {resource}".format(resource=resource)
@@ -44,7 +46,7 @@ class CozytouchClient:
     def __make_request(
         self, resource, method="GET", data=None, headers=None, json_encode=True
     ):
-        """ Make call to Cozytouch API"""
+        """Make call to Cozytouch API."""
         if not self.is_connected and resource != "login":
             raise CozytouchAuthentificationFailed
 
@@ -58,20 +60,26 @@ class CozytouchClient:
 
         url = self.build_url(resource, data)
         if method == "GET":
-            response = self.session.get(url, timeout=self.timeout)
+            try:
+                response = self.session.get(url, timeout=self.timeout)
+            except ConnectTimeout:
+                raise CozytouchException("Connexion timeout")
         else:
             if json_encode:
                 data = json.dumps(data, cls=CozytouchEncoder)
                 headers["Content-Type"] = "application/json"
 
-            response = self.session.post(
-                url, headers=headers, data=data, timeout=self.timeout
-            )
+            try:
+                response = self.session.post(
+                    url, headers=headers, data=data, timeout=self.timeout
+                )
+            except ConnectTimeout:
+                raise CozytouchException("Connexion timeout")
 
         return response
 
     def connect(self):
-        """ Authenticate using username and userPassword """
+        """Authenticate using username and userPassword."""
         response = self.__make_request(
             "login",
             method="POST",
@@ -92,7 +100,7 @@ class CozytouchClient:
             self.retry = 0
 
     def get_setup(self):
-        """ Get cozytouch setup (devices, places) """
+        """Get cozytouch setup (devices, places)."""
         response = self.__make_request("setup", method="GET")
         self.__retry(response, self.get_setup)
 
@@ -106,8 +114,7 @@ class CozytouchClient:
         return SetupHandler(response.json(), self)
 
     def get_devices(self):
-        """ Get cozytouch setup (devices, places) """
-
+        """.Get cozytouch setup (devices, places)."""
         response = self.__make_request("devices")
         self.__retry(response, self.get_devices)
 
@@ -121,8 +128,7 @@ class CozytouchClient:
         return DevicesHandler(response.json(), self)
 
     def get_device_info(self, device_url):
-        """ Get cozytouch setup (devices, places) """
-
+        """Get cozytouch setup (devices, places)."""
         response = self.__make_request("deviceInfo", data={"device_url": device_url})
         self.__retry(response, self.get_devices, {"device_url": device_url})
 
@@ -139,8 +145,7 @@ class CozytouchClient:
         return state
 
     def get_device_state(self, device_url, state_name):
-        """ Get cozytouch setup (devices, places) """
-
+        """Get cozytouch setup (devices, places)."""
         response = self.__make_request(
             "stateInfo", data={"device_url": device_url, "state_name": state_name}
         )
@@ -159,8 +164,7 @@ class CozytouchClient:
         return SetupHandler(response.json(), self)
 
     def send_commands(self, commands, *args):
-        """ Get devices states """
-
+        """Get devices states."""
         logger.debug("Request commands %s", vars(commands))
         response = self.__make_request(
             "apply",
