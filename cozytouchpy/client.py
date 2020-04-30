@@ -5,7 +5,7 @@ import re
 import requests
 import urllib.parse
 
-from requests.exceptions import ConnectTimeout
+from requests.exceptions import ConnectTimeout, ConnectionError
 
 from .constant import USER_AGENT, COZYTOUCH_ENDPOINTS
 from .exception import CozytouchException, CozytouchAuthentificationFailed
@@ -63,7 +63,7 @@ class CozytouchClient:
             try:
                 response = self.session.get(url, timeout=self.timeout)
             except ConnectTimeout:
-                raise CozytouchException("Connexion timeout")
+                raise CozytouchException("Connection timeout")
         else:
             if json_encode:
                 data = json.dumps(data, cls=CozytouchEncoder)
@@ -74,7 +74,9 @@ class CozytouchClient:
                     url, headers=headers, data=data, timeout=self.timeout
                 )
             except ConnectTimeout:
-                raise CozytouchException("Connexion timeout")
+                raise CozytouchException("Connection timeout")
+            except ConnectionError:
+                raise CozytouchException("Connection error")            
 
         return response
 
