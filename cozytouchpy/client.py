@@ -5,7 +5,7 @@ import re
 import requests
 import urllib.parse
 
-from requests.exceptions import ConnectTimeout, ConnectionError
+from requests.exceptions import ConnectTimeout, ConnectionError  # pylint: disable=redefined-builtin
 
 from .constant import USER_AGENT, COZYTOUCH_ENDPOINTS
 from .exception import CozytouchException, CozytouchAuthentificationFailed
