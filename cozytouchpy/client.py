@@ -76,7 +76,7 @@ class CozytouchClient:
             except ConnectTimeout:
                 raise CozytouchException("Connection timeout")
             except ConnectionError:
-                raise CozytouchException("Connection error")            
+                raise CozytouchException("Connection error")
 
         return response
 
@@ -93,11 +93,11 @@ class CozytouchClient:
             raise CozytouchAuthentificationFailed(response.status_code)
         self.is_connected = True
 
-    def __retry(self, response, callback, *kwargs):
+    def __retry(self, response, callback, *args):
         if response.status_code == 401 and self.retry < self.max_retry:
             self.retry += 1
             self.connect()
-            callback(*kwargs)
+            callback(*args)
         else:
             self.retry = 0
 
