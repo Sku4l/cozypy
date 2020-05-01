@@ -165,11 +165,8 @@ class CozytouchClient:
 
     def send_commands(self, commands, *args):
         """Get devices states."""
-        logger.debug(
-            "Request commands {label} {actions}".format(
-                label=commands["label"], actions=commands["actions"]
-            )
-        )
+        logger.debug("Request commands %s", str(commands))
+
         response = self.__make_request(
             "apply",
             method="POST",
