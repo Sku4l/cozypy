@@ -2,5 +2,9 @@ class CozytouchException(Exception):
     pass
 
 
-class CozytouchAuthentificationFailed(Exception):
+class AuthentificationFailed(CozytouchException):
+    pass
+
+
+class HttpRequestFailed(CozytouchException):
     pass

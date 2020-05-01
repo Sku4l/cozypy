@@ -5,10 +5,10 @@ import re
 import requests
 import urllib.parse
 
-from requests.exceptions import ConnectTimeout, ConnectionError  # pylint: disable=redefined-builtin
+from requests.exceptions import RequestException
 
 from .constant import USER_AGENT, COZYTOUCH_ENDPOINTS
-from .exception import CozytouchException, CozytouchAuthentificationFailed
+from .exception import CozytouchException, AuthentificationFailed, HttpRequestFailed
 from .handlers import SetupHandler, DevicesHandler
 from .utils import CozytouchEncoder
 
@@ -48,7 +48,7 @@ class CozytouchClient:
     ):
         """Make call to Cozytouch API."""
         if not self.is_connected and resource != "login":
-            raise CozytouchAuthentificationFailed
+            raise AuthentificationFailed
 
         if data is None:
             data = {}
@@ -62,8 +62,8 @@ class CozytouchClient:
         if method == "GET":
             try:
                 response = self.session.get(url, timeout=self.timeout)
-            except ConnectTimeout:
-                raise CozytouchException("Connection timeout")
+            except RequestException as e:
+                raise HttpRequestFailed("Error request %s", e)
         else:
             if json_encode:
                 data = json.dumps(data, cls=CozytouchEncoder)
@@ -73,10 +73,8 @@ class CozytouchClient:
                 response = self.session.post(
                     url, headers=headers, data=data, timeout=self.timeout
                 )
-            except ConnectTimeout:
-                raise CozytouchException("Connection timeout")
-            except ConnectionError:
-                raise CozytouchException("Connection error")
+            except RequestException as e:
+                raise HttpRequestFailed("Error Request : %s", e)
 
         return response
 
@@ -90,7 +88,7 @@ class CozytouchClient:
         )
         logger.debug(response.cookies.get_dict())
         if response.status_code != 200:
-            raise CozytouchAuthentificationFailed(response.status_code)
+            raise AuthentificationFailed(response.status_code)
         self.is_connected = True
 
     def __retry(self, response, callback, *args):
