@@ -52,7 +52,7 @@ class CozytouchClient:
 
         if data is None:
             data = {}
-        logger.debug("Request : %s", data)
+        logger.debug("Request: %s", data)
         if headers is None:
             headers = {}
 
@@ -75,7 +75,7 @@ class CozytouchClient:
                 )
             except RequestException as e:
                 raise HttpRequestFailed("Error Request", e)
-
+        logger.debug("Response: %s", response)
         return response
 
     def connect(self):
@@ -165,7 +165,11 @@ class CozytouchClient:
 
     def send_commands(self, commands, *args):
         """Get devices states."""
-        logger.debug("Request commands %s", vars(commands))
+        logger.debug(
+            "Request commands {label} {actions}".format(
+                label=commands["label"], actions=commands["actions"]
+            )
+        )
         response = self.__make_request(
             "apply",
             method="POST",
