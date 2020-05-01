@@ -63,7 +63,7 @@ class CozytouchClient:
             try:
                 response = self.session.get(url, timeout=self.timeout)
             except RequestException as e:
-                raise HttpRequestFailed("Error request %s", e)
+                raise HttpRequestFailed("Error request", e)
         else:
             if json_encode:
                 data = json.dumps(data, cls=CozytouchEncoder)
@@ -74,7 +74,7 @@ class CozytouchClient:
                     url, headers=headers, data=data, timeout=self.timeout
                 )
             except RequestException as e:
-                raise HttpRequestFailed("Error Request : %s", e)
+                raise HttpRequestFailed("Error Request", e)
 
         return response
 
