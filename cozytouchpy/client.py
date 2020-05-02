@@ -130,7 +130,7 @@ class CozytouchClient:
     def get_device_info(self, device_url):
         """Get cozytouch setup (devices, places)."""
         response = self.__make_request("deviceInfo", data={"device_url": device_url})
-        self.__retry(response, self.get_devices, {"device_url": device_url})
+        self.__retry(response, self.get_device_info, {"device_url": device_url})
 
         if response.status_code != 200:
             response_json = response.json()
@@ -150,7 +150,7 @@ class CozytouchClient:
             "stateInfo", data={"device_url": device_url, "state_name": state_name}
         )
         kwargs = {"device_url": device_url, "state_name": state_name}
-        self.__retry(response, self.get_devices, kwargs)
+        self.__retry(response, self.get_device_state, kwargs)
 
         if response.status_code != 200:
             raise CozytouchException(
