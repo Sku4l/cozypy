@@ -7,10 +7,7 @@ import urllib.parse
 import datetime
 import asyncio
 
-from requests.exceptions import RequestException
-
-from cozytouchpy.objects import CozytouchDevice, DeviceMetadata
-from .constant import USER_AGENT, COZYTOUCH_ENDPOINTS
+from .constant import USER_AGENT, COZYTOUCH_ENDPOINTS, API_THROTTLE
 from .exception import CozytouchException, AuthentificationFailed, HttpRequestFailed
 from .handlers import SetupHandler, DevicesHandler
 from .utils import CozytouchEncoder
@@ -72,7 +69,7 @@ class CozytouchClient:
                     async with session.get(url) as resp:
                         response_json = await resp.json()
                         response = resp
-                except RequestException as e:
+                except aiohttp.ClientError as e:
                     raise HttpRequestFailed("Error Request", e)
             else:
                 if json_encode:
@@ -83,9 +80,17 @@ class CozytouchClient:
                     async with session.post(url, headers=headers, data=data) as resp:
                         response_json = await resp.json()
                         response = resp
-                except RequestException as e:
+                except aiohttp.ClientError as e:
                     raise HttpRequestFailed("Error Request", e)
         logger.debug(f"Response status : {response.status}")
+        return response_json, response
+
+    async def __make_request_reconnect(self, resource, method="GET", data=None, headers=None, json_encode=True):
+        response_json, response = await self.__make_request(resource, method, data, headers, json_encode)
+        if response.status == 401:
+            logger.debug("Connection refused, reconnecting")
+            await self.connect()
+            response_json, response = await self.__make_request(resource, method, data, headers, json_encode)
         return response_json, response
 
     async def connect(self):
@@ -102,14 +107,6 @@ class CozytouchClient:
         self.is_connected = True
         self.cookies = {'JSESSIONID': response.cookies.get('JSESSIONID')}
 
-    async def __make_request_reconnect(self, resource, method="GET", data=None, headers=None, json_encode=True):
-        response_json, response = await self.__make_request(resource, method, data, headers, json_encode)
-        if response.status == 401:
-            logger.debug("Connection refused, reconnecting")
-            await self.connect()
-            response_json, response = await self.__make_request(resource, method, data, headers, json_encode)
-        return response_json, response
-
     async def get_setup(self):
         """Get cozytouch setup (devices, places)."""
         response_json, response = await self.__make_request_reconnect("setup", method="GET")
@@ -122,10 +119,10 @@ class CozytouchClient:
         return SetupHandler(response_json, self)
 
     async def devices_data(self):
-        async with self._lock:
+        async with self._lock: #  Prevent call to the API if there is already one running
             fresh = False
             if self._last_fetch is not None:
-                fresh = (datetime.datetime.now() - self._last_fetch).total_seconds() < 60
+                fresh = (datetime.datetime.now() - self._last_fetch).total_seconds() < API_THROTTLE
             if self._devices_data is None or not fresh:
                 if self._devices_data is None:
                     logger.debug("Cache not available, fetching datas")
@@ -157,21 +154,7 @@ class CozytouchClient:
         self._devices_info = {}
         data = await self.devices_data()
         for dev in data:
-            url = dev["deviceURL"]
-            scheme = url[0: url.find("://")]
-            if scheme not in ["io", "internal"]:
-                raise CozytouchException("Invalid url {url}".format(url=url))
-            metadata = DeviceMetadata()
-            metadata.scheme = scheme
-            parts = url.replace(scheme + "://", "").replace("#", "/").split("/")
-            parts_len = len(parts)
-            if parts_len < 2:
-                raise CozytouchException("Invalid url {url}".format(url=url))
-            metadata.gateway_id = parts[0]
-            metadata.device_id = parts[1]
-            if parts_len == 3:
-                metadata.entity_id = parts[2]
-
+            metadata = SetupHandler.parse_url(dev["deviceURL"])
             self._devices_info[metadata.base_url] = dev
         return self._devices_info
 
@@ -186,25 +169,6 @@ class CozytouchClient:
                 )
             )
         return datas.get(device_url).get("states")
-
-    #def get_device_state(self, device_url, state_name):
-    #    """Get cozytouch setup (devices, places)."""
-    #    response = self.__make_request(
-    #        "stateInfo", data={"device_url": device_url, "state_name": state_name}
-    #    )
-    #    kwargs = {"device_url": device_url, "state_name": state_name}
-    #    self.__retry(response, self.get_devices, kwargs)
-    #
-    #    if response.status != 200:
-    #        raise CozytouchException(
-    #            "Unable to retrieve state {state_name} from device {device_url} : {response}".format(
-    #                device_url=device_url,
-    #                state_name=state_name,
-    #                response=response.content,
-    #            )
-    #        )
-    #
-    #    return SetupHandler(response.json(), self)
 
     async def send_commands(self, commands, *args):
         """Get devices states."""
