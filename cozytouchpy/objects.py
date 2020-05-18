@@ -195,9 +195,8 @@ class CozytouchDevice(CozytouchObject):
         device = None
         if "widget" not in data or "uiClass" not in data:
             raise CozytouchException("Unable to identify device")
-        device_class = DeviceType.from_str(
-            data["widget"] if "widget" in data else data["uiClass"]
-        )
+        device_str = data["widget"] if "widget" in data else data["uiClass"]
+        device_class = DeviceType.from_str(device_str)
         logger.debug(device_class)
         if device_class == DeviceType.OCCUPANCY:
             device = CozytouchOccupancySensor(data)
@@ -218,7 +217,7 @@ class CozytouchDevice(CozytouchObject):
             device = CozytouchWaterHeater(data)
             device.sensors = sensors
         if device is None:
-            raise CozytouchException("Unknown device {type}".format(type=device_class))
+            raise CozytouchException("Unknown device {type}".format(type=device_str))
 
         device.client = client
         device.metadata = metadata
