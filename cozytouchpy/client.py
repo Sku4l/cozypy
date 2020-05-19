@@ -174,7 +174,6 @@ class CozytouchClient:
         """Get devices states."""
         logger.debug("Request commands %s", str(commands))
         response_json, response = await self.__make_request_reconnect(
-
             "apply",
             method="POST",
             data=commands,
