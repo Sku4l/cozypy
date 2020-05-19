@@ -41,28 +41,31 @@ class SetupHandler:
             del devices[idx]
 
         for device in devices:
-            device_type = DeviceType.from_str(device["widget"])
-            metadata = self.__parse_url(device["deviceURL"])
-            gateway = self.__find_gateway(metadata.gateway_id)
-            place = self.__find_place(device)
-            cozyouch_device = CozytouchDevice.build(
-                data=device,
-                client=self.client,
-                metadata=metadata,
-                gateway=gateway,
-                place=place,
-            )
-            device_sensors = self.__link_sensors(
-                sensors, place, gateway, cozyouch_device
-            )
-            cozyouch_device.sensors = device_sensors
+            try:
+                device_type = DeviceType.from_str(device["widget"])
+                metadata = self.__parse_url(device["deviceURL"])
+                gateway = self.__find_gateway(metadata.gateway_id)
+                place = self.__find_place(device)
+                cozyouch_device = CozytouchDevice.build(
+                    data=device,
+                    client=self.client,
+                    metadata=metadata,
+                    gateway=gateway,
+                    place=place,
+                )
+                device_sensors = self.__link_sensors(
+                    sensors, place, gateway, cozyouch_device
+                )
+                cozyouch_device.sensors = device_sensors
 
-            if device_type == DeviceType.POD:
-                self.pods.append(cozyouch_device)
-            elif device_type in [DeviceType.HEATER, DeviceType.PILOT_WIRE_INTERFACE, DeviceType.APC_HEAT_PUMP, DeviceType.APC_HEATING_AND_COOLING_ZONE]:
-                self.heaters.append(cozyouch_device)
-            elif device_type in [DeviceType.WATER_HEATER, DeviceType.APC_WATER_HEATER]:
-                self.water_heaters.append(cozyouch_device)
+                if device_type == DeviceType.POD:
+                    self.pods.append(cozyouch_device)
+                elif device_type in [DeviceType.HEATER, DeviceType.PILOT_WIRE_INTERFACE, DeviceType.APC_HEAT_PUMP, DeviceType.APC_HEATING_AND_COOLING_ZONE]:
+                    self.heaters.append(cozyouch_device)
+                elif device_type in [DeviceType.WATER_HEATER, DeviceType.APC_WATER_HEATER]:
+                    self.water_heaters.append(cozyouch_device)
+            except CozytouchException as e:
+                logger.warning("Error building device, skipping: {}".format(e))
 
     def __parse_url(self, url):
         scheme = url[0 : url.find("://")]
@@ -133,4 +136,7 @@ class DevicesHandler:
 
     def __build_devices(self, data):
         for device in data:
-            self.devices.append(CozytouchDevice.build(device, self))
+            try:
+                self.devices.append(CozytouchDevice.build(device, self))
+            except CozytouchException as e:
+                logger.warning("Error building device, skipping: {}".format(e))
