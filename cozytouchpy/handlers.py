@@ -59,9 +59,9 @@ class SetupHandler:
 
             if device_type == DeviceType.POD:
                 self.pods.append(cozyouch_device)
-            elif device_type in [DeviceType.HEATER, DeviceType.PILOT_WIRE_INTERFACE]:
+            elif device_type in [DeviceType.HEATER, DeviceType.PILOT_WIRE_INTERFACE, DeviceType.APC_HEAT_PUMP, DeviceType.APC_HEATING_AND_COOLING_ZONE]:
                 self.heaters.append(cozyouch_device)
-            elif device_type == DeviceType.WATER_HEATER:
+            elif device_type in [DeviceType.WATER_HEATER, DeviceType.APC_WATER_HEATER]:
                 self.water_heaters.append(cozyouch_device)
 
     def __parse_url(self, url):

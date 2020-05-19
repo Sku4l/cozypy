@@ -211,10 +211,10 @@ class CozytouchDevice(CozytouchObject):
             device = CozytouchElectrecitySensor(data)
         elif device_class == DeviceType.CONTACT:
             device = CozytouchContactSensor(data)
-        elif device_class in [DeviceType.HEATER, DeviceType.PILOT_WIRE_INTERFACE]:
+        elif device_class in [DeviceType.HEATER, DeviceType.PILOT_WIRE_INTERFACE, DeviceType.APC_HEAT_PUMP, DeviceType.APC_HEATING_AND_COOLING_ZONE]:
             device = CozytouchHeater(data)
             device.sensors = sensors
-        elif device_class in [DeviceType.WATER_HEATER]:
+        elif device_class in [DeviceType.WATER_HEATER, DeviceType.APC_WATER_HEATER]:
             device = CozytouchWaterHeater(data)
             device.sensors = sensors
         if device is None:
