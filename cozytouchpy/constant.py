@@ -19,8 +19,8 @@ COZYTOUCH_ENDPOINTS = {
 }
 
 USER_AGENT = "Home assistant/Cozytouch"
+API_THROTTLE = 60  # Delay minimum between API call
 
-API_THROTTLE = 60 # Delay minimum between API call
 
 class DeviceType(TextEnum):
     """Device type."""
@@ -46,26 +46,38 @@ class DeviceType(TextEnum):
 class DeviceState(TextEnum):
     """Device state."""
 
-    ABSENCE_COOLING_TARGET_TEMPERATURE_STATE = "core:AbsenceCoolingTargetTemperatureState"
+    ABSENCE_COOLING_TARGET_TEMPERATURE_STATE = (
+        "core:AbsenceCoolingTargetTemperatureState"
+    )
     ABSENCE_END_DATE_STATE = "core:AbsenceEndDateState"
-    ABSENCE_HEATING_TARGET_TEMPERATURE_STATE = "core:AbsenceHeatingTargetTemperatureState"
+    ABSENCE_HEATING_TARGET_TEMPERATURE_STATE = (
+        "core:AbsenceHeatingTargetTemperatureState"
+    )
     ABSENCE_START_DATE_STATE = "core:AbsenceStartDateState"
     ACTIVE_COOLING_TIME_PROGRAM_STATE = "core:ActiveCoolingTimeProgramState"
     ACTIVE_HEATING_TIME_PROGRAM_STATE = "core:ActiveHeatingTimeProgramState"
     AWAY_STATE = "core:HolidaysModeState"
-    BOOST_ELECTRIC_POWER_CONSUMPTION_STATE = "core:BoostElectricPowerConsumptionState"  # int
+    BOOST_ELECTRIC_POWER_CONSUMPTION_STATE = (
+        "core:BoostElectricPowerConsumptionState"  # int
+    )
     BOOST_END_DATE_STATE = "core:BoostEndDateState"  # dict
     BOOST_MODE_DURATION_STATE = "core:BoostModeDurationState"  # int
     BOOST_ON_OFF_STATE = "core:BoostOnOffState"
     BOOST_START_DATE_STATE = "core:BoostStartDateState"  # dict
     BOTTOM_TANK_WATER_TEMPERATURE_STATE = "core:BottomTankWaterTemperatureState"
-    COMFORT_COOLING_TARGET_TEMPERATURE_STATE = "core:ComfortCoolingTargetTemperatureState"
-    COMFORT_HEATING_TARGET_TEMPERATURE_STATE = "core:ComfortHeatingTargetTemperatureState"
+    COMFORT_COOLING_TARGET_TEMPERATURE_STATE = (
+        "core:ComfortCoolingTargetTemperatureState"
+    )
+    COMFORT_HEATING_TARGET_TEMPERATURE_STATE = (
+        "core:ComfortHeatingTargetTemperatureState"
+    )
     COMFORT_TARGET_TEMPERATURE_STATE = "core:ComfortTargetTemperatureState"
     COMFORT_TEMPERATURE_STATE = "core:ComfortRoomTemperatureState"
     CONNECTIVITY_STATE = "core:ConnectivityState"
     CONTACT_STATE = "core:ContactState"
-    CONTROL_WATER_TARGET_TEMPERATURE_STATE = "core:ControlWaterTargetTemperatureState"  # int
+    CONTROL_WATER_TARGET_TEMPERATURE_STATE = (
+        "core:ControlWaterTargetTemperatureState"  # int
+    )
     COOLING_ON_OFF_STATE = "core:CoolingOnOffState"
     COUNTRY_CODE_STATE = "core:CountryCodeState"
     DATE_TIME_STATE = "core:DateTimeState"  # dict
@@ -85,7 +97,9 @@ class DeviceState(TextEnum):
     ELECTRIC_ENERGY_CONSUMPTION_STATE = "core:ElectricEnergyConsumptionState"
     ERROR_CODE_STATE = "core:ErrorCodeState"
     EXPECTED_NUM_SHOWER_STATE = "core:ExpectedNumberOfShowerState"  # int
-    FROST_PROTECTION_TARGET_TEMPERATURE_STATE = "core:FrostProtectionTargetTemperatureState"
+    FROST_PROTECTION_TARGET_TEMPERATURE_STATE = (
+        "core:FrostProtectionTargetTemperatureState"
+    )
     HALTED_TARGET_TEMPERATURE_STATE = "core:HaltedTargetTemperatureState"
     HEATING_DEROGATION_AVAILABILITY_STATE = "core:HeatingDerogationAvailabilityState"
     HEATING_ON_OFF_STATE = "core:HeatingOnOffState"
@@ -137,7 +151,9 @@ class DeviceState(TextEnum):
     ANTI_LEGIONELLOSIS_STATE = "io:AntiLegionellosisState"  # bool 0/1
     AWAY_MODE_DURATION_STATE = "io:AwayModeDurationState"  # bool 0/1
     BOILER_INSTALLATION_OPTION_STATE = "io:BoilerInstallationOptionState"  # dict
-    COOLING_INTERNAL_SCHEDULING_AVAILABILITY_STATE = "io:CoolingInternalSchedulingAvailabilityState"
+    COOLING_INTERNAL_SCHEDULING_AVAILABILITY_STATE = (
+        "io:CoolingInternalSchedulingAvailabilityState"
+    )
     DEROGATION_REMAINING_TIME_STATE = "io:DerogationRemainingTimeState"
     DHW_AVAILABILITY_STATE = "io:DHWAvailabilityState"
     DHW_AWAY_STATE = "io:DHWAbsenceModeState"  # string off,on,prog
@@ -145,18 +161,24 @@ class DeviceState(TextEnum):
     DHW_CAPACITY_STATE = "io:DHWCapacityState"  # float
     DHW_ERROR_STATE = "io:DHWErrorState"  # dict
     DHW_MODE_STATE = "io:DHWModeState"  # string
-    ELECTRIC_BOOSTER_OPERATING_TIME_STATE = "io:ElectricBoosterOperatingTimeState"  # int
-    ELECTRIC_EXTRA_MANAGEMENT_STATE = "io:ElectricalExtraManagementState"  # string auto,deactive
+    ELECTRIC_BOOSTER_OPERATING_TIME_STATE = (
+        "io:ElectricBoosterOperatingTimeState"  # int
+    )
+    ELECTRIC_EXTRA_MANAGEMENT_STATE = (
+        "io:ElectricalExtraManagementState"  # string auto,deactive
+    )
     ENERGY_CONSUMPTION_AVAILABILITY_STATE = "io:EnergyConsumptionAvailabilityState"
     EXTRACTION_OPTION_STATE = "io:ExtractionOptionState"  # string  fastExtractionSpeed,lowExtractionSpeed,noExtraction
-    HEATING_INTERNAL_SCHEDULING_AVAILABILITY_STATE = "io:HeatingInternalSchedulingAvailabilityState"
+    HEATING_INTERNAL_SCHEDULING_AVAILABILITY_STATE = (
+        "io:HeatingInternalSchedulingAvailabilityState"
+    )
     HEAT_PUMP_OPERATING_TIME_STATE = "io:HeatPumpOperatingTimeState"  # int
     INSTALLATION_STATE = "io:InstallationState"  # string -> class InstallationState
     LAST_PASS_APC_OPERATING_MODE_STATE = "io:LastPassAPCOperatingModeState"
     MIDDLE_WATER_TEMPERATURE_STATE = "io:MiddleWaterTemperatureState"  # float
     MODEL_STATE = "io:ModelState"
     OPERATING_MODE_CAPABILITIES_STATE = "io:OperatingModeCapabilitiesState"
-    OPERATING_RANGE_STATE = "io:OperatingRangeState"   # string
+    OPERATING_RANGE_STATE = "io:OperatingRangeState"  # string
     PASS_APC_COOLING_MODE_STATE = "io:PassAPCCoolingModeState"
     PASS_APC_COOLING_PROFILE_STATE = "io:PassAPCCoolingProfileState"
     PASS_APC_DHW_CONFIGURATION_STATE = "io:PassAPCDHWConfigurationState"
@@ -169,10 +191,16 @@ class DeviceState(TextEnum):
     POWER_CONSUMPTION_FAN_STATE = "io:PowerConsumptionFanState"  # int
     POWER_HEAT_ELECTRICAL_STATE = "io:PowerHeatElectricalState"  # int
     POWER_HEAT_PUMP_STATE = "io:PowerHeatPumpState"  # int
-    PRIORITY_LOCK_LEVEL_STATE = "io:PriorityLockLevelState"  # string -> class PriorityLockLevelState
-    PRIORITY_LOCK_ORIGINATOR_STATE = "io:PriorityLockOriginatorState"  # string -> class PriorityLockOriginatorState
+    PRIORITY_LOCK_LEVEL_STATE = (
+        "io:PriorityLockLevelState"  # string -> class PriorityLockLevelState
+    )
+    PRIORITY_LOCK_ORIGINATOR_STATE = (
+        "io:PriorityLockOriginatorState"  # string -> class PriorityLockOriginatorState
+    )
     PROGRAMMING_SLOTS_STATE = "io:ProgrammingSlotsState"  # dict
-    RATE_MANAGEMENT_STATE = "io:RateManagementState"  # string forbidden,no,recommended,unsuitable,wanted
+    RATE_MANAGEMENT_STATE = (
+        "io:RateManagementState"  # string forbidden,no,recommended,unsuitable,wanted
+    )
     SMART_GRID_OPTION_STATE = "io:SmartGridOptionState"  # string active,deactive
     TARGETING_HEATING_LEVEL_STATE = "io:TargetHeatingLevelState"
     THERMAL_SCHEDULING_AVAILABILITY_STATE = "io:ThermalSchedulingAvailabilityState"
@@ -349,8 +377,12 @@ class DeviceCommand(TextEnum):
     REFRESH_BOOST_MODE_DURATION = "refreshBoostModeDuration"
     REFRESH_BOOST_START_DATE = "refreshBoostStartDate"
     REFRESH_BOTTOM_TANK_WATER_TEMPERATURE = "refreshBottomTankWaterTemperature"
-    REFRESH_COMFORT_COOLING_TARGET_TEMPERATURE = "refreshComfortCoolingTargetTemperature"
-    REFRESH_COMFORT_HEATING_TARGET_TEMPERATURE = "refreshComfortHeatingTargetTemperature"
+    REFRESH_COMFORT_COOLING_TARGET_TEMPERATURE = (
+        "refreshComfortCoolingTargetTemperature"
+    )
+    REFRESH_COMFORT_HEATING_TARGET_TEMPERATURE = (
+        "refreshComfortHeatingTargetTemperature"
+    )
     REFRESH_COMFORT_TARGET_DHW_TEMPERATURE = "refreshComfortTargetDHWTemperature"
     REFRESH_COMFORT_TEMPERATURE = "refreshComfortTemperature"
     REFRESH_CURRENT_OPERATING_MODE = "refreshCurrentOperatingMode"
@@ -386,7 +418,9 @@ class DeviceCommand(TextEnum):
     REFRESH_OPERATING_TIME = "refreshOperatingTime"
     REFRESH_OPERATION_MODE = "refreshOperatingMode"
     REFRESH_OUTSIDE_TEMPERATURE = "refreshOutsideTemperature"
-    REFRESH_OUTSIDE_TEMPERATURE_SENSOR_AVAILABILITY = "refreshOutsideTemperatureSensorAvailability"
+    REFRESH_OUTSIDE_TEMPERATURE_SENSOR_AVAILABILITY = (
+        "refreshOutsideTemperatureSensorAvailability"
+    )
     REFRESH_PASS_APC_COOLING_MODE = "refreshPassAPCCoolingMode"
     REFRESH_PASS_APC_COOLING_PROFILE = "refreshPassAPCCoolingProfile"
     REFRESH_PASS_APC_DHW_MODE = "refreshPassAPCDHWMode"
@@ -411,5 +445,7 @@ class DeviceCommand(TextEnum):
     REFRESH_ZONES_PASS_APC_HEATING_PROFILE = "refreshZonesPassAPCHeatingProfile"
     REFRESH_ZONES_TARGET_TEMPERATURE = "refreshZonesTargetTemperature"
     REFRESH_ZONES_TEMPERATURE = "refreshZonesTemperature"
-    REFRESH_ZONES_TEMPERATURE_SENSOR_AVAILABILITY = "refreshZonesTemperatureSensorAvailability"
+    REFRESH_ZONES_TEMPERATURE_SENSOR_AVAILABILITY = (
+        "refreshZonesTemperatureSensorAvailability"
+    )
     REFRESH_ZONES_THERMAL_CONFIGURATION = "refreshZonesThermalConfiguration"

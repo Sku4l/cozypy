@@ -1,3 +1,5 @@
+"""Construct class cozytouch."""
+
 import logging
 from .constant import DeviceType
 from .exception import CozytouchException
@@ -7,7 +9,10 @@ logger = logging.getLogger(__name__)
 
 
 class SetupHandler:
+    """Set handler."""
+
     def __init__(self, data, client):
+        """Initialize handler."""
         self.client = client
         self.data = data
         self.pods = []
@@ -60,15 +65,24 @@ class SetupHandler:
 
                 if device_type == DeviceType.POD:
                     self.pods.append(cozyouch_device)
-                elif device_type in [DeviceType.HEATER, DeviceType.PILOT_WIRE_INTERFACE, DeviceType.APC_HEAT_PUMP, DeviceType.APC_HEATING_AND_COOLING_ZONE]:
+                elif device_type in [
+                    DeviceType.HEATER,
+                    DeviceType.PILOT_WIRE_INTERFACE,
+                    DeviceType.APC_HEAT_PUMP,
+                    DeviceType.APC_HEATING_AND_COOLING_ZONE,
+                ]:
                     self.heaters.append(cozyouch_device)
-                elif device_type in [DeviceType.WATER_HEATER, DeviceType.APC_WATER_HEATER]:
+                elif device_type in [
+                    DeviceType.WATER_HEATER,
+                    DeviceType.APC_WATER_HEATER,
+                ]:
                     self.water_heaters.append(cozyouch_device)
             except CozytouchException as e:
                 logger.warning("Error building device, skipping: {}".format(e))
 
     @staticmethod
     def parse_url(url):
+        """Parse url."""
         scheme = url[0 : url.find("://")]
         if scheme not in ["io", "internal"]:
             raise CozytouchException("Invalid url {url}".format(url=url))
@@ -124,7 +138,10 @@ class SetupHandler:
 
 
 class DevicesHandler:
+    """Devices."""
+
     def __init__(self, data, client):
+        """Initialize."""
         self.client = client
         self.data = data
         self.devices = []

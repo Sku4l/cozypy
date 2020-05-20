@@ -1,3 +1,5 @@
+"""Utils class."""
+
 import logging
 import enum
 import json
@@ -7,8 +9,11 @@ logger = logging.getLogger(__name__)
 
 
 class TextEnum(enum.Enum):
+    """Text enum."""
+
     @classmethod
     def from_str(cls, name):
+        """Enum from string."""
         for item in cls:
             if item.value == name:
                 return item
@@ -16,7 +21,10 @@ class TextEnum(enum.Enum):
 
 
 class CozytouchEncoder(json.JSONEncoder):
+    """Encode json."""
+
     def default(self, obj):  # pylint: disable=arguments-differ, method-hidden
+        """Transform json."""
         from .objects import CozytouchCommands, CozytouchAction, CozytouchCommand
 
         if isinstance(obj, Enum):
