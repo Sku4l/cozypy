@@ -83,7 +83,7 @@ class CozytouchClient:
                         response_json = await resp.json()
                         response = resp
                 except aiohttp.ClientError as e:
-                    raise HttpRequestFailed("Error Request", e)
+                    raise HttpRequestFailed("Error Request %s", e)
         logger.debug(f"Response status : {response.status}")
         return response_json, response
 
@@ -141,7 +141,7 @@ class CozytouchClient:
                     logger.debug("Cache not available, fetching datas")
                 else:
                     delta = (datetime.datetime.now() - self._last_fetch).total_seconds()
-                    logger.debug(f"Cache too old {delta}, fetching datas")
+                    logger.debug("Cache too old %s, fetching datas", delta)
                 response_json, response = await self.__make_request_reconnect("devices")
                 if response.status != 200:
                     raise CozytouchException(
@@ -183,7 +183,7 @@ class CozytouchClient:
             )
         return datas.get(device_url).get("states")
 
-    async def send_commands(self, commands, *args):
+    async def send_commands(self, commands):
         """Get devices states."""
         logger.debug("Request commands %s", str(commands))
         response_json, response = await self.__make_request_reconnect(
