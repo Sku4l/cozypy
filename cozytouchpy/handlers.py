@@ -43,7 +43,7 @@ class SetupHandler:
         for device in devices:
             try:
                 device_type = DeviceType.from_str(device["widget"])
-                metadata = self.__parse_url(device["deviceURL"])
+                metadata = self.parse_url(device["deviceURL"])
                 gateway = self.__find_gateway(metadata.gateway_id)
                 place = self.__find_place(device)
                 cozyouch_device = CozytouchDevice.build(
@@ -67,7 +67,8 @@ class SetupHandler:
             except CozytouchException as e:
                 logger.warning("Error building device, skipping: {}".format(e))
 
-    def __parse_url(self, url):
+    @staticmethod
+    def parse_url(url):
         scheme = url[0 : url.find("://")]
         if scheme not in ["io", "internal"]:
             raise CozytouchException("Invalid url {url}".format(url=url))
@@ -83,11 +84,6 @@ class SetupHandler:
             metadata.entity_id = parts[2]
         return metadata
 
-    def __extract_gateway(self, url):
-        if "#" not in url:
-            return url
-        return url[0 : url.index("#")]
-
     def __link_sensors(
         self,
         sensors,
@@ -97,7 +93,7 @@ class SetupHandler:
     ):
         device_sensors = []
         for sensor in sensors:
-            metadata = self.__parse_url(sensor["deviceURL"])
+            metadata = self.parse_url(sensor["deviceURL"])
             if metadata.device_id == parent.metadata.device_id:
                 device_sensors.append(
                     CozytouchDevice.build(
