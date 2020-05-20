@@ -63,7 +63,9 @@ class CozytouchClient:
         headers["User-Agent"] = USER_AGENT
 
         url = self.build_url(resource, data)
-        async with aiohttp.ClientSession(cookies=self.cookies, timeout=self.timeout) as session:
+        async with aiohttp.ClientSession(
+            cookies=self.cookies, timeout=self.timeout
+        ) as session:
             if method == "GET":
                 try:
                     async with session.get(url) as resp:
@@ -85,31 +87,39 @@ class CozytouchClient:
         logger.debug(f"Response status : {response.status}")
         return response_json, response
 
-    async def __make_request_reconnect(self, resource, method="GET", data=None, headers=None, json_encode=True):
-        response_json, response = await self.__make_request(resource, method, data, headers, json_encode)
+    async def __make_request_reconnect(
+        self, resource, method="GET", data=None, headers=None, json_encode=True
+    ):
+        response_json, response = await self.__make_request(
+            resource, method, data, headers, json_encode
+        )
         if response.status == 401:
             logger.debug("Connection refused, reconnecting")
             await self.connect()
-            response_json, response = await self.__make_request(resource, method, data, headers, json_encode)
+            response_json, response = await self.__make_request(
+                resource, method, data, headers, json_encode
+            )
         return response_json, response
 
     async def connect(self):
         """Authenticate using username and userPassword."""
-        _, response = await self.__make_request(
+        response = await self.__make_request(
             "login",
             method="POST",
             data={"userId": self.username, "userPassword": self.password},
             json_encode=False,
         )
-        logger.debug(response.cookies)
+
         if response.status != 200:
             raise AuthentificationFailed(response.status)
         self.is_connected = True
-        self.cookies = {'JSESSIONID': response.cookies.get('JSESSIONID')}
+        self.cookies = {"JSESSIONID": response.cookies.get("JSESSIONID")}
 
     async def get_setup(self):
         """Get cozytouch setup (devices, places)."""
-        response_json, response = await self.__make_request_reconnect("setup", method="GET")
+        response_json, response = await self.__make_request_reconnect(
+            "setup", method="GET"
+        )
         if response.status != 200:
             raise CozytouchException(
                 "Unable to retrieve setup: {error}[{code}]".format(
@@ -119,10 +129,13 @@ class CozytouchClient:
         return SetupHandler(response_json, self)
 
     async def devices_data(self):
-        async with self._lock: #  Prevent call to the API if there is already one running
+        """Fetch data."""
+        async with self._lock:  # Prevent call to the API if there is already one running
             fresh = False
             if self._last_fetch is not None:
-                fresh = (datetime.datetime.now() - self._last_fetch).total_seconds() < API_THROTTLE
+                fresh = (
+                    datetime.datetime.now() - self._last_fetch
+                ).total_seconds() < API_THROTTLE
             if self._devices_data is None or not fresh:
                 if self._devices_data is None:
                     logger.debug("Cache not available, fetching datas")
@@ -150,7 +163,7 @@ class CozytouchClient:
         return DevicesHandler(data, self)
 
     async def devices_info(self):
-        """Get data using cache if available"""
+        """Get data using cache if available."""
         self._devices_info = {}
         data = await self.devices_data()
         for dev in data:
