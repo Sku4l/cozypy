@@ -103,7 +103,7 @@ class CozytouchClient:
 
     async def connect(self):
         """Authenticate using username and userPassword."""
-        response = await self.__make_request(
+        _, response = await self.__make_request(
             "login",
             method="POST",
             data={"userId": self.username, "userPassword": self.password},
