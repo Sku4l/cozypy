@@ -204,13 +204,18 @@ class CozytouchDevice(CozytouchObject):
             device = CozytouchPod(data)
         elif device_class == DeviceType.TEMPERATURE:
             device = CozytouchTemperatureSensor(data)
-        elif device_class == DeviceType.OCCUPANCY:
-            device = CozytouchOccupancySensor(data)
         elif device_class == DeviceType.ELECTRECITY:
             device = CozytouchElectrecitySensor(data)
         elif device_class == DeviceType.CONTACT:
             device = CozytouchContactSensor(data)
-        elif device_class in [DeviceType.HEATER, DeviceType.PILOT_WIRE_INTERFACE, DeviceType.APC_HEAT_PUMP, DeviceType.APC_HEATING_AND_COOLING_ZONE]:
+        elif device_class == DeviceType.FOSSIL_ENERGY:
+            device = CozytouchCumulativeFossilEnergyConsumptionSensor(data)
+        elif device_class in [
+            DeviceType.HEATER,
+            DeviceType.PILOT_WIRE_INTERFACE,
+            DeviceType.APC_HEAT_PUMP,
+            DeviceType.APC_HEATING_AND_COOLING_ZONE,
+        ]:
             device = CozytouchHeater(data)
             device.sensors = sensors
         elif device_class in [DeviceType.WATER_HEATER, DeviceType.APC_WATER_HEATER]:
@@ -340,6 +345,20 @@ class CozytouchOccupancySensor(CozytouchDevice):
         """State."""
         state = self.get_state(DeviceState.OCCUPANCY_STATE)
         return state == "personInside"
+
+
+class CozytouchCumulativeFossilEnergyConsumptionSensor(CozytouchDevice):
+    """Temperature sensor."""
+
+    @property
+    def sensor_class(self):
+        """Class."""
+        return "temperature"
+
+    @property
+    def temperature(self):
+        """State."""
+        return self.get_state(DeviceState.FOSSIL_ENERGY_CONSUMPTION_STATE)
 
 
 class CozytouchHeater(CozytouchDevice):

@@ -33,6 +33,7 @@ class DeviceType(TextEnum):
     CONTACT = "ContactSensor"
     OCCUPANCY = "OccupancySensor"
     ELECTRECITY = "CumulativeElectricPowerConsumptionSensor"
+    FOSSIL_ENERGY = "CumulativeFossilEnergyConsumptionSensor"
     APC_HEAT_PUMP = "AtlanticPassAPCHeatPump"
     APC_WATER_HEATER = "AtlanticPassAPCDHW"
     APC_HEATING_AND_COOLING_ZONE = "AtlanticPassAPCHeatingAndCoolingZone"
@@ -40,7 +41,13 @@ class DeviceType(TextEnum):
     @classmethod
     def sensors(cls):
         """Sensors method."""
-        return [cls.TEMPERATURE, cls.CONTACT, cls.OCCUPANCY, cls.ELECTRECITY]
+        return [
+            cls.TEMPERATURE,
+            cls.CONTACT,
+            cls.OCCUPANCY,
+            cls.ELECTRECITY,
+            cls.FOSSIL_ENERGY,
+        ]
 
 
 class DeviceState(TextEnum):
@@ -100,6 +107,7 @@ class DeviceState(TextEnum):
     FROST_PROTECTION_TARGET_TEMPERATURE_STATE = (
         "core:FrostProtectionTargetTemperatureState"
     )
+    FOSSIL_ENERGY_CONSUMPTION_STATE = "core:FossilEnergyConsumptionState"
     HALTED_TARGET_TEMPERATURE_STATE = "core:HaltedTargetTemperatureState"
     HEATING_DEROGATION_AVAILABILITY_STATE = "core:HeatingDerogationAvailabilityState"
     HEATING_ON_OFF_STATE = "core:HeatingOnOffState"
