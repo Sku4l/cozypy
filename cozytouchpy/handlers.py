@@ -78,7 +78,7 @@ class SetupHandler:
                 ]:
                     self.water_heaters.append(cozyouch_device)
             except CozytouchException as e:
-                logger.warning("Error building device, skipping: {}".format(e))
+                logger.warning("Error building device, skipping: %s", e)
 
     @staticmethod
     def parse_url(url):
@@ -152,4 +152,4 @@ class DevicesHandler:
             try:
                 self.devices.append(CozytouchDevice.build(device, self))
             except CozytouchException as e:
-                logger.warning("Error building device, skipping: {}".format(e))
+                logger.warning("Error building device, skipping: %s", e)
