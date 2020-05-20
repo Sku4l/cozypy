@@ -83,8 +83,8 @@ class CozytouchClient:
                         response_json = await resp.json()
                         response = resp
                 except aiohttp.ClientError as e:
-                    raise HttpRequestFailed("Error Request %s", e)
-        logger.debug(f"Response status : {response.status}")
+                    raise HttpRequestFailed("Error Request", e)
+        logger.debug("Response status : %s", response.status)
         return response_json, response
 
     async def __make_request_reconnect(
