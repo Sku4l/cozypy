@@ -5,6 +5,8 @@ from ..constant import (
     DeviceState,
     DeviceType,
     OperatingModeState,
+    OnOffState,
+    AvailableState,
 )
 from ..exception import CozytouchException
 from .device import CozytouchDevice
@@ -27,16 +29,42 @@ class CozytouchBoiler(CozytouchDevice):
         return None
 
     @property
+    def away_target_temperature(self):
+        """Boost state."""
+        return self.get_state(DeviceState.ABSENCE_HEATING_TARGET_TEMPERATURE_STATE)
+
+    @property
     def is_on(self):
         """Is alive."""
-        return self.operating_mode != OperatingModeState.STANDBY
+        return self.operating_mode != OperatingModeState.STOP
+
+    @property
+    def timeprogram_state(self):
+        """Get all time program."""
+        TimeProgram = {}
+        for i in range(4):
+            state = DeviceState.from_str(f"core:TimeProgram{i+1}State")
+            TimeProgram.update({f"TimeProgram{i+1}": self.get_state(state)})
+        return TimeProgram
 
     @property
     def operating_mode(self):
         """Return operation mode."""
         return OperatingModeState.from_str(
-            self.get_state(DeviceState.OPERATING_MODE_STATE)
+            self.get_state(DeviceState.PASS_APC_OPERATING_MODE_STATE)
         )
+
+    @property
+    def operating_mode_list(self):
+        """Return operating mode list."""
+        definition = self.get_state_definition(
+            DeviceState.PASS_APC_OPERATING_MODE_STATE
+        )
+        if definition is not None:
+            return [
+                OperatingModeState.from_str(value) for value in definition["values"]
+            ]
+        return []
 
     @property
     def supported_states(self):
