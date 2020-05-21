@@ -3,7 +3,22 @@
 import logging
 from .constant import DeviceType
 from .exception import CozytouchException
-from .objects import CozytouchDevice, CozytouchPlace, CozytouchGateway, DeviceMetadata
+from .utils import DeviceMetadata
+from .objects import (
+    CozytouchDevice,
+    CozytouchPlace,
+    CozytouchGateway,
+    CozytouchHeater,
+    CozytouchHeatingZone,
+    CozytouchPod,
+    CozytouchWaterHeater,
+    CozytouchBoiler,
+    CozytouchContactSensor,
+    CozytouchCumulativeFossilEnergyConsumptionSensor,
+    CozytouchElectrecitySensor,
+    CozytouchOccupancySensor,
+    CozytouchTemperatureSensor,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -20,6 +35,8 @@ class SetupHandler:
         self.heaters = []
         self.sensors = []
         self.water_heaters = []
+        self.boilers = []
+        self.heatingzones = []
         self.__build_places(data["rootPlace"])
         self.__build_gateways(data["gateways"])
         self.__build_devices(data["devices"])
@@ -51,7 +68,7 @@ class SetupHandler:
                 metadata = self.parse_url(device["deviceURL"])
                 gateway = self.__find_gateway(metadata.gateway_id)
                 place = self.__find_place(device)
-                cozyouch_device = CozytouchDevice.build(
+                cozyouch_device = DevicesHandler.build(
                     data=device,
                     client=self.client,
                     metadata=metadata,
@@ -62,16 +79,22 @@ class SetupHandler:
                     sensors, place, gateway, cozyouch_device
                 )
                 cozyouch_device.sensors = device_sensors
-
                 if device_type == DeviceType.POD:
                     self.pods.append(cozyouch_device)
                 elif device_type in [
                     DeviceType.HEATER,
                     DeviceType.PILOT_WIRE_INTERFACE,
                     DeviceType.APC_HEAT_PUMP,
-                    DeviceType.APC_HEATING_AND_COOLING_ZONE,
                 ]:
                     self.heaters.append(cozyouch_device)
+                elif device_type in [
+                    DeviceType.APC_BOILER,
+                ]:
+                    self.boilers.append(cozyouch_device)
+                elif device_type in [
+                    DeviceType.APC_HEATING_ZONE,
+                ]:
+                    self.heatingzones.append(cozyouch_device)
                 elif device_type in [
                     DeviceType.WATER_HEATER,
                     DeviceType.APC_WATER_HEATER,
@@ -110,7 +133,7 @@ class SetupHandler:
             metadata = self.parse_url(sensor["deviceURL"])
             if metadata.device_id == parent.metadata.device_id:
                 device_sensors.append(
-                    CozytouchDevice.build(
+                    DevicesHandler.build(
                         data=sensor,
                         client=self.client,
                         metadata=metadata,
@@ -150,6 +173,52 @@ class DevicesHandler:
     def __build_devices(self, data):
         for device in data:
             try:
-                self.devices.append(CozytouchDevice.build(device, self))
+                self.devices.append(self.build(device, self))
             except CozytouchException as e:
                 logger.warning("Error building device, skipping: %s", e)
+
+    @staticmethod
+    def build(
+        data, client, metadata=None, gateway=None, place=None, sensors=None, parent=None
+    ):
+        """Build device object."""
+        if sensors is None:
+            sensors = []
+        device = None
+        if "widget" not in data or "uiClass" not in data:
+            raise CozytouchException("Unable to identify device")
+        device_str = data["widget"] if "widget" in data else data["uiClass"]
+        device_class = DeviceType.from_str(device_str)
+        if device_class == DeviceType.OCCUPANCY:
+            device = CozytouchOccupancySensor(data)
+        elif device_class == DeviceType.POD:
+            device = CozytouchPod(data)
+        elif device_class == DeviceType.TEMPERATURE:
+            device = CozytouchTemperatureSensor(data)
+        elif device_class == DeviceType.ELECTRECITY:
+            device = CozytouchElectrecitySensor(data)
+        elif device_class == DeviceType.CONTACT:
+            device = CozytouchContactSensor(data)
+        elif device_class == DeviceType.FOSSIL_ENERGY:
+            device = CozytouchCumulativeFossilEnergyConsumptionSensor(data)
+        elif device_class in [DeviceType.APC_HEATING_ZONE]:
+            device = CozytouchHeatingZone(data)
+        elif device_class in [
+            DeviceType.HEATER,
+            DeviceType.PILOT_WIRE_INTERFACE,
+            DeviceType.APC_HEAT_PUMP,
+        ]:
+            device = CozytouchHeater(data)
+        elif device_class in [DeviceType.APC_BOILER]:
+            device = CozytouchBoiler(data)
+        elif device_class in [DeviceType.WATER_HEATER, DeviceType.APC_WATER_HEATER]:
+            device = CozytouchWaterHeater(data)
+        if device is None:
+            raise CozytouchException("Unknown device {type}".format(type=device_str))
+
+        device.client = client
+        device.metadata = metadata
+        device.gateway = gateway
+        device.place = place
+        device.parent = parent
+        return device
