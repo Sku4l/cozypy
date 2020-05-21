@@ -74,6 +74,13 @@ class CozytouchDevice(CozytouchObject):
                 s["value"] = value
                 break
 
+    def get_values_definition(self, attribut: str, state: DeviceState):
+        """Get all values for a definiion."""
+        definition = self.get_state_definition(state)
+        if definition is None:
+            return []
+        return [attribut.from_str(value) for value in definition["values"]]
+
     def has_state(self, state: DeviceState):
         """State."""
         for s in self.states:

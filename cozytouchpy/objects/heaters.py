@@ -7,7 +7,7 @@ from ..constant import (
     DeviceType,
     OperatingModeState,
     TargetingHeatingLevelState,
-    AwayModeState,
+    OnOffState,
 )
 from ..exception import CozytouchException
 
@@ -84,12 +84,9 @@ class CozytouchHeater(CozytouchDevice):
     @property
     def operating_mode_list(self):
         """Return operating mode list."""
-        definition = self.get_state_definition(DeviceState.OPERATING_MODE_STATE)
-        if definition is not None:
-            return [
-                OperatingModeState.from_str(value) for value in definition["values"]
-            ]
-        return []
+        return self.get_values_definition(
+            OperatingModeState, DeviceState.OPERATING_MODE_STATE
+        )
 
     @property
     def target_heating_level(self):
@@ -101,15 +98,9 @@ class CozytouchHeater(CozytouchDevice):
     @property
     def target_heating_level_list(self):
         """Return heating level list."""
-        definition = self.get_state_definition(
-            DeviceState.TARGETING_HEATING_LEVEL_STATE
+        return self.get_values_definition(
+            TargetingHeatingLevelState, DeviceState.TARGETING_HEATING_LEVEL_STATE
         )
-        if definition is not None:
-            return [
-                TargetingHeatingLevelState.from_str(value)
-                for value in definition["values"]
-            ]
-        return []
 
     @property
     def supported_states(self):
@@ -256,13 +247,13 @@ class CozytouchHeater(CozytouchDevice):
         commands = CozytouchCommands("Set away mode OFF")
         action = CozytouchAction(device_url=self.deviceUrl)
         action.add_command(
-            CozytouchCommand(DeviceCommand.SET_AWAY_MODE, AwayModeState.OFF)
+            CozytouchCommand(DeviceCommand.SET_AWAY_MODE, OnOffState.OFF)
         )
         commands.add_action(action)
 
         await self.client.send_commands(commands)
 
-        self.set_state(DeviceState.AWAY_STATE, AwayModeState.OFF)
+        self.set_state(DeviceState.AWAY_STATE, OnOffState.OFF)
 
     async def turn_away_mode_on(self):
         """Set away mode on."""
@@ -277,14 +268,12 @@ class CozytouchHeater(CozytouchDevice):
 
         commands = CozytouchCommands("Set away mode ON")
         action = CozytouchAction(device_url=self.deviceUrl)
-        action.add_command(
-            CozytouchCommand(DeviceCommand.SET_AWAY_MODE, AwayModeState.ON)
-        )
+        action.add_command(CozytouchCommand(DeviceCommand.SET_AWAY_MODE, OnOffState.ON))
         commands.add_action(action)
 
         await self.client.send_commands(commands)
 
-        self.set_state(DeviceState.AWAY_STATE, AwayModeState.ON)
+        self.set_state(DeviceState.AWAY_STATE, OnOffState.ON)
 
     async def turn_on(self):
         """Set on."""

@@ -5,8 +5,6 @@ from ..constant import (
     DeviceState,
     DeviceType,
     OperatingModeState,
-    OnOffState,
-    AvailableState,
 )
 from ..exception import CozytouchException
 from .device import CozytouchDevice
@@ -57,14 +55,9 @@ class CozytouchBoiler(CozytouchDevice):
     @property
     def operating_mode_list(self):
         """Return operating mode list."""
-        definition = self.get_state_definition(
-            DeviceState.PASS_APC_OPERATING_MODE_STATE
+        return self.get_values_definition(
+            OperatingModeState, DeviceState.PASS_APC_OPERATING_MODE_STATE
         )
-        if definition is not None:
-            return [
-                OperatingModeState.from_str(value) for value in definition["values"]
-            ]
-        return []
 
     @property
     def supported_states(self):
