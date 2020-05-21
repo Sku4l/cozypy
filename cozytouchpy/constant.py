@@ -80,6 +80,7 @@ class DeviceState(TextEnum):
         "core:ComfortHeatingTargetTemperatureState"
     )
     COMFORT_TARGET_TEMPERATURE_STATE = "core:ComfortTargetTemperatureState"
+    COMFORT_TARGET_DHW_TEMPERATURE_STATE = "core:ComfortTargetDHWTemperatureState"
     COMFORT_TEMPERATURE_STATE = "core:ComfortRoomTemperatureState"
     CONNECTIVITY_STATE = "core:ConnectivityState"
     CONTACT_STATE = "core:ContactState"
@@ -97,6 +98,7 @@ class DeviceState(TextEnum):
     ECO_COOLING_TARGET_TEMPERATURE_STATE = "core:EcoCoolingTargetTemperatureState"
     ECO_HEATING_TARGET_TEMPERATURE_STATE = "core:EcoHeatingTargetTemperatureState"
     ECO_TARGET_TEMPERATURE_STATE = "core:EcoTargetTemperatureState"
+    ECO_TARGET_DHW_TEMPERATURE_STATE = "core:EcoTargetDHWTemperatureState"
     ECO_TEMPERATURE_STATE = "core:EcoRoomTemperatureState"
     ECS_POWER_CONSUMPTION_EXTRA1_STATE = "core:ECSPowerConsumptionExtra1State"
     ECS_POWER_CONSUMPTION_EXTRA2_STATE = "core:ECSPowerConsumptionExtra2State"
@@ -230,19 +232,30 @@ class AwayModeState(TextEnum):
     OFF = "off"
 
 
+class AvailableState(TextEnum):
+    """Set away mode."""
+
+    AVAILABLE = "available"
+    UNAVAILABLE = "unavailable"
+
+
 class OperatingModeState(TextEnum):
     """Set operation mode."""
 
-    STANDBY = "standby"
-    BASIC = "basic"
-    INTERNAL = "internal"
     AUTO = "auto"
+    BASIC = "basic"
+    COOLING = "cooling"
+    DRYING = "drying"
     FROSTPROTECT = "frostprotection"
+    HEATING = "heating"
+    INTERNAL = "internal"
     MANUEL = "frostprotection"
-    NORMAL = "normal"
     MAX = "max"
+    NORMAL = "normal"
     PROG = "prog"
     PROGRAM = "program"
+    STANDBY = "standby"
+    STOP = "stop"
 
 
 class OperatingRangeState(TextEnum):
@@ -268,17 +281,17 @@ class PriorityLockLevelState(TextEnum):
 class PriorityLockOriginatorState(TextEnum):
     """Priority Lock Originitor."""
 
-    LSC = "LSC"
-    SAAC = "SAAC"
-    SFC = "SFC"
-    UPS = "UPS"
     EXTERNALGATEWAY = "externalGateway"
     LOCALUSER = "localUser"
+    LSC = "LSC"
     MYSELF = "myself"
     RAIN = "rain"
+    SAAC = "SAAC"
     SECURITY = "security"
+    SFC = "SFC"
     TEMPERATURE = "temperature"
     TIMER = "timer"
+    UPS = "UPS"
     USER = "user"
     WIND = "wind"
 
@@ -294,14 +307,14 @@ class InstallationState(TextEnum):
 class TargetingHeatingLevelState(TextEnum):
     """Set targeting heating level state."""
 
-    ECO = "eco"
     BOOST = "boost"
     COMFORT = "comfort"
     COMFORT_ONE = "comfort-1"
     COMFORT_TWO = "comfort-2"
+    ECO = "eco"
     FROST_PROTECTION = "frostprotection"
-    SECURED = "secured"
     OFF = "off"
+    SECURED = "secured"
 
 
 class DeviceCommand(TextEnum):
