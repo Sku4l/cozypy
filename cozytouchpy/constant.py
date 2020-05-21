@@ -65,13 +65,11 @@ class DeviceState(TextEnum):
     ACTIVE_COOLING_TIME_PROGRAM_STATE = "core:ActiveCoolingTimeProgramState"
     ACTIVE_HEATING_TIME_PROGRAM_STATE = "core:ActiveHeatingTimeProgramState"
     AWAY_STATE = "core:HolidaysModeState"
-    BOOST_ELECTRIC_POWER_CONSUMPTION_STATE = (
-        "core:BoostElectricPowerConsumptionState"  # int
-    )
-    BOOST_END_DATE_STATE = "core:BoostEndDateState"  # dict
-    BOOST_MODE_DURATION_STATE = "core:BoostModeDurationState"  # int
+    BOOST_ELECTRIC_POWER_CONSUMPTION_STATE = "core:BoostElectricPowerConsumptionState"
+    BOOST_END_DATE_STATE = "core:BoostEndDateState"
+    BOOST_MODE_DURATION_STATE = "core:BoostModeDurationState"
     BOOST_ON_OFF_STATE = "core:BoostOnOffState"
-    BOOST_START_DATE_STATE = "core:BoostStartDateState"  # dict
+    BOOST_START_DATE_STATE = "core:BoostStartDateState"
     BOTTOM_TANK_WATER_TEMPERATURE_STATE = "core:BottomTankWaterTemperatureState"
     COMFORT_COOLING_TARGET_TEMPERATURE_STATE = (
         "core:ComfortCoolingTargetTemperatureState"
@@ -84,17 +82,15 @@ class DeviceState(TextEnum):
     COMFORT_TEMPERATURE_STATE = "core:ComfortRoomTemperatureState"
     CONNECTIVITY_STATE = "core:ConnectivityState"
     CONTACT_STATE = "core:ContactState"
-    CONTROL_WATER_TARGET_TEMPERATURE_STATE = (
-        "core:ControlWaterTargetTemperatureState"  # int
-    )
+    CONTROL_WATER_TARGET_TEMPERATURE_STATE = "core:ControlWaterTargetTemperatureState"
     COOLING_ON_OFF_STATE = "core:CoolingOnOffState"
     COUNTRY_CODE_STATE = "core:CountryCodeState"
-    DATE_TIME_STATE = "core:DateTimeState"  # dict
+    DATE_TIME_STATE = "core:DateTimeState"
     DEROGATED_TARGET_TEMPERATURE_STATE = "core:DerogatedTargetTemperatureState"
     DEROGATION_ON_OFF_STATE = "core:DerogationOnOffState"
     DHW_DEROGATION_AVAILABILITY_STATE = "core:DHWDerogationAvailabilityState"
     DHW_ON_OFF_STATE = "core:DHWOnOffState"
-    DHWP_SOFTWARE_VERSION_STATE = "core:DHWPSoftwareVersionState"  # string
+    DHWP_SOFTWARE_VERSION_STATE = "core:DHWPSoftwareVersionState"
     ECO_COOLING_TARGET_TEMPERATURE_STATE = "core:EcoCoolingTargetTemperatureState"
     ECO_HEATING_TARGET_TEMPERATURE_STATE = "core:EcoHeatingTargetTemperatureState"
     ECO_TARGET_TEMPERATURE_STATE = "core:EcoTargetTemperatureState"
@@ -106,7 +102,7 @@ class DeviceState(TextEnum):
     ECS_POWER_CONSUMPTION_STATE = "core:ECSPowerConsumptionState"
     ELECTRIC_ENERGY_CONSUMPTION_STATE = "core:ElectricEnergyConsumptionState"
     ERROR_CODE_STATE = "core:ErrorCodeState"
-    EXPECTED_NUM_SHOWER_STATE = "core:ExpectedNumberOfShowerState"  # int
+    EXPECTED_NUM_SHOWER_STATE = "core:ExpectedNumberOfShowerState"
     FROST_PROTECTION_TARGET_TEMPERATURE_STATE = (
         "core:FrostProtectionTargetTemperatureState"
     )
@@ -118,78 +114,74 @@ class DeviceState(TextEnum):
     HEATING_POWER_CONSUMPTION_EXTRA2_STATE = "core:HeatingPowerConsumptionExtra2State"
     HEATING_POWER_CONSUMPTION_EXTRA3_STATE = "core:HeatingPowerConsumptionExtra3State"
     HEATING_POWER_CONSUMPTION_STATE = "core:HeatingPowerConsumptionState"
-    HEATING_STATUS_STATE = "core:HeatingStatusState"  # bool off
+    HEATING_STATUS_STATE = "core:HeatingStatusState"
     LAST_ACTION_CONF_BUTTON_STATE = "internal:LastActionConfigButtonState"
     LIGHTING_LED_POD_MODE_STATE = "internal:LightingLedPodModeState"
-    MANUFACTURER_NAME_STATE = "core:ManufacturerNameState"  # string
-    MAX_SHOWER_MANUEL_MODE_STATE = "core:MaximalShowerManualModeState"  # int
-    MAX_TEMPERATURE_MANUEL_MODE_STATE = "core:MaximalTemperatureManualModeState"  # int
-    MIDDLE_WATER_TEMPERATURE_IN_STATE = "core:MiddleWaterTemperatureInState"  # float
-    MIN_SHOWER_MANUEL_MODE_STATE = "core:MinimalShowerManualModeState"  # int
-    MIN_TEMPERATURE_MANUEL_MODE_STATE = "core:MinimalTemperatureManualModeState"  # int
-    NAME_STATE = "core:NameState"  # string
-    NUM_SHOWER_REMAINING_STATE = "core:NumberOfShowerRemainingState"  # int
-    NUM_TANK_STATE = "core:NumberOfTankState"  # int
+    MANUFACTURER_NAME_STATE = "core:ManufacturerNameState"
+    MAX_SHOWER_MANUEL_MODE_STATE = "core:MaximalShowerManualModeState"
+    MAX_TEMPERATURE_MANUEL_MODE_STATE = "core:MaximalTemperatureManualModeState"
+    MIDDLE_WATER_TEMPERATURE_IN_STATE = "core:MiddleWaterTemperatureInState"
+    MIN_SHOWER_MANUEL_MODE_STATE = "core:MinimalShowerManualModeState"
+    MIN_TEMPERATURE_MANUEL_MODE_STATE = "core:MinimalTemperatureManualModeState"
+    NAME_STATE = "core:NameState"
+    NUM_SHOWER_REMAINING_STATE = "core:NumberOfShowerRemainingState"
+    NUM_TANK_STATE = "core:NumberOfTankState"
     OCCUPANCY_STATE = "core:OccupancyState"
     ON_OFF_STATE = "core:OnOffState"
-    OPERATING_MODE_STATE = "core:OperatingModeState"  # dict -> class OperatingModeState
-    POWER_HEAT_ELECTRICAL_IN_STATE = "core:PowerHeatElectricalInState"  # int
+    OPERATING_MODE_STATE = "core:OperatingModeState"
+    POWER_HEAT_ELECTRICAL_IN_STATE = "core:PowerHeatElectricalInState"
     PRIORITY_LOCK_TIMER_STATE = "core:PriorityLockTimerState"
     PRODUCT_MODEL_NAME_STATE = "core:ProductModelNameState"
-    PROGRAMMING_AVAILABLE_STATE = "core:ProgrammingAvailableState"  # int
-    RSSI_LEVEL_STATE = "core:RSSILevelState"  # int 0-100
+    PROGRAMMING_AVAILABLE_STATE = "core:ProgrammingAvailableState"
+    RSSI_LEVEL_STATE = "core:RSSILevelState"
     SECURED_POSITION_TEMPERATURE_STATE = "core:SecuredPositionTemperatureState"
-    STATUS_STATE = "core:StatusState"  # string available,unavailable
+    STATUS_STATE = "core:StatusState"
     STOP_RELAUNCH_STATE = "core:StopRelaunchState"
     TARGET_DHW_TEMPERATURE_STATE = "core:TargetDHWTemperatureState"
-    TARGET_TEMPERATURE_STATE = "core:TargetTemperatureState"  # float
-    TEMPERATURE_STATE = "core:TemperatureState"  # float
+    TARGET_TEMPERATURE_STATE = "core:TargetTemperatureState"
+    TEMPERATURE_STATE = "core:TemperatureState"
     THERMAL_CONFIGURATION_STATE = "core:ThermalConfigurationState"
     TIME_PROGRAM1_STATE = "core:TimeProgram1State"
     TIME_PROGRAM2_STATE = "core:TimeProgram2State"
     TIME_PROGRAM3_STATE = "core:TimeProgram3State"
     TIME_PROGRAM4_STATE = "core:TimeProgram4State"
-    V40_WATER_VOLUME_ESTIMATION_STATE = "core:V40WaterVolumeEstimationState"  # int
-    VERSION_STATE = "core:VersionState"  # int
-    WATER_CONSUMPTION_STATE = "core:WaterConsumptionState"  # int
-    WATER_TARGET_TEMPERATURE_STATE = "core:WaterTargetTemperatureState"  # int
-    WATER_TEMPERATURE_STATE = "core:WaterTemperatureState"  # int
+    V40_WATER_VOLUME_ESTIMATION_STATE = "core:V40WaterVolumeEstimationState"
+    VERSION_STATE = "core:VersionState"
+    WATER_CONSUMPTION_STATE = "core:WaterConsumptionState"
+    WATER_TARGET_TEMPERATURE_STATE = "core:WaterTargetTemperatureState"
+    WATER_TEMPERATURE_STATE = "core:WaterTemperatureState"
     ZONES_NUMBER_STATE = "core:ZonesNumberState"
 
     # Input/Output
     ABSENCE_SCHEDULING_AVAILABILITY_STATE = "io:AbsenceSchedulingAvailabilityState"
     ABSENCE_SCHEDULING_MODE_STATE = "io:AbsenceSchedulingModeState"
-    ANTI_LEGIONELLOSIS_STATE = "io:AntiLegionellosisState"  # bool 0/1
-    AWAY_MODE_DURATION_STATE = "io:AwayModeDurationState"  # bool 0/1
-    BOILER_INSTALLATION_OPTION_STATE = "io:BoilerInstallationOptionState"  # dict
+    ANTI_LEGIONELLOSIS_STATE = "io:AntiLegionellosisState"
+    AWAY_MODE_DURATION_STATE = "io:AwayModeDurationState"
+    BOILER_INSTALLATION_OPTION_STATE = "io:BoilerInstallationOptionState"
     COOLING_INTERNAL_SCHEDULING_AVAILABILITY_STATE = (
         "io:CoolingInternalSchedulingAvailabilityState"
     )
     DEROGATION_REMAINING_TIME_STATE = "io:DerogationRemainingTimeState"
     DHW_AVAILABILITY_STATE = "io:DHWAvailabilityState"
-    DHW_AWAY_STATE = "io:DHWAbsenceModeState"  # string off,on,prog
-    DHW_BOOST_MODE_STATE = "io:DHWBoostModeState"  # string off,on,prog
-    DHW_CAPACITY_STATE = "io:DHWCapacityState"  # float
-    DHW_ERROR_STATE = "io:DHWErrorState"  # dict
-    DHW_MODE_STATE = "io:DHWModeState"  # string
-    ELECTRIC_BOOSTER_OPERATING_TIME_STATE = (
-        "io:ElectricBoosterOperatingTimeState"  # int
-    )
-    ELECTRIC_EXTRA_MANAGEMENT_STATE = (
-        "io:ElectricalExtraManagementState"  # string auto,deactive
-    )
+    DHW_AWAY_STATE = "io:DHWAbsenceModeState"
+    DHW_BOOST_MODE_STATE = "io:DHWBoostModeState"
+    DHW_CAPACITY_STATE = "io:DHWCapacityState"
+    DHW_ERROR_STATE = "io:DHWErrorState"
+    DHW_MODE_STATE = "io:DHWModeState"
+    ELECTRIC_BOOSTER_OPERATING_TIME_STATE = "io:ElectricBoosterOperatingTimeState"
+    ELECTRIC_EXTRA_MANAGEMENT_STATE = "io:ElectricalExtraManagementState"
     ENERGY_CONSUMPTION_AVAILABILITY_STATE = "io:EnergyConsumptionAvailabilityState"
-    EXTRACTION_OPTION_STATE = "io:ExtractionOptionState"  # string  fastExtractionSpeed,lowExtractionSpeed,noExtraction
+    EXTRACTION_OPTION_STATE = "io:ExtractionOptionState"
     HEATING_INTERNAL_SCHEDULING_AVAILABILITY_STATE = (
         "io:HeatingInternalSchedulingAvailabilityState"
     )
-    HEAT_PUMP_OPERATING_TIME_STATE = "io:HeatPumpOperatingTimeState"  # int
-    INSTALLATION_STATE = "io:InstallationState"  # string -> class InstallationState
+    HEAT_PUMP_OPERATING_TIME_STATE = "io:HeatPumpOperatingTimeState"
+    INSTALLATION_STATE = "io:InstallationState"
     LAST_PASS_APC_OPERATING_MODE_STATE = "io:LastPassAPCOperatingModeState"
-    MIDDLE_WATER_TEMPERATURE_STATE = "io:MiddleWaterTemperatureState"  # float
+    MIDDLE_WATER_TEMPERATURE_STATE = "io:MiddleWaterTemperatureState"
     MODEL_STATE = "io:ModelState"
     OPERATING_MODE_CAPABILITIES_STATE = "io:OperatingModeCapabilitiesState"
-    OPERATING_RANGE_STATE = "io:OperatingRangeState"  # string
+    OPERATING_RANGE_STATE = "io:OperatingRangeState"
     PASS_APC_COOLING_MODE_STATE = "io:PassAPCCoolingModeState"
     PASS_APC_COOLING_PROFILE_STATE = "io:PassAPCCoolingProfileState"
     PASS_APC_DHW_CONFIGURATION_STATE = "io:PassAPCDHWConfigurationState"
@@ -199,20 +191,14 @@ class DeviceState(TextEnum):
     PASS_APC_HEATING_PROFILE_STATE = "io:PassAPCHeatingProfileState"
     PASS_APC_OPERATING_MODE_STATE = "io:PassAPCOperatingModeState"
     PASS_APC_PRODUCT_TYPE_STATE = "io:PassAPCProductTypeState"
-    POWER_CONSUMPTION_FAN_STATE = "io:PowerConsumptionFanState"  # int
-    POWER_HEAT_ELECTRICAL_STATE = "io:PowerHeatElectricalState"  # int
-    POWER_HEAT_PUMP_STATE = "io:PowerHeatPumpState"  # int
-    PRIORITY_LOCK_LEVEL_STATE = (
-        "io:PriorityLockLevelState"  # string -> class PriorityLockLevelState
-    )
-    PRIORITY_LOCK_ORIGINATOR_STATE = (
-        "io:PriorityLockOriginatorState"  # string -> class PriorityLockOriginatorState
-    )
-    PROGRAMMING_SLOTS_STATE = "io:ProgrammingSlotsState"  # dict
-    RATE_MANAGEMENT_STATE = (
-        "io:RateManagementState"  # string forbidden,no,recommended,unsuitable,wanted
-    )
-    SMART_GRID_OPTION_STATE = "io:SmartGridOptionState"  # string active,deactive
+    POWER_CONSUMPTION_FAN_STATE = "io:PowerConsumptionFanState"
+    POWER_HEAT_ELECTRICAL_STATE = "io:PowerHeatElectricalState"
+    POWER_HEAT_PUMP_STATE = "io:PowerHeatPumpState"
+    PRIORITY_LOCK_LEVEL_STATE = "io:PriorityLockLevelState"
+    PRIORITY_LOCK_ORIGINATOR_STATE = "io:PriorityLockOriginatorState"
+    PROGRAMMING_SLOTS_STATE = "io:ProgrammingSlotsState"
+    RATE_MANAGEMENT_STATE = "io:RateManagementState"
+    SMART_GRID_OPTION_STATE = "io:SmartGridOptionState"
     TARGETING_HEATING_LEVEL_STATE = "io:TargetHeatingLevelState"
     THERMAL_SCHEDULING_AVAILABILITY_STATE = "io:ThermalSchedulingAvailabilityState"
     THERMAL_SCHEDULING_MODE_STATE = "io:ThermalSchedulingModeState"
@@ -220,13 +206,6 @@ class DeviceState(TextEnum):
 
 class OnOffState(TextEnum):
     """Set state."""
-
-    ON = "on"
-    OFF = "off"
-
-
-class AwayModeState(TextEnum):
-    """Set away mode."""
 
     ON = "on"
     OFF = "off"
@@ -256,52 +235,6 @@ class OperatingModeState(TextEnum):
     PROGRAM = "program"
     STANDBY = "standby"
     STOP = "stop"
-
-
-class OperatingRangeState(TextEnum):
-    """Set operation range."""
-
-    PAC24h = "pac24h_elec24h"
-    PACPROG = "pacProg_elecProg"
-
-
-class PriorityLockLevelState(TextEnum):
-    """Priority Locke level."""
-
-    COMFORTL1 = "comfortLevel1"
-    COMFORTL2 = "comfortLevel2"
-    COMFORTL3 = "comfortLevel3"
-    COMFORTL4 = "comfortLevel4"
-    ENVPROTECT = "environmentProtection"
-    HUMPROTECT = "humanProtection"
-    USERL1 = "userLevel1"
-    USERL2 = "userLevel2"
-
-
-class PriorityLockOriginatorState(TextEnum):
-    """Priority Lock Originitor."""
-
-    EXTERNALGATEWAY = "externalGateway"
-    LOCALUSER = "localUser"
-    LSC = "LSC"
-    MYSELF = "myself"
-    RAIN = "rain"
-    SAAC = "SAAC"
-    SECURITY = "security"
-    SFC = "SFC"
-    TEMPERATURE = "temperature"
-    TIMER = "timer"
-    UPS = "UPS"
-    USER = "user"
-    WIND = "wind"
-
-
-class InstallationState(TextEnum):
-    """Set installation state."""
-
-    EXTRA_BOILER = "extraBoiler"
-    EXTRA_SOLAR = "extraSolar"
-    ONLY_THERMODYNAMIC = "onlyThermodynamic"
 
 
 class TargetingHeatingLevelState(TextEnum):
