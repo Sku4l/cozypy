@@ -36,7 +36,8 @@ class DeviceType(TextEnum):
     FOSSIL_ENERGY = "CumulativeFossilEnergyConsumptionSensor"
     APC_HEAT_PUMP = "AtlanticPassAPCHeatPump"
     APC_WATER_HEATER = "AtlanticPassAPCDHW"
-    APC_HEATING_AND_COOLING_ZONE = "AtlanticPassAPCHeatingAndCoolingZone"
+    APC_HEATING_ZONE = "AtlanticPassAPCHeatingZone"
+    APC_BOILER = "AtlanticPassAPCBoiler"
 
     @classmethod
     def sensors(cls):
