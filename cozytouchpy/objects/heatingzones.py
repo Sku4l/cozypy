@@ -47,17 +47,12 @@ class CozytouchHeatingZone(CozytouchDevice):
     @property
     def eco_temperature(self):
         """Return economic temperature."""
-        comfort_temp = self.comfort_temperature
-        if comfort_temp is None:
-            return 0
-        return comfort_temp - self.get_state(
-            DeviceState.ECO_HEATING_TARGET_TEMPERATURE_STATE
-        )
+        return self.get_state(DeviceState.ECO_HEATING_TARGET_TEMPERATURE_STATE)
 
     @property
     def is_on(self):
         """Is alive."""
-        return self.operating_mode != OperatingModeState.STANDBY
+        return self.get_state(DeviceState.HEATING_ON_OFF_STATE)
 
     @property
     def operating_mode(self):
