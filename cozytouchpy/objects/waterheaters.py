@@ -42,6 +42,13 @@ class CozytouchWaterHeater(CozytouchDevice):
         )
 
     @property
+    def operating_mode_list(self):
+        """Return operating mode list."""
+        return self.get_values_definition(
+            OperatingModeState, DeviceState.OPERATING_MODE_STATE
+        )
+
+    @property
     def supported_states(self):
         """Return supported ."""
         supported_state = [state for state in DeviceState if self.has_state(state)]
