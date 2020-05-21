@@ -1,3 +1,4 @@
+"""Objects for cozytouch."""
 from .boilers import CozytouchBoiler
 from .device import CozytouchDevice
 from .gateway import CozytouchGateway
