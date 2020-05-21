@@ -65,6 +65,11 @@ async def async_demo():
         logger.info(place.id)
         logger.info(place.name)
 
+    logger.info("### BOILERS ###")
+    for boiler in setup.boilers:
+        logger.info(boiler.id)
+        device_info(boiler)
+
     logger.info("### WATER HEATERS ###")
     for water_heater in setup.water_heaters:
         logger.info(water_heater.id)
