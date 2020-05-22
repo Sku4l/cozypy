@@ -32,6 +32,11 @@ class CozytouchHeater(CozytouchDevice):
         return None
 
     @property
+    def name(self):
+        """Name."""
+        return self.data["label"]
+
+    @property
     def is_on(self):
         """Heater is on."""
         if self.widget == DeviceType.PILOT_WIRE_INTERFACE:
