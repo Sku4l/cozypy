@@ -218,49 +218,34 @@ class AvailableState(TextEnum):
     UNAVAILABLE = "unavailable"
 
 
-class OperatingModeState(TextEnum):
+class ModeState(TextEnum):
     """Set operation mode."""
-
-    AUTO = "auto"
-    BASIC = "basic"
-    COOLING = "cooling"
-    DRYING = "drying"
-    FROSTPROTECT = "frostprotection"
-    HEATING = "heating"
-    INTERNAL = "internal"
-    MANUEL = "manuel"
-    MAX = "max"
-    NORMAL = "normal"
-    PROG = "prog"
-    PROGRAM = "program"
-    STANDBY = "standby"
-    STOP = "stop"
-
-
-class HeatingMode(TextEnum):
-    """APC Heating mode."""
 
     ABSENCE = "absence"
     AUTO = "auto"
-    COMFORT = "comfort"
-    ECO = "eco"
-    EXTERNAL_SCHEDULING = "externalScheduling"
-    INTERNAL_SCHEDULING = "internalScheduling"
-    MANUEL = "manu"
-    STOP = "stop"
-
-
-class TargetingHeatingLevelState(TextEnum):
-    """Set targeting heating level state."""
-
+    BASIC = "basic"
     BOOST = "boost"
     COMFORT = "comfort"
     COMFORT_ONE = "comfort-1"
     COMFORT_TWO = "comfort-2"
+    COOLING = "cooling"
+    DRYING = "drying"
     ECO = "eco"
-    FROST_PROTECTION = "frostprotection"
+    EXTERNAL_SCHEDULING = "externalScheduling"
+    FROSTPROTECT = "frostprotection"
+    HEATING = "heating"
+    INTERNAL = "internal"
+    INTERNAL_SCHEDULING = "internalScheduling"
+    MANU = "manu"
+    MANUEL = "manuel"
+    MAX = "max"
+    NORMAL = "normal"
     OFF = "off"
+    PROG = "prog"
+    PROGRAM = "program"
     SECURED = "secured"
+    STANDBY = "standby"
+    STOP = "stop"
 
 
 class DeviceCommand(TextEnum):

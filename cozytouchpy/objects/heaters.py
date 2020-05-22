@@ -5,8 +5,7 @@ from ..constant import (
     DeviceCommand,
     DeviceState,
     DeviceType,
-    OperatingModeState,
-    TargetingHeatingLevelState,
+    ModeState,
     OnOffState,
 )
 from ..exception import CozytouchException
@@ -40,9 +39,9 @@ class CozytouchHeater(CozytouchDevice):
     def is_on(self):
         """Heater is on."""
         if self.widget == DeviceType.PILOT_WIRE_INTERFACE:
-            return self.target_heating_level != TargetingHeatingLevelState.OFF
+            return self.target_heating_level != ModeState.OFF
         elif self.widget == DeviceType.HEATER:
-            return self.operating_mode != OperatingModeState.STANDBY
+            return self.operating_mode != ModeState.STANDBY
         return False
 
     @property
@@ -82,21 +81,17 @@ class CozytouchHeater(CozytouchDevice):
     @property
     def operating_mode(self):
         """Return operation mode."""
-        return OperatingModeState.from_str(
-            self.get_state(DeviceState.OPERATING_MODE_STATE)
-        )
+        return ModeState.from_str(self.get_state(DeviceState.OPERATING_MODE_STATE))
 
     @property
     def operating_mode_list(self):
         """Return operating mode list."""
-        return self.get_values_definition(
-            OperatingModeState, DeviceState.OPERATING_MODE_STATE
-        )
+        return self.get_values_definition(ModeState, DeviceState.OPERATING_MODE_STATE)
 
     @property
     def target_heating_level(self):
         """Return heating level."""
-        return TargetingHeatingLevelState.from_str(
+        return ModeState.from_str(
             self.get_state(DeviceState.TARGETING_HEATING_LEVEL_STATE)
         )
 
@@ -104,7 +99,7 @@ class CozytouchHeater(CozytouchDevice):
     def target_heating_level_list(self):
         """Return heating level list."""
         return self.get_values_definition(
-            TargetingHeatingLevelState, DeviceState.TARGETING_HEATING_LEVEL_STATE
+            ModeState, DeviceState.TARGETING_HEATING_LEVEL_STATE
         )
 
     @property
@@ -283,16 +278,16 @@ class CozytouchHeater(CozytouchDevice):
     async def turn_on(self):
         """Set on."""
         if self.widget == DeviceType.PILOT_WIRE_INTERFACE:
-            await self.set_targeting_heating_level(TargetingHeatingLevelState.COMFORT)
+            await self.set_targeting_heating_level(ModeState.COMFORT)
         elif self.widget == DeviceType.HEATER:
-            await self.set_operating_mode(OperatingModeState.INTERNAL)
+            await self.set_operating_mode(ModeState.INTERNAL)
 
     async def turn_off(self):
         """Set off."""
         if self.widget == DeviceType.PILOT_WIRE_INTERFACE:
-            await self.set_targeting_heating_level(TargetingHeatingLevelState.OFF)
+            await self.set_targeting_heating_level(ModeState.OFF)
         elif self.widget == DeviceType.HEATER:
-            await self.set_operating_mode(OperatingModeState.STANDBY)
+            await self.set_operating_mode(ModeState.STANDBY)
 
     async def update(self):
         """Update heater device."""

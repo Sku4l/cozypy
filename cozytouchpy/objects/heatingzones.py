@@ -5,7 +5,7 @@ from ..constant import (
     DeviceState,
     DeviceType,
     OnOffState,
-    HeatingMode,
+    ModeState,
 )
 from ..exception import CozytouchException
 
@@ -66,14 +66,14 @@ class CozytouchHeatingZone(CozytouchDevice):
     @property
     def operating_mode(self):
         """Return operation mode."""
-        return HeatingMode.from_str(
+        return ModeState.from_str(
             self.get_state(DeviceState.PASS_APC_HEATING_MODE_STATE)
         )
 
     def operating_mode_list(self):
         """Return operating mode list."""
         return self.get_values_definition(
-            HeatingMode, DeviceState.PASS_APC_HEATING_MODE_STATE
+            ModeState, DeviceState.PASS_APC_HEATING_MODE_STATE
         )
 
     @property

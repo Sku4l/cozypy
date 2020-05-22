@@ -5,7 +5,7 @@ from ..constant import (
     DeviceCommand,
     DeviceState,
     DeviceType,
-    OperatingModeState,
+    ModeState,
 )
 from ..exception import CozytouchException
 
@@ -32,21 +32,17 @@ class CozytouchWaterHeater(CozytouchDevice):
     @property
     def is_on(self):
         """Is alive."""
-        return self.operating_mode != OperatingModeState.STANDBY
+        return self.operating_mode != ModeState.STANDBY
 
     @property
     def operating_mode(self):
         """Return operation mode."""
-        return OperatingModeState.from_str(
-            self.get_state(DeviceState.OPERATING_MODE_STATE)
-        )
+        return ModeState.from_str(self.get_state(DeviceState.OPERATING_MODE_STATE))
 
     @property
     def operating_mode_list(self):
         """Return operating mode list."""
-        return self.get_values_definition(
-            OperatingModeState, DeviceState.OPERATING_MODE_STATE
-        )
+        return self.get_values_definition(ModeState, DeviceState.OPERATING_MODE_STATE)
 
     @property
     def supported_states(self):
