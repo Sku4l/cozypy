@@ -5,7 +5,7 @@ from ..constant import (
     DeviceState,
     DeviceType,
     OnOffState,
-    OperatingModeState,
+    HeatingMode,
 )
 from ..exception import CozytouchException
 
@@ -35,6 +35,15 @@ class CozytouchHeatingZone(CozytouchDevice):
         return self.data["label"]
 
     @property
+    def is_on(self):
+        """Heater is on."""
+        return self.get_state(DeviceState.HEATING_ON_OFF_STATE) == OnOffState.ON
+
+    @property
+    def is_away(self):
+        """Not implemented."""
+
+    @property
     def state(self):
         """Return Configuration state."""
         return self.get_state(DeviceState.THERMAL_CONFIGURATION_STATE)
@@ -60,15 +69,16 @@ class CozytouchHeatingZone(CozytouchDevice):
         return self.get_state(DeviceState.PASS_APC_HEATING_MODE_STATE)
 
     @property
-    def is_on(self):
-        """Is alive."""
-        return self.get_state(DeviceState.HEATING_ON_OFF_STATE)
-
-    @property
     def operating_mode(self):
         """Return operation mode."""
-        return OperatingModeState.from_str(
-            self.get_state(DeviceState.OPERATING_MODE_STATE)
+        return HeatingMode.from_str(
+            self.get_state(DeviceState.PASS_APC_HEATING_MODE_STATE)
+        )
+
+    def operating_mode_list(self):
+        """Return operating mode list."""
+        return self.get_values_definition(
+            HeatingMode, DeviceState.PASS_APC_HEATING_MODE_STATE
         )
 
     @property
@@ -87,6 +97,31 @@ class CozytouchHeatingZone(CozytouchDevice):
     def is_state_supported(self, state: DeviceState):
         """Return is supported ."""
         return state in self.supported_states
+
+    async def set_operating_mode(self, mode):
+        """Set operating mode."""
+        if not self.has_state(DeviceState.PASS_APC_HEATING_MODE_STATE):
+            raise CozytouchException(
+                "Unsupported command {command}".format(
+                    command=DeviceCommand.SET_PASS_APC_HEATING_MODE
+                )
+            )
+        if self.client is None:
+            raise CozytouchException("Unable to execute command")
+
+        commands = CozytouchCommands("Change operating mode")
+        action = CozytouchAction(device_url=self.deviceUrl)
+        action.add_command(
+            CozytouchCommand(DeviceCommand.SET_PASS_APC_HEATING_MODE, mode)
+        )
+        action.add_command(
+            CozytouchCommand(DeviceCommand.REFRESH_PASS_APC_HEATING_MODE)
+        )
+        commands.add_action(action)
+
+        await self.client.send_commands(commands)
+
+        self.set_state(DeviceState.OPERATING_MODE_STATE, mode)
 
     async def set_eco_temperature(self, temperature):
         """Set eco temperature."""
