@@ -1,4 +1,20 @@
 """Objects for cozytouch."""
+__all__ = [
+    "CozytouchBoiler",
+    "CozytouchDevice",
+    "CozytouchGateway",
+    "CozytouchHeater",
+    "CozytouchHeatingZone",
+    "CozytouchObject",
+    "CozytouchPlace",
+    "CozytouchPod",
+    "CozytouchContactSensor",
+    "CozytouchCumulativeFossilEnergyConsumptionSensor",
+    "CozytouchElectrecitySensor",
+    "CozytouchOccupancySensor",
+    "CozytouchTemperatureSensor",
+    "CozytouchWaterHeater",
+]
 from .boilers import CozytouchBoiler
 from .device import CozytouchDevice
 from .gateway import CozytouchGateway
