@@ -198,7 +198,7 @@ class CozytouchClient:
                     device_url=device_url
                 )
             )
-        return datas.get(device_url).get("states")
+        return datas.get(device_url).get("dictStates")
 
     async def send_commands(self, commands):
         """Get devices states."""
