@@ -64,11 +64,6 @@ class CozytouchHeatingZone(CozytouchDevice):
         return self.get_state(DeviceState.ECO_HEATING_TARGET_TEMPERATURE_STATE)
 
     @property
-    def apc_heating_state(self):
-        """Return economic temperature."""
-        return self.get_state(DeviceState.PASS_APC_HEATING_MODE_STATE)
-
-    @property
     def operating_mode(self):
         """Return operation mode."""
         return HeatingMode.from_str(
