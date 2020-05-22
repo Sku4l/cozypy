@@ -30,7 +30,12 @@ class CozytouchHeatingZone(CozytouchDevice):
         return None
 
     @property
-    def config_state(self):
+    def name(self):
+        """Name."""
+        return self.data["label"]
+
+    @property
+    def state(self):
         """Return Configuration state."""
         return self.get_state(DeviceState.THERMAL_CONFIGURATION_STATE)
 
@@ -48,6 +53,11 @@ class CozytouchHeatingZone(CozytouchDevice):
     def eco_temperature(self):
         """Return economic temperature."""
         return self.get_state(DeviceState.ECO_HEATING_TARGET_TEMPERATURE_STATE)
+
+    @property
+    def apc_heating_state(self):
+        """Return economic temperature."""
+        return self.get_state(DeviceState.PASS_APC_HEATING_MODE_STATE)
 
     @property
     def is_on(self):
