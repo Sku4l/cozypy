@@ -2,12 +2,15 @@
 import logging
 
 from ..constant import (
+    DeviceCommand,
     DeviceState,
     DeviceType,
     OperatingModeState,
 )
 from ..exception import CozytouchException
 from .device import CozytouchDevice
+from ..utils import CozytouchAction, CozytouchCommand, CozytouchCommands
+
 
 logger = logging.getLogger(__name__)
 
@@ -80,6 +83,29 @@ class CozytouchBoiler(CozytouchDevice):
     def is_state_supported(self, state: DeviceState):
         """Return is supported ."""
         return state in self.supported_states
+
+    async def set_operating_mode(self, mode):
+        """Set operating mode."""
+        if not self.has_state(DeviceState.PASS_APC_OPERATING_MODE_STATE):
+            raise CozytouchException(
+                "Unsupported command {command}".format(
+                    command=DeviceCommand.SET_PASS_APC_OPERATING_MODE
+                )
+            )
+        if self.client is None:
+            raise CozytouchException("Unable to execute command")
+
+        commands = CozytouchCommands("Change operating mode")
+        action = CozytouchAction(device_url=self.deviceUrl)
+        action.add_command(
+            CozytouchCommand(DeviceCommand.SET_PASS_APC_OPERATING_MODE, mode)
+        )
+        action.add_command(CozytouchCommand(DeviceCommand.REFRESH_OPERATION_MODE))
+        commands.add_action(action)
+
+        await self.client.send_commands(commands)
+
+        self.set_state(DeviceState.PASS_APC_OPERATING_MODE_STATE, mode)
 
     async def update(self):
         """Update boiler state."""
