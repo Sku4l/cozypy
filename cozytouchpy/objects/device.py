@@ -1,7 +1,7 @@
 """Describe objects for cozytouch."""
 import logging
 
-from ..constant import DeviceState, DeviceType
+from ..constant import DeviceState
 from ..exception import CozytouchException
 from ..utils import DeviceMetadata
 from .gateway import CozytouchGateway
@@ -17,7 +17,8 @@ class CozytouchDevice(CozytouchObject):
     def __init__(self, data: dict):
         """Initialize."""
         super(CozytouchDevice, self).__init__(data)
-        self.states = data["states"]
+        self.states = data["dictStates"]
+        self.sensors = []
         self.metadata: DeviceMetadata = None
         self.gateway: CozytouchGateway = None
         self.place: CozytouchPlace = None
@@ -31,60 +32,52 @@ class CozytouchDevice(CozytouchObject):
     @property
     def widget(self):
         """Widget."""
-        return DeviceType(self.data["widget"])
+        return self.data["widget"]
 
     @property
     def manufacturer(self):
         """Manufacturer."""
-        return self.get_state(DeviceState.MANUFACTURER_NAME_STATE)
+        return self.states.get(DeviceState.MANUFACTURER_NAME_STATE)
 
     @property
     def model(self):
         """Model."""
-        return self.get_state(DeviceState.MODEL_STATE)
+        return self.states.get(DeviceState.MODEL_STATE)
 
     @property
     def name(self):
         """Name."""
-        return self.place.name + " " + self.widget.name.replace("_", " ").capitalize()
+        return self.place.name + " " + self.widget.replace("_", " ").capitalize()
 
     @property
     def version(self):
         """Version."""
-        return self.get_state(DeviceState.VERSION_STATE)
+        return self.states.get(DeviceState.VERSION_STATE)
 
-    def get_state_definition(self, state: DeviceState):
-        """Get definition."""
-        for definition in self.data["definition"]["states"]:
-            if definition["qualifiedName"] == state.value:
-                return definition
-        return None
-
-    def get_state(self, state: DeviceState, value_only=True):
-        """Get state."""
-        for s in self.states:
-            if s["name"] == state.value:
-                return s["value"] if value_only else s
-        return None
-
-    def set_state(self, state: DeviceState, value):
-        """Set state."""
-        for s in self.states:
-            if s["name"] == state.value:
-                s["value"] = value
+    def set_state(self, state, value):
+        """Set state value."""
+        for state_name in self.states:
+            if state_name == state:
+                state_name = value
                 break
 
-    def get_values_definition(self, attribut: str, state: DeviceState):
-        """Get all values for a definiion."""
-        definition = self.get_state_definition(state)
-        if definition is None:
-            return []
-        return [attribut.from_str(value) for value in definition["values"]]
+    def get_definition(self, definition):
+        """Get definition value."""
+        for state in self.data["definition"].get("states"):
+            if state.get("qualifiedName") == definition:
+                return state.get("values")
 
-    def has_state(self, state: DeviceState):
-        """State."""
-        for s in self.states:
-            if s["name"] == state.value:
+    def get_sensors(self, device_type):
+        """Get sensor."""
+        for sensor in self.sensors:
+            if sensor.widget == device_type:
+                return sensor
+        return None
+
+    def has_state(self, state):
+        """Search name state."""
+        for state_name in self.states.keys():
+            if state_name == state:
                 return True
         return False
 

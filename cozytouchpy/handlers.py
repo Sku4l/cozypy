@@ -56,7 +56,7 @@ class SetupHandler:
         sensors = []
 
         for idx in range(len(devices) - 1, -1, -1):
-            device_type = DeviceType.from_str(devices[idx]["widget"])
+            device_type = devices[idx]["widget"]
             if device_type not in DeviceType.sensors():
                 continue
             sensors.append(devices[idx])
@@ -64,7 +64,7 @@ class SetupHandler:
 
         for device in devices:
             try:
-                device_type = DeviceType.from_str(device["widget"])
+                device_type = device["widget"]
                 metadata = self.parse_url(device["deviceURL"])
                 gateway = self.__find_gateway(metadata.gateway_id)
                 place = self.__find_place(device)
@@ -187,8 +187,7 @@ class DevicesHandler:
         device = None
         if "widget" not in data or "uiClass" not in data:
             raise CozytouchException("Unable to identify device")
-        device_str = data["widget"] if "widget" in data else data["uiClass"]
-        device_class = DeviceType.from_str(device_str)
+        device_class = data["widget"] if "widget" in data else data["uiClass"]
         if device_class == DeviceType.OCCUPANCY:
             device = CozytouchOccupancySensor(data)
         elif device_class == DeviceType.POD:
@@ -211,10 +210,13 @@ class DevicesHandler:
             device = CozytouchHeater(data)
         elif device_class in [DeviceType.APC_BOILER]:
             device = CozytouchBoiler(data)
-        elif device_class in [DeviceType.WATER_HEATER, DeviceType.APC_WATER_HEATER]:
+        elif device_class in [
+            DeviceType.WATER_HEATER,
+            DeviceType.APC_WATER_HEATER,
+        ]:
             device = CozytouchWaterHeater(data)
         if device is None:
-            raise CozytouchException("Unknown device {type}".format(type=device_str))
+            raise CozytouchException("Unknown device {type}".format(type=device_class))
 
         device.client = client
         device.metadata = metadata

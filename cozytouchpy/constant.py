@@ -1,7 +1,5 @@
 """Constants."""
 
-from .utils import TextEnum
-
 COZYTOUCH_BASE_URL = "https://ha110-1.overkiz.com/enduser-mobile-web/enduserAPI"
 
 COZYTOUCH_ENDPOINTS = {
@@ -22,7 +20,7 @@ USER_AGENT = "Home assistant/Cozytouch"
 API_THROTTLE = 60  # Delay minimum between API call
 
 
-class DeviceType(TextEnum):
+class DeviceType:
     """Device type."""
 
     POD = "Pod"
@@ -51,7 +49,7 @@ class DeviceType(TextEnum):
         ]
 
 
-class DeviceState(TextEnum):
+class DeviceState:
     """Device state."""
 
     ABSENCE_COOLING_TARGET_TEMPERATURE_STATE = (
@@ -204,21 +202,21 @@ class DeviceState(TextEnum):
     THERMAL_SCHEDULING_MODE_STATE = "io:ThermalSchedulingModeState"
 
 
-class OnOffState(TextEnum):
+class OnOffState:
     """Set state."""
 
     ON = "on"
     OFF = "off"
 
 
-class AvailableState(TextEnum):
+class AvailableState:
     """Set away mode."""
 
     AVAILABLE = "available"
     UNAVAILABLE = "unavailable"
 
 
-class ModeState(TextEnum):
+class ModeState:
     """Set operation mode."""
 
     ABSENCE = "absence"
@@ -248,7 +246,7 @@ class ModeState(TextEnum):
     STOP = "stop"
 
 
-class DeviceCommand(TextEnum):
+class DeviceCommand:
     """Commande device."""
 
     DELAY_STOP_IDENTIFY = "delayedStopIdentify"

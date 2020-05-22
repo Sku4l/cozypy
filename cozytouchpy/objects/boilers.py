@@ -4,7 +4,6 @@ import logging
 from ..constant import (
     DeviceCommand,
     DeviceState,
-    DeviceType,
     ModeState,
 )
 from ..exception import CozytouchException
@@ -23,21 +22,15 @@ class CozytouchBoiler(CozytouchDevice):
         super(CozytouchBoiler, self).__init__(data)
         self.sensors = []
 
-    def __get_sensors(self, device_type: DeviceType):
-        for sensor in self.sensors:
-            if sensor.widget == device_type:
-                return sensor
-        return None
-
     @property
     def model(self):
         """Model."""
-        return self.get_state(DeviceState.PRODUCT_MODEL_NAME_STATE)
+        return self.states.get(DeviceState.PRODUCT_MODEL_NAME_STATE)
 
     @property
     def away_target_temperature(self):
         """Boost state."""
-        return self.get_state(DeviceState.ABSENCE_HEATING_TARGET_TEMPERATURE_STATE)
+        return self.states.get(DeviceState.ABSENCE_HEATING_TARGET_TEMPERATURE_STATE)
 
     @property
     def is_on(self):
@@ -49,38 +42,30 @@ class CozytouchBoiler(CozytouchDevice):
         """Get all time program."""
         TimeProgram = {}
         for i in range(4):
-            state = DeviceState.from_str(f"core:TimeProgram{i+1}State")
-            TimeProgram.update({f"TimeProgram{i+1}": self.get_state(state)})
+            state = f"core:TimeProgram{i+1}State"
+            TimeProgram.update({f"TimeProgram{i+1}": self.states.get(state)})
         return TimeProgram
 
     @property
     def operating_mode(self):
         """Return operation mode."""
-        return ModeState.from_str(
-            self.get_state(DeviceState.PASS_APC_OPERATING_MODE_STATE)
-        )
+        return self.states.get(DeviceState.PASS_APC_OPERATING_MODE_STATE)
 
     @property
     def operating_mode_list(self):
         """Return operating mode list."""
-        return self.get_values_definition(
-            ModeState, DeviceState.PASS_APC_OPERATING_MODE_STATE
-        )
+        return self.get_definition(DeviceState.PASS_APC_OPERATING_MODE_STATE)
 
     @property
-    def supported_states(self):
-        """Return supported ."""
-        supported_state = [state for state in DeviceState if self.has_state(state)]
-        for state in DeviceState:
-            if state in supported_state:
-                continue
-            for sensor in self.sensors:
-                if sensor.has_state(state):
-                    supported_state.append(state)
-                    break
-        return supported_state
+    def supported_states(self) -> dict:
+        """Supported states."""
+        supported_states = [state for state in self.states.keys()]
+        for sensor in self.sensors:
+            sensor_states = [state for state in sensor.states.keys()]
+            supported_states = list(set(supported_states + sensor_states))
+        return supported_states
 
-    def is_state_supported(self, state: DeviceState):
+    def is_state_supported(self, state):
         """Return is supported ."""
         return state in self.supported_states
 

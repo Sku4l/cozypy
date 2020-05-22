@@ -10,6 +10,11 @@ logger = logging.getLogger(__name__)
 class CozytouchSensor(CozytouchDevice):
     """Generic sensor."""
 
+    def __init__(self, data):
+        """Initialize."""
+        super(CozytouchSensor, self).__init__(data)
+        delattr(self, "sensors")
+
     @property
     def id(self):
         """Return Unique id."""
@@ -38,7 +43,7 @@ class CozytouchContactSensor(CozytouchSensor):
     @property
     def is_opened(self):
         """State."""
-        state = self.get_state(DeviceState.CONTACT_STATE)
+        state = self.states.get(DeviceState.CONTACT_STATE)
         return state != "closed"
 
 
@@ -53,7 +58,7 @@ class CozytouchElectrecitySensor(CozytouchSensor):
     @property
     def consumption(self):
         """State."""
-        return int(self.get_state(DeviceState.ELECTRIC_ENERGY_CONSUMPTION_STATE))
+        return int(self.states.get(DeviceState.ELECTRIC_ENERGY_CONSUMPTION_STATE))
 
 
 class CozytouchTemperatureSensor(CozytouchSensor):
@@ -67,7 +72,7 @@ class CozytouchTemperatureSensor(CozytouchSensor):
     @property
     def temperature(self):
         """State."""
-        return self.get_state(DeviceState.TEMPERATURE_STATE)
+        return self.states.get(DeviceState.TEMPERATURE_STATE)
 
 
 class CozytouchOccupancySensor(CozytouchSensor):
@@ -81,8 +86,7 @@ class CozytouchOccupancySensor(CozytouchSensor):
     @property
     def is_occupied(self):
         """State."""
-        state = self.get_state(DeviceState.OCCUPANCY_STATE)
-        return state == "personInside"
+        return self.states.get(DeviceState.OCCUPANCY_STATE) == "personInside"
 
 
 class CozytouchCumulativeFossilEnergyConsumptionSensor(CozytouchSensor):
@@ -96,4 +100,4 @@ class CozytouchCumulativeFossilEnergyConsumptionSensor(CozytouchSensor):
     @property
     def temperature(self):
         """State."""
-        return self.get_state(DeviceState.FOSSIL_ENERGY_CONSUMPTION_STATE)
+        return self.states.get(DeviceState.FOSSIL_ENERGY_CONSUMPTION_STATE)

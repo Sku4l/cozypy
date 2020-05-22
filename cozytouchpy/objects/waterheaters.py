@@ -4,7 +4,6 @@ import logging
 from ..constant import (
     DeviceCommand,
     DeviceState,
-    DeviceType,
     ModeState,
 )
 from ..exception import CozytouchException
@@ -21,13 +20,6 @@ class CozytouchWaterHeater(CozytouchDevice):
     def __init__(self, data: dict):
         """Initialize."""
         super(CozytouchWaterHeater, self).__init__(data)
-        self.sensors = []
-
-    def __get_sensors(self, device_type: DeviceType):
-        for sensor in self.sensors:
-            if sensor.widget == device_type:
-                return sensor
-        return None
 
     @property
     def is_on(self):
@@ -37,27 +29,23 @@ class CozytouchWaterHeater(CozytouchDevice):
     @property
     def operating_mode(self):
         """Return operation mode."""
-        return ModeState.from_str(self.get_state(DeviceState.OPERATING_MODE_STATE))
+        return self.states.get(DeviceState.DHW_MODE_STATE)
 
     @property
     def operating_mode_list(self):
         """Return operating mode list."""
-        return self.get_values_definition(ModeState, DeviceState.OPERATING_MODE_STATE)
+        return self.get_definition(DeviceState.DHW_MODE_STATE)
 
     @property
-    def supported_states(self):
-        """Return supported ."""
-        supported_state = [state for state in DeviceState if self.has_state(state)]
-        for state in DeviceState:
-            if state in supported_state:
-                continue
-            for sensor in self.sensors:
-                if sensor.has_state(state):
-                    supported_state.append(state)
-                    break
-        return supported_state
+    def supported_states(self) -> dict:
+        """Supported states."""
+        supported_states = [state for state in self.states.keys()]
+        for sensor in self.sensors:
+            sensor_states = [state for state in sensor.states.keys()]
+            supported_states = list(set(supported_states + sensor_states))
+        return supported_states
 
-    def is_state_supported(self, state: DeviceState):
+    def is_state_supported(self, state):
         """Return is supported ."""
         return state in self.supported_states
 

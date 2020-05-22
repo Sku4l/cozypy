@@ -22,13 +22,6 @@ class CozytouchHeater(CozytouchDevice):
     def __init__(self, data: dict):
         """Initialize."""
         super(CozytouchHeater, self).__init__(data)
-        self.sensors = []
-
-    def __get_sensors(self, device_type: DeviceType):
-        for sensor in self.sensors:
-            if sensor.widget == device_type:
-                return sensor
-        return None
 
     @property
     def name(self):
@@ -47,7 +40,7 @@ class CozytouchHeater(CozytouchDevice):
     @property
     def is_away(self):
         """Heater is away."""
-        away = self.get_state(DeviceState.AWAY_STATE)
+        away = self.states.get(DeviceState.AWAY_STATE)
         if away is None:
             return False
         return True if away == "on" else False
@@ -55,7 +48,7 @@ class CozytouchHeater(CozytouchDevice):
     @property
     def temperature(self):
         """Return temperature."""
-        sensor = self.__get_sensors(DeviceType.TEMPERATURE)
+        sensor = self.get_sensors(DeviceType.TEMPERATURE)
         if sensor is None:
             return 0
         return sensor.temperature
@@ -63,12 +56,12 @@ class CozytouchHeater(CozytouchDevice):
     @property
     def target_temperature(self):
         """Return target temperature."""
-        return self.get_state(DeviceState.TARGET_TEMPERATURE_STATE)
+        return self.states.get(DeviceState.TARGET_TEMPERATURE_STATE)
 
     @property
     def comfort_temperature(self):
         """Return comfort temperature."""
-        return self.get_state(DeviceState.COMFORT_TEMPERATURE_STATE)
+        return self.states.get(DeviceState.COMFORT_TEMPERATURE_STATE)
 
     @property
     def eco_temperature(self):
@@ -76,46 +69,38 @@ class CozytouchHeater(CozytouchDevice):
         comfort_temp = self.comfort_temperature
         if comfort_temp is None:
             return 0
-        return comfort_temp - self.get_state(DeviceState.ECO_TEMPERATURE_STATE)
+        return comfort_temp - self.states.get(DeviceState.ECO_TEMPERATURE_STATE)
 
     @property
     def operating_mode(self):
         """Return operation mode."""
-        return ModeState.from_str(self.get_state(DeviceState.OPERATING_MODE_STATE))
+        return self.states.get(DeviceState.OPERATING_MODE_STATE)
 
     @property
     def operating_mode_list(self):
         """Return operating mode list."""
-        return self.get_values_definition(ModeState, DeviceState.OPERATING_MODE_STATE)
+        return self.get_definition(DeviceState.OPERATING_MODE_STATE)
 
     @property
     def target_heating_level(self):
         """Return heating level."""
-        return ModeState.from_str(
-            self.get_state(DeviceState.TARGETING_HEATING_LEVEL_STATE)
-        )
+        return self.states.get(DeviceState.TARGETING_HEATING_LEVEL_STATE)
 
     @property
     def target_heating_level_list(self):
         """Return heating level list."""
-        return self.get_values_definition(
-            ModeState, DeviceState.TARGETING_HEATING_LEVEL_STATE
-        )
+        return self.get_definition(DeviceState.TARGETING_HEATING_LEVEL_STATE)
 
     @property
-    def supported_states(self):
-        """Return supported."""
-        supported_state = [state for state in DeviceState if self.has_state(state)]
-        for state in DeviceState:
-            if state in supported_state:
-                continue
-            for sensor in self.sensors:
-                if sensor.has_state(state):
-                    supported_state.append(state)
-                    break
-        return supported_state
+    def supported_states(self) -> dict:
+        """Supported states."""
+        supported_states = [state for state in self.states.keys()]
+        for sensor in self.sensors:
+            sensor_states = [state for state in sensor.states.keys()]
+            supported_states = list(set(supported_states + sensor_states))
+        return supported_states
 
-    def is_state_supported(self, state: DeviceState):
+    def is_state_supported(self, state):
         """Is supported ."""
         return state in self.supported_states
 
