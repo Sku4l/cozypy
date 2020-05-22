@@ -25,8 +25,6 @@ class CozytouchEncoder(json.JSONEncoder):
 
     def default(self, obj):  # pylint: disable=arguments-differ, method-hidden
         """Transform json."""
-        from .utils import CozytouchCommands, CozytouchAction, CozytouchCommand
-
         if isinstance(obj, Enum):
             return obj.value
         if isinstance(obj, CozytouchCommands):
