@@ -85,6 +85,14 @@ class CozytouchClient:
                 except aiohttp.ClientError as e:
                     raise HttpRequestFailed("Error Request", e)
         logger.debug("Response status : %s", response.status)
+
+        if "devices" in response_json:
+            # Convert states to dictionnary
+            self.__convert_states_devices(response_json.get("devices"))
+        if resource == "states":
+            # Convert states to dictionnary
+            data = self.__convert_state(response_json)
+
         return response_json, response
 
     async def __make_request_reconnect(
@@ -100,6 +108,15 @@ class CozytouchClient:
                 resource, method, data, headers, json_encode
             )
         return response_json, response
+
+    def __convert_states_devices(self, devices: dict) -> dict:
+        """Convert all states for all devices to dictionnary."""
+        for device in devices:
+            device["dictStates"] = self.__convert_state(device.get("states"))
+
+    def __convert_state(self, states: dict) -> dict:
+        """Convert all states for a device to dictionnary."""
+        return {state["name"]: state["value"] for state in states}
 
     async def connect(self):
         """Authenticate using username and userPassword."""
