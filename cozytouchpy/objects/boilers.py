@@ -17,11 +17,6 @@ logger = logging.getLogger(__name__)
 class CozytouchBoiler(CozytouchDevice):
     """Boiler."""
 
-    def __init__(self, data: dict):
-        """Initialize."""
-        super(CozytouchBoiler, self).__init__(data)
-        self.sensors = []
-
     @property
     def model(self):
         """Model."""

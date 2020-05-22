@@ -86,6 +86,8 @@ class CozytouchClient:
                     raise HttpRequestFailed("Error Request", e)
         logger.debug("Response status : %s", response.status)
 
+        response_json = self.json_data()  # Test Json
+
         if "devices" in response_json:
             # Convert states to dictionnary
             self.__convert_states_devices(response_json.get("devices"))
@@ -218,3 +220,12 @@ class CozytouchClient:
 
         logger.debug("Response commands %s", response.content)
         return response_json
+
+    def json_data(self):
+        """TEST : Use method for json file."""
+        import os
+
+        json_data = open(os.path.join(os.path.dirname(__file__), "../return_test.json"))
+        with json_data as f:
+            data = json.load(f)
+        return data

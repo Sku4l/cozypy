@@ -17,10 +17,6 @@ logger = logging.getLogger(__name__)
 class CozytouchWaterHeater(CozytouchDevice):
     """Water Heater."""
 
-    def __init__(self, data: dict):
-        """Initialize."""
-        super(CozytouchWaterHeater, self).__init__(data)
-
     @property
     def is_on(self):
         """Is alive."""

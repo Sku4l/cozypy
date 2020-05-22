@@ -19,10 +19,6 @@ logger = logging.getLogger(__name__)
 class CozytouchHeater(CozytouchDevice):
     """Heater."""
 
-    def __init__(self, data: dict):
-        """Initialize."""
-        super(CozytouchHeater, self).__init__(data)
-
     @property
     def name(self):
         """Name."""
