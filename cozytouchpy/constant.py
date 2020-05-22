@@ -228,12 +228,25 @@ class OperatingModeState(TextEnum):
     FROSTPROTECT = "frostprotection"
     HEATING = "heating"
     INTERNAL = "internal"
-    MANUEL = "frostprotection"
+    MANUEL = "manuel"
     MAX = "max"
     NORMAL = "normal"
     PROG = "prog"
     PROGRAM = "program"
     STANDBY = "standby"
+    STOP = "stop"
+
+
+class HeatingMode(TextEnum):
+    """APC Heating mode."""
+
+    ABSENCE = "absence"
+    AUTO = "auto"
+    COMFORT = "comfort"
+    ECO = "eco"
+    EXTERNAL_SCHEDULING = "externalScheduling"
+    INTERNAL_SCHEDULING = "internalScheduling"
+    MANUEL = "manu"
     STOP = "stop"
 
 
