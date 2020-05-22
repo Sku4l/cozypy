@@ -27,6 +27,11 @@ class CozytouchBoiler(CozytouchDevice):
         return None
 
     @property
+    def model(self):
+        """Model."""
+        return self.get_state(DeviceState.PRODUCT_MODEL_NAME_STATE)
+
+    @property
     def away_target_temperature(self):
         """Boost state."""
         return self.get_state(DeviceState.ABSENCE_HEATING_TARGET_TEMPERATURE_STATE)
