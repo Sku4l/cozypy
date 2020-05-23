@@ -80,7 +80,7 @@ class CozytouchClient:
                     headers["Content-Type"] = "application/json"
 
                 try:
-                    logger.debug("Json: {}".format(data))
+                    logger.debug("Json: %s", data)
                     async with session.post(url, headers=headers, data=data) as resp:
                         response_json = await resp.json()
                         response = resp
