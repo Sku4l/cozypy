@@ -80,10 +80,10 @@ class CozytouchDevice(CozytouchObject):
                 return sensor
         return None
 
-    def has_state(self, state):
+    def has_state(self, name):
         """Search name state."""
-        for state_name in self.states.keys():
-            if state_name == state:
+        for state in self.states:
+            if state["name"] == name:
                 return True
         return False
 
