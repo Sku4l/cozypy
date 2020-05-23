@@ -56,13 +56,14 @@ class CozytouchClient:
 
         if data is None:
             data = {}
-        logger.debug("Request %s : %s", resource, data)
+
         if headers is None:
             headers = {}
 
         headers["User-Agent"] = USER_AGENT
 
         url = self.build_url(resource, data)
+        logger.debug("Request %s : %s", method, resource)
         async with aiohttp.ClientSession(
             cookies=self.cookies, timeout=self.timeout
         ) as session:
@@ -79,6 +80,7 @@ class CozytouchClient:
                     headers["Content-Type"] = "application/json"
 
                 try:
+                    logger.debug("Json: {}".format(data))
                     async with session.post(url, headers=headers, data=data) as resp:
                         response_json = await resp.json()
                         response = resp
@@ -86,6 +88,7 @@ class CozytouchClient:
                     raise HttpRequestFailed("Error Request", e)
 
         logger.debug("Response status : %s", response.status)
+        logger.debug("Response json : %s", response_json)
 
         return response_json, response
 
@@ -186,7 +189,6 @@ class CozytouchClient:
 
     async def send_commands(self, commands):
         """Get devices states."""
-        logger.debug("Request commands %s", str(commands))
         response_json, response = await self.__make_request_reconnect(
             "apply",
             method="POST",
@@ -199,6 +201,4 @@ class CozytouchClient:
                     error=response_json["error"], code=response_json["errorCode"]
                 )
             )
-
-        logger.debug("Response commands %s", response.content)
         return response_json
