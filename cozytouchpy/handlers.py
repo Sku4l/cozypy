@@ -88,7 +88,7 @@ class SetupHandler:
                 ]:
                     self.heaters.append(cozyouch_device)
                 elif device_type in [DeviceType.APC_HEAT_PUMP]:
-                    self.heat_pump.append(cozyouch_device)
+                    self.heat_pumps.append(cozyouch_device)
                 elif device_type in [
                     DeviceType.APC_BOILER,
                 ]:
