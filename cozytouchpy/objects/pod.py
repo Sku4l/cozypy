@@ -23,9 +23,9 @@ class CozytouchPod(CozytouchDevice):
     @property
     def supported_states(self) -> dict:
         """Supported states."""
-        supported_states = [state for state in self.states.keys()]
+        supported_states = [state["name"] for state in self.states]
         for sensor in self.sensors:
-            sensor_states = [state for state in sensor.states.keys()]
+            sensor_states = [state["name"] for state in sensor.states]
             supported_states = list(set(supported_states + sensor_states))
         return supported_states
 

@@ -20,12 +20,12 @@ class CozytouchBoiler(CozytouchDevice):
     @property
     def model(self):
         """Model."""
-        return self.states.get(DeviceState.PRODUCT_MODEL_NAME_STATE)
+        return self.get_state(DeviceState.PRODUCT_MODEL_NAME_STATE)
 
     @property
     def away_target_temperature(self):
         """Boost state."""
-        return self.states.get(DeviceState.ABSENCE_HEATING_TARGET_TEMPERATURE_STATE)
+        return self.get_state(DeviceState.ABSENCE_HEATING_TARGET_TEMPERATURE_STATE)
 
     @property
     def is_on(self):
@@ -38,13 +38,13 @@ class CozytouchBoiler(CozytouchDevice):
         TimeProgram = {}
         for i in range(4):
             state = f"core:TimeProgram{i+1}State"
-            TimeProgram.update({f"TimeProgram{i+1}": self.states.get(state)})
+            TimeProgram.update({f"TimeProgram{i+1}": self.get_state(state)})
         return TimeProgram
 
     @property
     def operating_mode(self):
         """Return operation mode."""
-        return self.states.get(DeviceState.PASS_APC_OPERATING_MODE_STATE)
+        return self.get_state(DeviceState.PASS_APC_OPERATING_MODE_STATE)
 
     @property
     def operating_mode_list(self):
@@ -54,9 +54,9 @@ class CozytouchBoiler(CozytouchDevice):
     @property
     def supported_states(self) -> dict:
         """Supported states."""
-        supported_states = [state for state in self.states.keys()]
+        supported_states = [state["name"] for state in self.states]
         for sensor in self.sensors:
-            sensor_states = [state for state in sensor.states.keys()]
+            sensor_states = [state["name"] for state in sensor.states]
             supported_states = list(set(supported_states + sensor_states))
         return supported_states
 

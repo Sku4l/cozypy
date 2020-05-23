@@ -17,7 +17,7 @@ class CozytouchDevice(CozytouchObject):
     def __init__(self, data: dict):
         """Initialize."""
         super(CozytouchDevice, self).__init__(data)
-        self.states = data["dictStates"]
+        self.states = data["states"]
         self.sensors = []
         self.metadata: DeviceMetadata = None
         self.gateway: CozytouchGateway = None
@@ -37,12 +37,12 @@ class CozytouchDevice(CozytouchObject):
     @property
     def manufacturer(self):
         """Manufacturer."""
-        return self.states.get(DeviceState.MANUFACTURER_NAME_STATE)
+        return self.get_state(DeviceState.MANUFACTURER_NAME_STATE)
 
     @property
     def model(self):
         """Model."""
-        return self.states.get(DeviceState.MODEL_STATE)
+        return self.get_state(DeviceState.MODEL_STATE)
 
     @property
     def name(self):
@@ -52,7 +52,13 @@ class CozytouchDevice(CozytouchObject):
     @property
     def version(self):
         """Version."""
-        return self.states.get(DeviceState.VERSION_STATE)
+        return self.get_state(DeviceState.VERSION_STATE)
+
+    def get_state(self, name):
+        """Get state value."""
+        for state in self.states:
+            if state.get("name") == name:
+                return state.get("value")
 
     def set_state(self, state, value):
         """Set state value."""
@@ -91,7 +97,7 @@ class CozytouchDevice(CozytouchObject):
     def __str__(self):
         """Definition."""
         return "{widget} (name={name}, model={model}, manufacturer={manufacturer}, version={version})".format(
-            widget=self.widget.name.capitalize(),
+            widget=self.widget.capitalize(),
             name=self.name,
             model=self.model,
             manufacturer=self.manufacturer,

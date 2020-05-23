@@ -36,7 +36,7 @@ class CozytouchHeater(CozytouchDevice):
     @property
     def is_away(self):
         """Heater is away."""
-        away = self.states.get(DeviceState.AWAY_STATE)
+        away = self.get_state(DeviceState.AWAY_STATE)
         if away is None:
             return False
         return True if away == "on" else False
@@ -52,12 +52,12 @@ class CozytouchHeater(CozytouchDevice):
     @property
     def target_temperature(self):
         """Return target temperature."""
-        return self.states.get(DeviceState.TARGET_TEMPERATURE_STATE)
+        return self.get_state(DeviceState.TARGET_TEMPERATURE_STATE)
 
     @property
     def comfort_temperature(self):
         """Return comfort temperature."""
-        return self.states.get(DeviceState.COMFORT_TEMPERATURE_STATE)
+        return self.get_state(DeviceState.COMFORT_TEMPERATURE_STATE)
 
     @property
     def eco_temperature(self):
@@ -65,12 +65,12 @@ class CozytouchHeater(CozytouchDevice):
         comfort_temp = self.comfort_temperature
         if comfort_temp is None:
             return 0
-        return comfort_temp - self.states.get(DeviceState.ECO_TEMPERATURE_STATE)
+        return comfort_temp - self.get_state(DeviceState.ECO_TEMPERATURE_STATE)
 
     @property
     def operating_mode(self):
         """Return operation mode."""
-        return self.states.get(DeviceState.OPERATING_MODE_STATE)
+        return self.get_state(DeviceState.OPERATING_MODE_STATE)
 
     @property
     def operating_mode_list(self):
@@ -80,7 +80,7 @@ class CozytouchHeater(CozytouchDevice):
     @property
     def target_heating_level(self):
         """Return heating level."""
-        return self.states.get(DeviceState.TARGETING_HEATING_LEVEL_STATE)
+        return self.get_state(DeviceState.TARGETING_HEATING_LEVEL_STATE)
 
     @property
     def target_heating_level_list(self):
@@ -90,9 +90,9 @@ class CozytouchHeater(CozytouchDevice):
     @property
     def supported_states(self) -> dict:
         """Supported states."""
-        supported_states = [state for state in self.states.keys()]
+        supported_states = [state["name"] for state in self.states]
         for sensor in self.sensors:
-            sensor_states = [state for state in sensor.states.keys()]
+            sensor_states = [state["name"] for state in sensor.states]
             supported_states = list(set(supported_states + sensor_states))
         return supported_states
 

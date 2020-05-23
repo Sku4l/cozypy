@@ -25,7 +25,7 @@ class CozytouchWaterHeater(CozytouchDevice):
     @property
     def operating_mode(self):
         """Return operation mode."""
-        return self.states.get(DeviceState.DHW_MODE_STATE)
+        return self.get_state(DeviceState.DHW_MODE_STATE)
 
     @property
     def operating_mode_list(self):
@@ -35,9 +35,9 @@ class CozytouchWaterHeater(CozytouchDevice):
     @property
     def supported_states(self) -> dict:
         """Supported states."""
-        supported_states = [state for state in self.states.keys()]
+        supported_states = [state["name"] for state in self.states]
         for sensor in self.sensors:
-            sensor_states = [state for state in sensor.states.keys()]
+            sensor_states = [state["name"] for state in sensor.states]
             supported_states = list(set(supported_states + sensor_states))
         return supported_states
 
