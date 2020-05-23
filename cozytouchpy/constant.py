@@ -277,7 +277,7 @@ class DeviceCommand:
     SET_COMFORT_TEMP = "setComfortTemperature"
     SET_COOLING_ON_OFF_STATE = "setCoolingOnOffState"
     SET_COUNTRY_CODE = "setCountryCode"
-    SET_CURRENT_OPERATION_MODE = "setCurrentOperatingMode"
+    SET_CURRENT_OPERATING_MODE = "setCurrentOperatingMode"
     SET_DATETIME = "setDateTime"
     SET_DEROGATED_TARGET_TEMPERATURE = "setDerogatedTargetTemperature"
     SET_DEROGATION_ON_OFF_STATE = "setDerogationOnOffState"

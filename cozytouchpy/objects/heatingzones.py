@@ -1,14 +1,7 @@
 """Describe objects for cozytouch."""
 import logging
-from ..constant import (
-    DeviceCommand,
-    DeviceType,
-    DeviceState,
-    OnOffState,
-)
+from ..constant import DeviceCommand, DeviceType, DeviceState, OnOffState
 from ..exception import CozytouchException
-
-from ..utils import CozytouchAction, CozytouchCommand, CozytouchCommands
 from .device import CozytouchDevice
 
 logger = logging.getLogger(__name__)
@@ -84,116 +77,57 @@ class CozytouchHeatingZone(CozytouchDevice):
 
     async def set_operating_mode(self, mode):
         """Set operating mode."""
-        if not self.has_state(DeviceState.PASS_APC_HEATING_MODE_STATE):
-            raise CozytouchException(
-                "Unsupported command {command}".format(
-                    command=DeviceCommand.SET_PASS_APC_HEATING_MODE
-                )
-            )
-        if self.client is None:
-            raise CozytouchException("Unable to execute command")
-
-        commands = CozytouchCommands("Change operating mode")
-        action = CozytouchAction(device_url=self.deviceUrl)
-        action.add_command(
-            CozytouchCommand(DeviceCommand.SET_PASS_APC_HEATING_MODE, mode)
-        )
-        action.add_command(
-            CozytouchCommand(DeviceCommand.REFRESH_PASS_APC_HEATING_MODE)
-        )
-        commands.add_action(action)
-
-        await self.client.send_commands(commands)
-
-        self.set_state(DeviceState.OPERATING_MODE_STATE, mode)
+        mode_state = DeviceState.PASS_APC_HEATING_MODE_STATE
+        actions = [
+            {"action": DeviceCommand.SET_PASS_APC_HEATING_MODE, "value": mode},
+            {"action": DeviceCommand.REFRESH_PASS_APC_HEATING_MODE},
+        ]
+        await self.set_mode(mode_state, actions)
+        self.set_state(mode_state, mode)
 
     async def set_eco_temperature(self, temperature):
         """Set eco temperature."""
-        if not self.has_state(DeviceState.ECO_HEATING_TARGET_TEMPERATURE_STATE):
-            raise CozytouchException(
-                "Unsupported command {command}".format(
-                    command=DeviceCommand.SET_ECO_HEATING_TARGET_TEMPERATURE
-                )
-            )
-        if self.client is None:
-            raise CozytouchException("Unable to execute command")
-        commands = CozytouchCommands("Set eco temperature")
-        action = CozytouchAction(device_url=self.deviceUrl)
-        action.add_command(
-            CozytouchCommand(
-                DeviceCommand.SET_ECO_HEATING_TARGET_TEMPERATURE, temperature
-            )
-        )
-        action.add_command(
-            CozytouchCommand(DeviceCommand.REFRESH_ECO_HEATING_TARGET_TEMPERATURE)
-        )
-        commands.add_action(action)
-        await self.client.send_commands(commands)
-        self.set_state(DeviceState.ECO_HEATING_TARGET_TEMPERATURE_STATE, temperature)
+        mode_state = DeviceState.ECO_HEATING_TARGET_TEMPERATURE_STATE
+        actions = [
+            {
+                "action": DeviceCommand.SET_ECO_HEATING_TARGET_TEMPERATURE,
+                "value": temperature,
+            },
+            {"action": DeviceCommand.REFRESH_ECO_HEATING_TARGET_TEMPERATURE},
+        ]
+        await self.set_mode(mode_state, actions)
+        self.set_state(mode_state, temperature)
 
     async def set_comfort_temperature(self, temperature):
         """Set comfort temperature."""
-        if not self.has_state(DeviceState.COMFORT_HEATING_TARGET_TEMPERATURE_STATE):
-            raise CozytouchException(
-                "Unsupported command {command}".format(
-                    command=DeviceCommand.SET_COMFORT_HEATING_TARGET_TEMPERATURE
-                )
-            )
-        if self.client is None:
-            raise CozytouchException("Unable to execute command")
-        commands = CozytouchCommands("Set comfort temperature")
-        action = CozytouchAction(device_url=self.deviceUrl)
-        action.add_command(
-            CozytouchCommand(
-                DeviceCommand.SET_COMFORT_HEATING_TARGET_TEMPERATURE, temperature
-            )
-        )
-        action.add_command(
-            CozytouchCommand(DeviceCommand.REFRESH_COMFORT_HEATING_TARGET_TEMPERATURE)
-        )
-        commands.add_action(action)
-        await self.client.send_commands(commands)
-        self.set_state(
-            DeviceState.COMFORT_HEATING_TARGET_TEMPERATURE_STATE, temperature
-        )
+        mode_state = DeviceState.COMFORT_HEATING_TARGET_TEMPERATURE_STATE
+        actions = [
+            {
+                "action": DeviceCommand.SET_COMFORT_HEATING_TARGET_TEMPERATURE,
+                "value": temperature,
+            },
+            {"action": DeviceCommand.REFRESH_COMFORT_HEATING_TARGET_TEMPERATURE},
+        ]
+        await self.set_mode(mode_state, actions)
+        self.set_state(mode_state, temperature)
 
     async def turn_on(self):
         """Set on."""
-        if not self.has_state(DeviceState.HEATING_ON_OFF_STATE):
-            raise CozytouchException(
-                "Unsupported command {command}".format(
-                    command=DeviceCommand.SET_HEATING_ON_OFF_STATE
-                )
-            )
-        if self.client is None:
-            raise CozytouchException("Unable to execute command")
-        commands = CozytouchCommands("Set Heating mode ON")
-        action = CozytouchAction(device_url=self.deviceUrl)
-        action.add_command(
-            CozytouchCommand(DeviceCommand.SET_HEATING_ON_OFF_STATE, OnOffState.ON)
-        )
-        commands.add_action(action)
-        await self.client.send_commands(commands)
-        self.set_state(DeviceState.HEATING_ON_OFF_STATE, OnOffState.ON)
+        mode_state = DeviceState.HEATING_ON_OFF_STATE
+        actions = [
+            {"action": DeviceCommand.SET_HEATING_ON_OFF_STATE, "value": OnOffState.ON}
+        ]
+        await self.set_mode(mode_state, actions)
+        self.set_state(mode_state, OnOffState.ON)
 
     async def turn_off(self):
         """Set off."""
-        if not self.has_state(DeviceState.HEATING_ON_OFF_STATE):
-            raise CozytouchException(
-                "Unsupported command {command}".format(
-                    command=DeviceCommand.SET_HEATING_ON_OFF_STATE
-                )
-            )
-        if self.client is None:
-            raise CozytouchException("Unable to execute command")
-        commands = CozytouchCommands("Set Heating mode ON")
-        action = CozytouchAction(device_url=self.deviceUrl)
-        action.add_command(
-            CozytouchCommand(DeviceCommand.SET_HEATING_ON_OFF_STATE, OnOffState.ON)
-        )
-        commands.add_action(action)
-        await self.client.send_commands(commands)
-        self.set_state(DeviceState.HEATING_ON_OFF_STATE, OnOffState.ON)
+        mode_state = DeviceState.HEATING_ON_OFF_STATE
+        actions = [
+            {"action": DeviceCommand.SET_HEATING_ON_OFF_STATE, "value": OnOffState.OFF}
+        ]
+        await self.set_mode(mode_state, actions)
+        self.set_state(mode_state, OnOffState.OFF)
 
     async def update(self):
         """Update heating zone box."""

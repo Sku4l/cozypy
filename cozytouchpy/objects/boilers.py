@@ -1,15 +1,9 @@
 """Describe objects for cozytouch."""
 import logging
 
-from ..constant import (
-    DeviceCommand,
-    DeviceState,
-    ModeState,
-)
+from ..constant import DeviceCommand, DeviceState, ModeState
 from ..exception import CozytouchException
 from .device import CozytouchDevice
-from ..utils import CozytouchAction, CozytouchCommand, CozytouchCommands
-
 
 logger = logging.getLogger(__name__)
 
@@ -31,6 +25,18 @@ class CozytouchBoiler(CozytouchDevice):
     def is_on(self):
         """Is alive."""
         return self.operating_mode != ModeState.STOP
+
+    @property
+    def current_temperature(self) -> float:
+        """Return tempereture (middle water heater)."""
+
+    @property
+    def target_temperature(self) -> float:
+        """Return the temperature we try to reach."""
+
+    @property
+    def is_away_mode_on(self) -> bool:
+        """Return if away mode enabled."""
 
     @property
     def timeprogram_state(self):
@@ -66,26 +72,13 @@ class CozytouchBoiler(CozytouchDevice):
 
     async def set_operating_mode(self, mode):
         """Set operating mode."""
-        if not self.has_state(DeviceState.PASS_APC_OPERATING_MODE_STATE):
-            raise CozytouchException(
-                "Unsupported command {command}".format(
-                    command=DeviceCommand.SET_PASS_APC_OPERATING_MODE
-                )
-            )
-        if self.client is None:
-            raise CozytouchException("Unable to execute command")
-
-        commands = CozytouchCommands("Change operating mode")
-        action = CozytouchAction(device_url=self.deviceUrl)
-        action.add_command(
-            CozytouchCommand(DeviceCommand.SET_PASS_APC_OPERATING_MODE, mode)
-        )
-        action.add_command(CozytouchCommand(DeviceCommand.REFRESH_OPERATION_MODE))
-        commands.add_action(action)
-
-        await self.client.send_commands(commands)
-
-        self.set_state(DeviceState.PASS_APC_OPERATING_MODE_STATE, mode)
+        mode_state = DeviceState.PASS_APC_OPERATING_MODE_STATE
+        actions = [
+            {"action": DeviceCommand.SET_PASS_APC_OPERATING_MODE, "value": mode},
+            {"action": DeviceCommand.REFRESH_OPERATION_MODE},
+        ]
+        await self.set_mode(mode_state, actions)
+        self.set_state(mode_state, mode)
 
     async def update(self):
         """Update boiler state."""

@@ -1,9 +1,13 @@
 """Describe objects for cozytouch."""
 import logging
-
 from ..constant import DeviceState
 from ..exception import CozytouchException
-from ..utils import DeviceMetadata
+from ..utils import (
+    CozytouchAction,
+    CozytouchCommand,
+    CozytouchCommands,
+    DeviceMetadata,
+)
 from .gateway import CozytouchGateway
 from .object import CozytouchObject
 from .place import CozytouchPlace
@@ -79,6 +83,19 @@ class CozytouchDevice(CozytouchObject):
             if sensor.widget == device_type:
                 return sensor
         return None
+
+    async def set_mode(self, mode_state, actions):
+        """Set mode."""
+        commands = CozytouchCommands(f"Change {mode_state} mode")
+        action = CozytouchAction(device_url=self.deviceUrl)
+        for act in actions:
+            if not self.has_state(mode_state):
+                raise CozytouchException("Unsupported command %s" % act["action"])
+            if self.client is None:
+                raise CozytouchException("Unable to execute command")
+            action.add_command(CozytouchCommand(act["action"], act.get("value")))
+        commands.add_action(action)
+        await self.client.send_commands(commands)
 
     def has_state(self, name):
         """Search name state."""
