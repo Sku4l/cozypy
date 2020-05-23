@@ -46,6 +46,8 @@ class CozytouchHeater(CozytouchDevice):
     @property
     def target_temperature(self):
         """Return target temperature."""
+        if self.widget == DeviceType.APC_HEATING_ZONE:
+            return self.get_state(DeviceState.COMFORT_TARGET_TEMPERATURE_STATE)
         return self.get_state(DeviceState.TARGET_TEMPERATURE_STATE)
 
     @property
@@ -164,15 +166,15 @@ class CozytouchHeater(CozytouchDevice):
         ]
 
         if self.widget == DeviceType.APC_HEATING_ZONE:
-            mode_state = DeviceState.COMFORT_TEMPERATURE_STATE
-            eco_state = DeviceState.ECO_TEMPERATURE_STATE
+            mode_state = DeviceState.COMFORT_HEATING_TARGET_TEMPERATURE_STATE
+            eco_state = DeviceState.ECO_HEATING_TARGET_TEMPERATURE_STATE
             eco_temp = float(self.eco_temperature)
             actions = [
-                {"action": DeviceCommand.SET_COMFORT_TEMP, "value": temperature},
-                {"action": DeviceCommand.SET_ECO_TEMP, "value": eco_temp},
-                {"action": DeviceCommand.REFRESH_TARGET_TEMPERATURE},
-                {"action": DeviceCommand.REFRESH_COMFORT_TEMPERATURE},
-                {"action": DeviceCommand.REFRESH_LOWERING_TEMP_PROG},
+                {
+                    "action": DeviceCommand.SET_COMFORT_HEATING_TARGET_TEMPERATURE,
+                    "value": temperature,
+                },
+                {"action": DeviceCommand.REFRESH_COMFORT_HEATING_TARGET_TEMPERATURE},
             ]
         await self.set_mode(mode_state, actions)
 
@@ -219,7 +221,14 @@ class CozytouchHeater(CozytouchDevice):
         elif self.widget == DeviceType.HEATER:
             await self.set_operating_mode(ModeState.INTERNAL)
         elif self.widget == DeviceType.APC_HEATING_ZONE:
-            await self.set_operating_mode(ModeState.COMFORT)
+            mode_state = DeviceState.HEATING_ON_OFF_STATE
+            actions = [
+                {
+                    "action": DeviceCommand.SET_HEATING_ON_OFF_STATE,
+                    "value": OnOffState.ON,
+                }
+            ]
+            await self.set_mode(mode_state, actions)
 
     async def turn_off(self):
         """Set off."""
@@ -228,7 +237,14 @@ class CozytouchHeater(CozytouchDevice):
         elif self.widget == DeviceType.HEATER:
             await self.set_operating_mode(ModeState.STANDBY)
         elif self.widget == DeviceType.APC_HEATING_ZONE:
-            await self.set_operating_mode(ModeState.STOP)
+            mode_state = DeviceState.HEATING_ON_OFF_STATE
+            actions = [
+                {
+                    "action": DeviceCommand.SET_HEATING_ON_OFF_STATE,
+                    "value": OnOffState.OFF,
+                }
+            ]
+            await self.set_mode(mode_state, actions)
 
     async def update(self):
         """Update heater device."""

@@ -9,7 +9,7 @@ from .objects import (
     CozytouchPlace,
     CozytouchGateway,
     CozytouchHeater,
-    CozytouchHeatingZone,
+    CozytouchHeatPump,
     CozytouchPod,
     CozytouchWaterHeater,
     CozytouchBoiler,
@@ -36,7 +36,7 @@ class SetupHandler:
         self.sensors = []
         self.water_heaters = []
         self.boilers = []
-        self.heatingzones = []
+        self.heat_pumps = []
         self.__build_places(data["rootPlace"])
         self.__build_gateways(data["gateways"])
         self.__build_devices(data["devices"])
@@ -84,17 +84,15 @@ class SetupHandler:
                 elif device_type in [
                     DeviceType.HEATER,
                     DeviceType.PILOT_WIRE_INTERFACE,
-                    DeviceType.APC_HEAT_PUMP,
+                    DeviceType.APC_HEATING_ZONE,
                 ]:
                     self.heaters.append(cozyouch_device)
+                elif device_type in [DeviceType.APC_HEAT_PUMP]:
+                    self.heat_pump.append(cozyouch_device)
                 elif device_type in [
                     DeviceType.APC_BOILER,
                 ]:
                     self.boilers.append(cozyouch_device)
-                elif device_type in [
-                    DeviceType.APC_HEATING_ZONE,
-                ]:
-                    self.heatingzones.append(cozyouch_device)
                 elif device_type in [
                     DeviceType.WATER_HEATER,
                     DeviceType.APC_WATER_HEATER,
@@ -200,16 +198,16 @@ class DevicesHandler:
             device = CozytouchContactSensor(data)
         elif device_class == DeviceType.FOSSIL_ENERGY:
             device = CozytouchCumulativeFossilEnergyConsumptionSensor(data)
-        elif device_class in [DeviceType.APC_HEATING_ZONE]:
-            device = CozytouchHeatingZone(data)
         elif device_class in [
             DeviceType.HEATER,
             DeviceType.PILOT_WIRE_INTERFACE,
-            DeviceType.APC_HEAT_PUMP,
+            DeviceType.APC_HEATING_ZONE,
         ]:
             device = CozytouchHeater(data)
         elif device_class in [DeviceType.APC_BOILER]:
             device = CozytouchBoiler(data)
+        elif device_class in [DeviceType.APC_HEAT_PUMP]:
+            device = CozytouchHeatPump(data)
         elif device_class in [
             DeviceType.WATER_HEATER,
             DeviceType.APC_WATER_HEATER,
