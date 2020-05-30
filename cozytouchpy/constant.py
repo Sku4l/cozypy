@@ -221,6 +221,14 @@ class AvailableState:
     UNAVAILABLE = "unavailable"
 
 
+class ThermalState:
+    """Set thermal mode."""
+
+    COOL = "cooling"
+    HEAT = "heating"
+    HEATCOOL = "heatingAndCooling"
+
+
 class ModeState:
     """Set operation mode."""
 
