@@ -74,6 +74,12 @@ class CozytouchWaterHeater(CozytouchDevice):
             {"action": DeviceCommand.SET_DWH_MODE, "value": mode},
             {"action": DeviceCommand.REFRESH_DHW_MODE},
         ]
+        if self.widget == DeviceType.APC_WATER_HEATER:
+            mode_state = DeviceState.PASS_APC_DHW_MODE_STATE
+            actions = [
+                {"action": DeviceCommand.SET_PASS_APC_DHW_MODE, "value": mode},
+                {"action": DeviceCommand.REFRESH_PASS_APC_DHW_MODE},
+            ]
         await self.set_mode(mode_state, actions)
         self.set_state(mode_state, mode)
 
