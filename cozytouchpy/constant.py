@@ -23,19 +23,24 @@ API_THROTTLE = 60  # Delay minimum between API call
 class DeviceType:
     """Device type."""
 
+    # Actuator
     POD = "Pod"
     HEATER = "AtlanticElectricalHeaterWithAdjustableTemperatureSetpoint"
     PILOT_WIRE_INTERFACE = "AtlanticElectricalHeater"
     WATER_HEATER = "DomesticHotWaterProduction"
+    APC_HEAT_PUMP = "AtlanticPassAPCHeatPump"
+    APC_WATER_HEATER = "AtlanticPassAPCDHW"
+    APC_HEATING_ZONE = "AtlanticPassAPCHeatingZone"
+    APC_HEATING_COOLING_ZONE = "AtlanticPassAPCHeatingAndCoolingZone"
+    APC_BOILER = "AtlanticPassAPCBoiler"
+
+    # Sensors
     TEMPERATURE = "TemperatureSensor"
     CONTACT = "ContactSensor"
     OCCUPANCY = "OccupancySensor"
     ELECTRECITY = "CumulativeElectricPowerConsumptionSensor"
+    DHW_ELECTRECITY = "DHWRelatedElectricalEnergyConsumptionSensor"
     FOSSIL_ENERGY = "CumulativeFossilEnergyConsumptionSensor"
-    APC_HEAT_PUMP = "AtlanticPassAPCHeatPump"
-    APC_WATER_HEATER = "AtlanticPassAPCDHW"
-    APC_HEATING_ZONE = "AtlanticPassAPCHeatingZone"
-    APC_BOILER = "AtlanticPassAPCBoiler"
 
     @classmethod
     def sensors(cls):
