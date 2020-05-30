@@ -39,7 +39,7 @@ class CozytouchWaterHeater(CozytouchDevice):
     def target_temperature(self):
         """Return the temperature we try to reach."""
         if self.widget == DeviceType.APC_WATER_HEATER:
-            return self.get_definition(DeviceState.TARGET_DHW_TEMPERATURE_STATE)
+            return self.get_state(DeviceState.TARGET_DHW_TEMPERATURE_STATE)
         return self.get_state(DeviceState.TARGET_TEMPERATURE_STATE)
 
     @property
