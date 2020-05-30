@@ -89,9 +89,7 @@ class SetupHandler:
                     self.heaters.append(cozyouch_device)
                 elif device_type in [DeviceType.APC_HEAT_PUMP]:
                     self.heat_pumps.append(cozyouch_device)
-                elif device_type in [
-                    DeviceType.APC_BOILER,
-                ]:
+                elif device_type in [DeviceType.APC_BOILER]:
                     self.boilers.append(cozyouch_device)
                 elif device_type in [
                     DeviceType.WATER_HEATER,
@@ -208,10 +206,7 @@ class DevicesHandler:
             device = CozytouchBoiler(data)
         elif device_class in [DeviceType.APC_HEAT_PUMP]:
             device = CozytouchHeatPump(data)
-        elif device_class in [
-            DeviceType.WATER_HEATER,
-            DeviceType.APC_WATER_HEATER,
-        ]:
+        elif device_class in [DeviceType.WATER_HEATER, DeviceType.APC_WATER_HEATER]:
             device = CozytouchWaterHeater(data)
         if device is None:
             raise CozytouchException("Unknown device {type}".format(type=device_class))
