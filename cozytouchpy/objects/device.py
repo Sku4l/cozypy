@@ -2,12 +2,7 @@
 import logging
 from ..constant import DeviceState
 from ..exception import CozytouchException
-from ..utils import (
-    CozytouchAction,
-    CozytouchCommand,
-    CozytouchCommands,
-    DeviceMetadata,
-)
+from ..utils import CozytouchAction, CozytouchCommand, CozytouchCommands, DeviceMetadata
 from .gateway import CozytouchGateway
 from .object import CozytouchObject
 from .place import CozytouchPlace
@@ -58,11 +53,12 @@ class CozytouchDevice(CozytouchObject):
         """Version."""
         return self.get_state(DeviceState.VERSION_STATE)
 
-    def get_state(self, name):
+    def get_state(self, name, default=None):
         """Get state value."""
         for state in self.states:
             if state.get("name") == name:
                 return state.get("value")
+        return default
 
     def set_state(self, state, value):
         """Set state value."""
@@ -71,18 +67,19 @@ class CozytouchDevice(CozytouchObject):
                 state_name = value
                 break
 
-    def get_definition(self, definition):
+    def get_definition(self, definition, default=None):
         """Get definition value."""
         for state in self.data["definition"].get("states"):
             if state.get("qualifiedName") == definition:
                 return state.get("values")
+        return default
 
-    def get_sensors(self, device_type):
+    def get_sensors(self, device_type, default=None):
         """Get sensor."""
         for sensor in self.sensors:
             if sensor.widget == device_type:
                 return sensor
-        return None
+        return default
 
     async def set_mode(self, mode_state, actions):
         """Set mode."""
