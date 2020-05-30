@@ -3,6 +3,7 @@ import logging
 
 from .device import CozytouchDevice
 from ..constant import DeviceState
+from ..utils import qualifiedName
 
 logger = logging.getLogger(__name__)
 
@@ -18,8 +19,7 @@ class CozytouchSensor(CozytouchDevice):
     @property
     def name(self):
         """Name."""
-        name = self.parent.name if self.parent is not None else self.name
-        return name + " " + self.sensor_class
+        return qualifiedName(self.data["controllableName"])
 
     @property
     def sensor_class(self):

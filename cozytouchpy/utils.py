@@ -3,6 +3,7 @@
 import logging
 import enum
 import json
+import re
 from enum import Enum
 
 logger = logging.getLogger(__name__)
@@ -102,3 +103,11 @@ class CozytouchCommand:
         self.parameters = parameters
         if parameters is not None and not isinstance(parameters, list):
             self.parameters = [parameters]
+
+
+def qualifiedName(name):
+    """Return human readable name."""
+    name = name.replace("APC", "Apc").replace("DHW", "Dhw")
+    name = (name.split(":"))[1]
+    name = re.sub(r"(\w)([A-Z])", r"\1 \2", name)
+    return name
