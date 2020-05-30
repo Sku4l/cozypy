@@ -85,6 +85,7 @@ class SetupHandler:
                     DeviceType.HEATER,
                     DeviceType.PILOT_WIRE_INTERFACE,
                     DeviceType.APC_HEATING_ZONE,
+                    DeviceType.APC_HEATING_COOLING_ZONE,
                 ]:
                     self.heaters.append(cozyouch_device)
                 elif device_type in [DeviceType.APC_HEAT_PUMP]:
@@ -186,20 +187,21 @@ class DevicesHandler:
         device_class = data["widget"] if "widget" in data else data["uiClass"]
         if device_class == DeviceType.OCCUPANCY:
             device = CozytouchOccupancySensor(data)
-        elif device_class == DeviceType.POD:
-            device = CozytouchPod(data)
         elif device_class == DeviceType.TEMPERATURE:
             device = CozytouchTemperatureSensor(data)
-        elif device_class == DeviceType.ELECTRECITY:
+        elif device_class in [DeviceType.ELECTRECITY, DeviceType.DHW_ELECTRECITY]:
             device = CozytouchElectrecitySensor(data)
         elif device_class == DeviceType.CONTACT:
             device = CozytouchContactSensor(data)
         elif device_class == DeviceType.FOSSIL_ENERGY:
             device = CozytouchCumulativeFossilEnergyConsumptionSensor(data)
+        elif device_class == DeviceType.POD:
+            device = CozytouchPod(data)
         elif device_class in [
             DeviceType.HEATER,
             DeviceType.PILOT_WIRE_INTERFACE,
             DeviceType.APC_HEATING_ZONE,
+            DeviceType.APC_HEATING_COOLING_ZONE,
         ]:
             device = CozytouchHeater(data)
         elif device_class in [DeviceType.APC_BOILER]:
