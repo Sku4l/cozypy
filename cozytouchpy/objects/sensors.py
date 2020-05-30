@@ -10,10 +10,6 @@ logger = logging.getLogger(__name__)
 class CozytouchSensor(CozytouchDevice):
     """Generic sensor."""
 
-    def __init__(self, data):
-        """Initialize."""
-        super(CozytouchSensor, self).__init__(data)
-
     @property
     def id(self):
         """Return Unique id."""
