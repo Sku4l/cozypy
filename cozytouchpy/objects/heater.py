@@ -36,6 +36,16 @@ class CozytouchHeater(CozytouchDevice):
         return True if away == "on" else False
 
     @property
+    def thermal_state(self):
+        """Return Thermal state."""
+        return DeviceState.THERMAL_CONFIGURATION_STATE
+
+    @property
+    def is_heating(self):
+        """Heater is heating."""
+        return DeviceState.PASS_APC_HEATING_MODE_STATE == OnOffState.ON
+
+    @property
     def temperature(self):
         """Return temperature."""
         sensor = self.get_sensors(DeviceType.TEMPERATURE)
@@ -192,6 +202,16 @@ class CozytouchHeater(CozytouchDevice):
         ]
         await self.set_mode(mode_state, actions)
         self.set_state(mode_state, temperature)
+
+    async def set_heating_mode(self, mode):
+        """Set heating."""
+        mode_state = DeviceState.PASS_APC_HEATING_MODE_STATE
+        actions = [
+            {"action": DeviceCommand.SET_PASS_APC_HEATING_MODE, "value": mode},
+            {"action": DeviceCommand.REFRESH_PASS_APC_HEATING_MODE},
+        ]
+        await self.set_mode(mode_state, actions)
+        self.set_state(mode_state, mode)
 
     async def set_away_mode(self, mode: OnOffState):
         """Set away mode off."""
