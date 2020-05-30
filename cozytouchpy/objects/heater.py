@@ -43,12 +43,12 @@ class CozytouchHeater(CozytouchDevice):
     @property
     def is_heating(self):
         """Heater is heating."""
-        return DeviceState.PASS_APC_HEATING_MODE_STATE == OnOffState.ON
+        return self.get_state(DeviceState.PASS_APC_HEATING_MODE_STATE) == OnOffState.ON
 
     @property
     def is_cooling(self):
         """Heater is heating."""
-        return DeviceState.PASS_APC_COOLING_MODE_STATE == OnOffState.ON
+        return self.get_state(DeviceState.PASS_APC_COOLING_MODE_STATE) == OnOffState.ON
 
     @property
     def temperature(self):
@@ -61,7 +61,7 @@ class CozytouchHeater(CozytouchDevice):
     @property
     def thermal_state(self):
         """Return Thermal state."""
-        return DeviceState.THERMAL_CONFIGURATION_STATE
+        return self.get_state(DeviceState.THERMAL_CONFIGURATION_STATE)
 
     @property
     def target_temperature(self):
