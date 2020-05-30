@@ -13,7 +13,6 @@ class CozytouchSensor(CozytouchDevice):
     def __init__(self, data):
         """Initialize."""
         super(CozytouchSensor, self).__init__(data)
-        delattr(self, "sensors")
 
     @property
     def id(self):
