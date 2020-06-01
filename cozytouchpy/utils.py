@@ -6,7 +6,6 @@ import json
 import re
 from enum import Enum
 from datetime import datetime
-from .exception import CozytouchException
 
 logger = logging.getLogger(__name__)
 
@@ -127,7 +126,9 @@ class CozytouchTimeProgram:
         for day in self._days:
             for value in day.values():
                 if len(value) < self._bracket:
-                    for idx in range(0, 3 - len(value)):
+                    for idx in range(  # pylint: disable=unused-variable
+                        0, 3 - len(value)
+                    ):
                         value.append({"start": "00:00", "end": "00:00"})
 
     def add_day(self, day, start, end):
