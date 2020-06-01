@@ -5,6 +5,8 @@ import enum
 import json
 import re
 from enum import Enum
+from datetime import datetime
+from .exception import CozytouchException
 
 logger = logging.getLogger(__name__)
 
@@ -105,9 +107,66 @@ class CozytouchCommand:
             self.parameters = [parameters]
 
 
+class CozytouchTimeProgram:
+    """TimeProgram."""
+
+    def __init__(self, bracket=1):
+        """Initialize TimeProgram."""
+        self._bracket = bracket
+        self._days = [
+            {"monday": []},
+            {"tuesday": []},
+            {"wednesday": []},
+            {"thursday": []},
+            {"friday": []},
+            {"saturday": []},
+            {"sunday": []},
+        ]
+
+    def _normalize(self):
+        for day in self._days:
+            for value in day.values():
+                if len(value) < self._bracket:
+                    for idx in range(0, 3 - len(value)):
+                        value.append({"start": "00:00", "end": "00:00"})
+
+    def add_day(self, day, start, end):
+        """Add day."""
+        for item in self._days:
+            if day in item:
+                item.get(day).append({"start": start, "end": end})
+
+    def add_week(self, start, end):
+        """Add day."""
+        for day in self._days:
+            for value in day.values():
+                value.append({"start": start, "end": end})
+
+    def get_TimeProgram(self):
+        """Return Timeprogram."""
+        self._normalize()
+        return self._days
+
+
 def qualifiedName(name):
     """Return human readable name."""
-    name = name.replace("APC", "Apc").replace("DHW", "Dhw")
+    name = name.replace("APC", "Apc").replace("DHW", "Dhw").replace("MBL", "Mbl")
     name = (name.split(":"))[1]
     name = re.sub(r"(\w)([A-Z])", r"\1 \2", name)
     return name
+
+
+def dt_to_json(str):
+    """Convert datetime to json."""
+    obj = datetime.strptime(str, "%Y-%m-%d %H:%M:%S")
+    if isinstance(obj, datetime.datetime):
+        return {
+            "year": obj.year,
+            "month": obj.month,
+            "day": obj.day,
+            "hour": obj.hour,
+            "minute": obj.minute,
+            "second": obj.second,
+        }
+    else:
+        raise TypeError("Cant serialize {}".format(obj))
