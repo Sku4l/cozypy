@@ -1,10 +1,11 @@
 """Construct class cozytouch."""
 
 import logging
-from .constant import DeviceType
+from .constant import DeviceType as dt
 from .exception import CozytouchException
 from .utils import DeviceMetadata
 from .objects import (
+    CozytouchClimate,
     CozytouchDevice,
     CozytouchPlace,
     CozytouchGateway,
@@ -30,13 +31,14 @@ class SetupHandler:
         """Initialize handler."""
         self.client = client
         self.data = data
-        self.pods = []
-        self.places = []
+        self.boilers = []
+        self.climates = []
         self.heaters = []
+        self.heat_pumps = []
+        self.places = []
+        self.pods = []
         self.sensors = []
         self.water_heaters = []
-        self.boilers = []
-        self.heat_pumps = []
         self.__build_places(data["rootPlace"])
         self.__build_gateways(data["gateways"])
         self.__build_devices(data["devices"])
@@ -54,15 +56,13 @@ class SetupHandler:
 
     def __build_devices(self, devices):
         sensors = []
-
-        for idx in range(len(devices) - 1, -1, -1):
-            device_type = devices[idx]["widget"]
-            if device_type not in DeviceType.sensors():
-                continue
-            sensors.append(devices[idx])
-            del devices[idx]
-
+        actuators = []
         for device in devices:
+            if device["definition"]["type"] == "SENSOR":
+                sensors.append(device)
+            elif device["definition"]["type"] == "ACTUATOR":
+                actuators.append(device)
+        for device in actuators:
             try:
                 device_type = device["widget"]
                 metadata = self.parse_url(device["deviceURL"])
@@ -79,23 +79,17 @@ class SetupHandler:
                     sensors, place, gateway, cozyouch_device
                 )
                 cozyouch_device.sensors = device_sensors
-                if device_type == DeviceType.POD:
-                    self.pods.append(cozyouch_device)
-                elif device_type in [
-                    DeviceType.HEATER,
-                    DeviceType.PILOT_WIRE_INTERFACE,
-                    DeviceType.APC_HEATING_ZONE,
-                    DeviceType.APC_HEATING_COOLING_ZONE,
-                ]:
-                    self.heaters.append(cozyouch_device)
-                elif device_type in [DeviceType.APC_HEAT_PUMP]:
-                    self.heat_pumps.append(cozyouch_device)
-                elif device_type in [DeviceType.APC_BOILER]:
+                if device_type in dt.CLASS_BOILER:
                     self.boilers.append(cozyouch_device)
-                elif device_type in [
-                    DeviceType.WATER_HEATER,
-                    DeviceType.APC_WATER_HEATER,
-                ]:
+                elif device_type in dt.CLASS_CLIMATE:
+                    self.climates.append(cozyouch_device)
+                elif device_type in dt.CLASS_HEATER:
+                    self.heaters.append(cozyouch_device)
+                elif device_type in dt.CLASS_HEATPUMP:
+                    self.heat_pumps.append(cozyouch_device)
+                elif device_type in dt.CLASS_POD:
+                    self.pods.append(cozyouch_device)
+                elif device_type in dt.CLASS_WATERHEATER:
                     self.water_heaters.append(cozyouch_device)
             except CozytouchException as e:
                 logger.warning("Error building device, skipping: %s", e)
@@ -104,7 +98,7 @@ class SetupHandler:
     def parse_url(url):
         """Parse url."""
         scheme = url[0 : url.find("://")]
-        if scheme not in ["io", "internal"]:
+        if scheme not in ["io", "internal", "modbuslink"]:
             raise CozytouchException("Invalid url {url}".format(url=url))
         metadata = DeviceMetadata()
         metadata.scheme = scheme
@@ -185,30 +179,27 @@ class DevicesHandler:
         if "widget" not in data or "uiClass" not in data:
             raise CozytouchException("Unable to identify device")
         device_class = data["widget"] if "widget" in data else data["uiClass"]
-        if device_class == DeviceType.OCCUPANCY:
+        if device_class in dt.CLASS_OCCUPANCY:
             device = CozytouchOccupancySensor(data)
-        elif device_class == DeviceType.TEMPERATURE:
+        elif device_class in dt.CLASS_TEMPERATURE:
             device = CozytouchTemperatureSensor(data)
-        elif device_class in [DeviceType.ELECTRECITY, DeviceType.DHW_ELECTRECITY]:
+        elif device_class in dt.CLASS_ELECTRECITY:
             device = CozytouchElectrecitySensor(data)
-        elif device_class == DeviceType.CONTACT:
+        elif device_class in dt.CLASS_CONTACT:
             device = CozytouchContactSensor(data)
-        elif device_class == DeviceType.FOSSIL_ENERGY:
+        elif device_class in dt.CLASS_FOSSIL:
             device = CozytouchCumulativeFossilEnergyConsumptionSensor(data)
-        elif device_class == DeviceType.POD:
-            device = CozytouchPod(data)
-        elif device_class in [
-            DeviceType.HEATER,
-            DeviceType.PILOT_WIRE_INTERFACE,
-            DeviceType.APC_HEATING_ZONE,
-            DeviceType.APC_HEATING_COOLING_ZONE,
-        ]:
-            device = CozytouchHeater(data)
-        elif device_class in [DeviceType.APC_BOILER]:
+        elif device_class in dt.CLASS_BOILER:
             device = CozytouchBoiler(data)
-        elif device_class in [DeviceType.APC_HEAT_PUMP]:
+        elif device_class in dt.CLASS_CLIMATE:
+            device = CozytouchClimate(data)
+        elif device_class in dt.CLASS_HEATER:
+            device = CozytouchHeater(data)
+        elif device_class in dt.CLASS_HEATPUMP:
             device = CozytouchHeatPump(data)
-        elif device_class in [DeviceType.WATER_HEATER, DeviceType.APC_WATER_HEATER]:
+        elif device_class in dt.CLASS_POD:
+            device = CozytouchPod(data)
+        elif device_class in dt.CLASS_WATERHEATER:
             device = CozytouchWaterHeater(data)
         if device is None:
             raise CozytouchException("Unknown device {type}".format(type=device_class))
