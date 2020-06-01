@@ -1,7 +1,6 @@
 """Describe objects for cozytouch."""
 import logging
 
-from ..constant import DeviceState
 from .device import CozytouchDevice
 
 logger = logging.getLogger(__name__)
@@ -29,6 +28,6 @@ class CozytouchPod(CozytouchDevice):
             supported_states = list(set(supported_states + sensor_states))
         return supported_states
 
-    def is_state_supported(self, state: DeviceState):
+    def is_state_supported(self, state):
         """State."""
         return state in self.supported_states
