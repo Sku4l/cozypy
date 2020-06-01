@@ -1,6 +1,6 @@
 """Describe objects for cozytouch."""
 import logging
-from ..constant import DeviceState
+from ..constant import DeviceState as ds
 from ..exception import CozytouchException
 from ..utils import CozytouchAction, CozytouchCommand, CozytouchCommands, DeviceMetadata
 from .gateway import CozytouchGateway
@@ -17,6 +17,7 @@ class CozytouchDevice(CozytouchObject):
         """Initialize."""
         super(CozytouchDevice, self).__init__(data)
         self.states = data["states"]
+        self.definition = data["definition"]
         self.sensors = []
         self.metadata: DeviceMetadata = None
         self.gateway: CozytouchGateway = None
@@ -36,12 +37,12 @@ class CozytouchDevice(CozytouchObject):
     @property
     def manufacturer(self):
         """Manufacturer."""
-        return self.get_state(DeviceState.MANUFACTURER_NAME_STATE)
+        return self.get_state(ds.MANUFACTURER_NAME_STATE)
 
     @property
     def model(self):
         """Model."""
-        return self.get_state(DeviceState.MODEL_STATE)
+        return self.get_state(ds.MODEL_STATE)
 
     @property
     def name(self):
@@ -51,7 +52,7 @@ class CozytouchDevice(CozytouchObject):
     @property
     def version(self):
         """Version."""
-        return self.get_state(DeviceState.VERSION_STATE)
+        return self.get_state(ds.VERSION_STATE)
 
     def get_state(self, name, default=None):
         """Get state value."""
@@ -83,23 +84,50 @@ class CozytouchDevice(CozytouchObject):
 
     async def set_mode(self, mode_state, actions):
         """Set mode."""
-        commands = CozytouchCommands(f"Change {mode_state} mode")
-        action = CozytouchAction(device_url=self.deviceUrl)
-        for act in actions:
-            if not self.has_state(mode_state):
-                raise CozytouchException("Unsupported command %s" % act["action"])
-            if self.client is None:
-                raise CozytouchException("Unable to execute command")
-            action.add_command(CozytouchCommand(act["action"], act.get("value")))
-        commands.add_action(action)
-        await self.client.send_commands(commands)
+        if self.client is None:
+            raise CozytouchException("Unable to execute command")
 
-    def has_state(self, name):
-        """Search name state."""
-        for state in self.states:
-            if state["name"] == name:
-                return True
-        return False
+        objCommands = CozytouchCommands(f"Change {mode_state} mode")
+        objAction = CozytouchAction(device_url=self.deviceUrl)
+        for action in actions:
+            command, paramters = action
+            self.has_state(mode_state, command, paramters)
+            objAction.add_command(CozytouchCommand(command, paramters))
+        objCommands.add_action(objAction)
+        await self.client.send_commands(objCommands)
+
+    def has_state(self, mode_state, command_name, parameters):
+        """Search and check parameters."""
+        state_type = [
+            state["type"] for state in self.states if state["name"] == mode_state
+        ]
+        if len(state_type) == 0:
+            raise CozytouchException("Unsupported state %s" % mode_state)
+
+        state_command = [
+            (command.get("commandName"), command.get("nparams"))
+            for command in self.definition.get("commands")
+            if command["commandName"] == command_name
+        ]
+        if len(state_command) != 1:
+            raise CozytouchException("Unsupported command %s" % command_name)
+
+        for state in self.definition.get("states"):
+            if state["qualifiedName"] == mode_state and state_command[0][1] > 0:
+                state_values = state.get("values")
+                if 1 in state_type and not isinstance(parameters, int):
+                    raise CozytouchException("Unsupported Integer %s" % parameters)
+                if 2 in state_type and not isinstance(parameters, float):
+                    raise CozytouchException("Unsupported Float %s" % parameters)
+                if 3 in state_type and state_values:
+                    if parameters not in state_values:
+                        raise CozytouchException(
+                            "Unsupported '%s' value in %s" % (parameters, state_values)
+                        )
+                if (10 in state_type or 11 in state_type) and not isinstance(
+                    parameters, list
+                ):
+                    raise CozytouchException("Unsupported List %s" % parameters)
 
     async def update(self):
         """Update device."""
