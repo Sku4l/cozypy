@@ -72,7 +72,7 @@ class CozytouchWaterHeater(CozytouchDevice):
 
     async def set_operating_mode(self, mode):
         """Set operating mode."""
-        mode_state = ds.OPERATING_MODE_STATE
+        mode_state = ds.DHW_MODE_STATE
         actions = [(dc.SET_DWH_MODE, mode), (dc.REFRESH_DHW_MODE, None)]
         if self.widget == dt.APC_WATER_HEATER:
             mode_state = ds.PASS_APC_DHW_MODE_STATE
