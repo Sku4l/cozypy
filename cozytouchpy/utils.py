@@ -157,9 +157,9 @@ def qualifiedName(name):
     return name
 
 
-def dt_to_json(str):
+def dt_to_json(string):
     """Convert datetime to json."""
-    obj = datetime.strptime(str, "%Y-%m-%d %H:%M:%S")
+    obj = datetime.strptime(string, "%Y-%m-%d %H:%M:%S")
     if isinstance(obj, datetime.datetime):
         return {
             "year": obj.year,
