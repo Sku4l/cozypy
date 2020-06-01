@@ -1,7 +1,10 @@
 """Describe objects for cozytouch."""
 import logging
 
-from ..constant import DeviceCommand, DeviceState, ModeState, OnOffState, DeviceType
+from ..constant import DeviceCommand as dc
+from ..constant import DeviceState as ds
+from ..constant import DeviceType as dt
+from ..constant import ModeState, OnOffState
 from ..exception import CozytouchException
 from .device import CozytouchDevice
 
@@ -19,40 +22,40 @@ class CozytouchWaterHeater(CozytouchDevice):
     @property
     def operating_mode(self):
         """Return operation mode."""
-        if self.widget == DeviceType.APC_WATER_HEATER:
-            return self.get_state(DeviceState.PASS_APC_DHW_MODE_STATE)
-        return self.get_state(DeviceState.DHW_MODE_STATE)
+        if self.widget == dt.APC_WATER_HEATER:
+            return self.get_state(ds.PASS_APC_DHW_MODE_STATE)
+        return self.get_state(ds.DHW_MODE_STATE)
 
     @property
     def operating_mode_list(self):
         """Return operating mode list."""
-        if self.widget == DeviceType.APC_WATER_HEATER:
-            return self.get_definition(DeviceState.PASS_APC_DHW_MODE_STATE)
-        return self.get_definition(DeviceState.DHW_MODE_STATE)
+        if self.widget == dt.APC_WATER_HEATER:
+            return self.get_definition(ds.PASS_APC_DHW_MODE_STATE)
+        return self.get_definition(ds.DHW_MODE_STATE)
 
     @property
     def current_temperature(self):
         """Return tempereture (middle water heater)."""
-        return self.get_state(DeviceState.MIDDLE_WATER_TEMPERATURE_STATE)
+        return self.get_state(ds.MIDDLE_WATER_TEMPERATURE_STATE)
 
     @property
     def target_temperature(self):
         """Return the temperature we try to reach."""
-        if self.widget == DeviceType.APC_WATER_HEATER:
-            return self.get_state(DeviceState.TARGET_DHW_TEMPERATURE_STATE)
-        return self.get_state(DeviceState.TARGET_TEMPERATURE_STATE)
+        if self.widget == dt.APC_WATER_HEATER:
+            return self.get_state(ds.TARGET_DHW_TEMPERATURE_STATE)
+        return self.get_state(ds.TARGET_TEMPERATURE_STATE)
 
     @property
     def is_away_mode_on(self):
         """Return true if away mode is on."""
-        return self.get_state(DeviceState.OPERATING_MODE_STATE) == OnOffState.ON
+        return self.get_state(ds.OPERATING_MODE_STATE) == OnOffState.ON
 
     @property
     def is_boost_mode_on(self):
         """Return boot enable."""
-        if self.widget == DeviceType.APC_WATER_HEATER:
-            return self.get_state(DeviceState.BOOST_ON_OFF_STATE) == OnOffState.ON
-        return self.get_state(DeviceState.OPERATING_MODE_STATE) == OnOffState.ON
+        if self.widget == dt.APC_WATER_HEATER:
+            return self.get_state(ds.BOOST_ON_OFF_STATE) == OnOffState.ON
+        return self.get_state(ds.OPERATING_MODE_STATE) == OnOffState.ON
 
     @property
     def supported_states(self) -> dict:
@@ -69,122 +72,94 @@ class CozytouchWaterHeater(CozytouchDevice):
 
     async def set_operating_mode(self, mode):
         """Set operating mode."""
-        mode_state = DeviceState.OPERATING_MODE_STATE
-        actions = [
-            {"action": DeviceCommand.SET_DWH_MODE, "value": mode},
-            {"action": DeviceCommand.REFRESH_DHW_MODE},
-        ]
-        if self.widget == DeviceType.APC_WATER_HEATER:
-            mode_state = DeviceState.PASS_APC_DHW_MODE_STATE
+        mode_state = ds.OPERATING_MODE_STATE
+        actions = [(dc.SET_DWH_MODE, mode), (dc.REFRESH_DHW_MODE, None)]
+        if self.widget == dt.APC_WATER_HEATER:
+            mode_state = ds.PASS_APC_DHW_MODE_STATE
             actions = [
-                {"action": DeviceCommand.SET_PASS_APC_DHW_MODE, "value": mode},
-                {"action": DeviceCommand.REFRESH_PASS_APC_DHW_MODE},
+                (dc.SET_PASS_APC_DHW_MODE, mode),
+                (dc.REFRESH_PASS_APC_DHW_MODE, None),
             ]
         await self.set_mode(mode_state, actions)
         self.set_state(mode_state, mode)
 
     async def set_away_mode(self, duration):
         """Set away mode."""
-        mode_state = DeviceState.AWAY_MODE_DURATION_STATE
+        mode_state = ds.AWAY_MODE_DURATION_STATE
         if int(duration) == 0:
             actions = [
-                {
-                    "action": DeviceCommand.SET_CURRENT_OPERATING_MODE,
-                    "value": {"relaunch": "off", "absence": "off"},
-                }
+                (dc.SET_CURRENT_OPERATING_MODE, {"relaunch": "off", "absence": "off"})
             ]
             await self.set_mode(mode_state, actions)
         else:
             actions = [
-                {"action": DeviceCommand.SET_AWAYS_MODE_DURATION, "value": duration},
-                {
-                    "action": DeviceCommand.SET_CURRENT_OPERATING_MODE,
-                    "value": {"relaunch": "off", "absence": "on"},
-                },
-                {"action": DeviceCommand.REFRESH_AWAYS_MODE_DURATION},
+                (dc.SET_AWAYS_MODE_DURATION, duration),
+                (dc.SET_CURRENT_OPERATING_MODE, {"relaunch": "off", "absence": "on"}),
+                (dc.REFRESH_AWAYS_MODE_DURATION, None),
             ]
             await self.set_mode(mode_state, actions)
 
     async def set_boost_mode(self, duration):
         """Set Boost mode."""
-        if self.widget == DeviceType.APC_WATER_HEATER:
-            mode_state = DeviceState.BOOST_ON_OFF_STATE
+        if self.widget == dt.APC_WATER_HEATER:
+            mode_state = ds.BOOST_ON_OFF_STATE
             if int(duration) == 0:
-                actions = [
-                    {
-                        "action": DeviceCommand.SET_BOOST_MODE_DURATION,
-                        "value": OnOffState.OFF,
-                    }
-                ]
+                actions = [(dc.SET_BOOST_MODE_DURATION, OnOffState.OFF)]
                 await self.set_mode(mode_state, actions)
                 self.set_state(mode_state, OnOffState.OFF)
             else:
-                actions = [
-                    {
-                        "action": DeviceCommand.SET_BOOST_MODE_DURATION,
-                        "value": OnOffState.ON,
-                    }
-                ]
+                actions = [(dc.SET_BOOST_MODE_DURATION, OnOffState.ON)]
                 await self.set_mode(mode_state, actions)
                 self.set_state(mode_state, OnOffState.ON)
         else:
-            mode_state = DeviceState.BOOST_MODE_DURATION_STATE
+            mode_state = ds.BOOST_MODE_DURATION_STATE
             if int(duration) == 0:
                 actions = [
-                    {
-                        "action": DeviceCommand.SET_CURRENT_OPERATING_MODE,
-                        "value": {"relaunch": "off", "absence": "off"},
-                    }
+                    (
+                        dc.SET_CURRENT_OPERATING_MODE,
+                        {"relaunch": "off", "absence": "off"},
+                    )
                 ]
                 await self.set_mode(mode_state, actions)
                 self.set_state(mode_state, duration)
             else:
                 actions = [
-                    {
-                        "action": DeviceCommand.SET_BOOST_MODE_DURATION,
-                        "value": duration,
-                    },
-                    {
-                        "action": DeviceCommand.SET_CURRENT_OPERATING_MODE,
-                        "value": {"relaunch": "on", "absence": "off"},
-                    },
-                    {"action": DeviceCommand.REFRESH_BOOST_MODE_DURATION},
+                    (dc.SET_BOOST_MODE_DURATION, duration),
+                    (
+                        dc.SET_CURRENT_OPERATING_MODE,
+                        {"relaunch": "on", "absence": "off"},
+                    ),
+                    (dc.REFRESH_BOOST_MODE_DURATION, None),
                 ]
                 await self.set_mode(mode_state, actions)
                 self.set_state(mode_state, duration)
 
     async def set_temperature(self, temperature):
         """Set temperature."""
-        mode_state = DeviceState.TARGET_TEMPERATURE_STATE
+        mode_state = ds.TARGET_TEMPERATURE_STATE
         actions = [
-            {"action": DeviceCommand.SET_TARGET_TEMP, "value": temperature},
-            {"action": DeviceCommand.REFRESH_TARGET_TEMPERATURE},
+            (dc.SET_TARGET_TEMP, temperature),
+            (dc.REFRESH_TARGET_TEMPERATURE, None),
         ]
         await self.set_mode(mode_state, actions)
         self.set_state(mode_state, temperature)
 
     async def set_eco_temperature(self, temperature):
         """Set operating mode."""
-        mode_state = DeviceState.ECO_TARGET_DHW_TEMPERATURE_STATE
+        mode_state = ds.ECO_TARGET_DHW_TEMPERATURE_STATE
         actions = [
-            {
-                "action": DeviceCommand.SET_ECO_TARGET_DHW_TEMPERATURE,
-                "value": temperature,
-            },
-            {"action": DeviceCommand.REFRESH_ECO_TARGET_DHW_TEMPERATURE},
+            (dc.SET_ECO_TARGET_DHW_TEMPERATURE, temperature),
+            (dc.REFRESH_ECO_TARGET_DHW_TEMPERATURE, None),
         ]
         await self.set_mode(mode_state, actions)
         self.set_state(mode_state, temperature)
 
     async def set_comfort_temperature(self, temperature):
         """Set operating mode."""
-        mode_state = DeviceState.COMFORT_TARGET_DHW_TEMPERATURE_STATE
+        mode_state = ds.COMFORT_TARGET_DHW_TEMPERATURE_STATE
         actions = [
-            {
-                "action": DeviceCommand.SET_COMFORT_TARGET_DHW_TEMPERATURE,
-                "value": temperature,
-            },
-            {"action": DeviceCommand.REFRESH_COMFORT_TARGET_DHW_TEMPERATURE},
+            (dc.SET_COMFORT_TARGET_DHW_TEMPERATURE, temperature),
+            (dc.REFRESH_COMFORT_TARGET_DHW_TEMPERATURE, None),
         ]
         await self.set_mode(mode_state, actions)
         self.set_state(mode_state, temperature)
