@@ -42,6 +42,18 @@ class DeviceType:
     DHW_ELECTRECITY = "DHWRelatedElectricalEnergyConsumptionSensor"
     FOSSIL_ENERGY = "CumulativeFossilEnergyConsumptionSensor"
 
+    CLASS_TEMPERATURE = [TEMPERATURE]
+    CLASS_CONTACT = [CONTACT]
+    CLASS_OCCUPANCY = [OCCUPANCY]
+    CLASS_ELECTRECITY = [ELECTRECITY, DHW_ELECTRECITY]
+    CLASS_FOSSIL = [FOSSIL_ENERGY]
+    CLASS_BOILER = [APC_BOILER]
+    CLASS_CLIMATE = [APC_HEATING_COOLING_ZONE]
+    CLASS_HEATER = [HEATER, APC_HEATING_ZONE, PILOT_WIRE_INTERFACE]
+    CLASS_HEATPUMP = [APC_HEAT_PUMP]
+    CLASS_POD = [POD]
+    CLASS_WATERHEATER = [WATER_HEATER, APC_WATER_HEATER]
+
     @classmethod
     def sensors(cls):
         """Sensors method."""
@@ -50,7 +62,20 @@ class DeviceType:
             cls.CONTACT,
             cls.OCCUPANCY,
             cls.ELECTRECITY,
+            cls.DHW_ELECTRECITY,
             cls.FOSSIL_ENERGY,
+        ]
+
+    @classmethod
+    def actuators(cls):
+        """Sensors method."""
+        return [
+            cls.CLASS_BOILER,
+            cls.CLASS_CLIMATE,
+            cls.CLASS_HEATER,
+            cls.CLASS_HEATPUMP,
+            cls.CLASS_POD,
+            cls.CLASS_WATERHEATER,
         ]
 
 
@@ -262,85 +287,40 @@ class ModeState:
 class DeviceCommand:
     """Commande device."""
 
-    DELAY_STOP_IDENTIFY = "delayedStopIdentify"
-    GET_NAME = "getName"
-    SET_ABSENCE_COOLING_TARGET_TEMPERATURE = "setAbsenceCoolingTargetTemperature"
-    SET_ABSENCE_END_DATE = "setAbsenceEndDate"
+    SET_ABSENCE_HEATING_TARGET_TEMP = "setAbsenceHeatingTargetTemperature"
+    SET_ABSENCE_COOLING_TARGET_TEMP = "setAbsenceCoolingTargetTemperature"
     SET_ABSENCE_END_DATE_TIME = "setAbsenceEndDateTime"
-    SET_ABSENCE_HEATING_TARGET_TEMPERATURE = "setAbsenceHeatingTargetTemperature"
-    SET_ABSENCE_MODE = "setAbsenceMode"
-    SET_ABSENCE_START_DATE = "setAbsenceStartDate"
     SET_ABSENCE_START_DATE_TIME = "setAbsenceStartDateTime"
-    SET_ACTIVE_COOLING_TIME_PROGRAM = "setActiveCoolingTimeProgram"
-    SET_ACTIVE_HEATING_TIME_PROGRAM = "setActiveHeatingTimeProgram"
-    SET_ANTI_LEGIONELLOSIS = "setAntiLegionellosis"
     SET_AWAY_MODE = "setHolidays"
     SET_AWAYS_MODE_DURATION = "setAwayModeDuration"
-    SET_BOILER_INSTALLATION_OPTION = "setBoilerInstallationOption"
-    SET_BOOST_END_DATE = "setBoostEndDate"
     SET_BOOST_MODE = "setBoostMode"
     SET_BOOST_MODE_DURATION = "setBoostModeDuration"
-    SET_BOOST_ON_OFF_STATE = "setBoostOnOffState"
-    SET_BOOST_START_DATE = "setBoostStartDate"
-    SET_CALENDAR = "setCalendar"
     SET_COMFORT_COOLING_TARGET_TEMPERATURE = "setComfortCoolingTargetTemperature"
     SET_COMFORT_HEATING_TARGET_TEMPERATURE = "setComfortHeatingTargetTemperature"
     SET_COMFORT_TARGET_DHW_TEMPERATURE = "setComfortTargetDHWTemperature"
-    SET_COMFORT_TARGET_TEMP = "setComfortTargetTemperature"
     SET_COMFORT_TEMP = "setComfortTemperature"
     SET_COOLING_ON_OFF_STATE = "setCoolingOnOffState"
-    SET_COUNTRY_CODE = "setCountryCode"
     SET_CURRENT_OPERATING_MODE = "setCurrentOperatingMode"
-    SET_DATETIME = "setDateTime"
-    SET_DEROGATED_TARGET_TEMPERATURE = "setDerogatedTargetTemperature"
     SET_DEROGATION_ON_OFF_STATE = "setDerogationOnOffState"
-    SET_DEROGATION_TIME = "setDerogationTime"
-    SET_DHW_ON_OFF_STATE = "setDHWOnOffState"
+    SET_DEROGATED_TARGET_TEMP = "setDerogatedTargetTemperature"
     SET_DWH_MODE = "setDHWMode"
     SET_ECO_COOLING_TARGET_TEMPERATURE = "setEcoCoolingTargetTemperature"
     SET_ECO_HEATING_TARGET_TEMPERATURE = "setEcoHeatingTargetTemperature"
     SET_ECO_TARGET_DHW_TEMPERATURE = "setEcoTargetDHWTemperature"
-    SET_ECO_TARGET_TEMP = "setEcoTargetTemperature"
     SET_ECO_TEMP = "setEcoTemperature"
-    SET_ELECTRICAL_EXTRA_MANAGEMENT = "setElectricalExtraManagement"
-    SET_EXPECTED_NUM_SHOWER = "setExpectedNumberOfShower"
-    SET_EXTRACTION_OPTION = "setExtractionOption"
-    SET_FROST_PROTECT_TARGET_TEMP = "setFrostProtectionTargetTemperature"
-    SET_HALTED_TARGET_TEMP = "setHaltedTargetTemperature"
     SET_HEATING_LEVEL = "setHeatingLevel"
     SET_HEATING_ON_OFF_STATE = "setHeatingOnOffState"
-    SET_INSTALLATION = "setInstallation"
-    SET_LIGHTING_LED_POD_MODE = "setLightingLedPodMode"
-    SET_LOWERING_TEMP_PROG = "setSetpointLoweringTemperatureInProgMode"
-    SET_NAME = "setName"
-    SET_OPERATING_RANGE = "setOperatingRange"
     SET_OPERATION_MODE = "setOperatingMode"
     SET_PASS_APC_COOLING_MODE = "setPassAPCCoolingMode"
     SET_PASS_APC_DHW_MODE = "setPassAPCDHWMode"
     SET_PASS_APC_HEATING_MODE = "setPassAPCHeatingMode"
     SET_PASS_APC_OPERATING_MODE = "setPassAPCOperatingMode"
-    SET_POD_LED_OFF = "setPodLedOff"
-    SET_POD_LED_ON = "setPodLedOn"
-    SET_PROGRAMMING_SLOT = "setProgrammingSlots"
-    SET_RATE_MANAGMENT = "setRateManagement"
-    SET_SMART_GRID_OPTION = "setSmartGridOption"
     SET_TARGET_TEMP = "setTargetTemperature"
-    SET_TIME_PROGRAM_BY_ID = "setTimeProgramById"
-    SET_WATER_TARGET_TEMPERATURE = "setWaterTargetTemperature"
-    SET_WATER_TEMPERATURE = "setWaterTemperature"
 
-    REFRESH_ABSENCE_END_DATE = "refreshAbsenceEndDate"
-    REFRESH_ABSENCE_MODE = "refreshAbsenceMode"
-    REFRESH_ABSENCE_SCHEDULING_AVAILABILITY = "refreshAbsenceSchedulingAvailability"
-    REFRESH_ABSENCE_START_DATE = "refreshAbsenceStartDate"
-    REFRESH_ANTI_LEGIONELLOSIS = "refreshAntiLegionellosis"
+    REFRESH_ABSENCE_SCHEDULING_AVAILABLE = "refreshAbsenceSchedulingAvailability"
     REFRESH_AWAYS_MODE_DURATION = "refreshAwayModeDuration"
-    REFRESH_BOILER_INSTALLATION_OPTION = "refreshBoilerInstallationOption"
-    REFRESH_BOOST_END_DATE = "refreshBoostEndDate"
     REFRESH_BOOST_MODE = "refreshBoostMode"
     REFRESH_BOOST_MODE_DURATION = "refreshBoostModeDuration"
-    REFRESH_BOOST_START_DATE = "refreshBoostStartDate"
-    REFRESH_BOTTOM_TANK_WATER_TEMPERATURE = "refreshBottomTankWaterTemperature"
     REFRESH_COMFORT_COOLING_TARGET_TEMPERATURE = (
         "refreshComfortCoolingTargetTemperature"
     )
@@ -349,67 +329,15 @@ class DeviceCommand:
     )
     REFRESH_COMFORT_TARGET_DHW_TEMPERATURE = "refreshComfortTargetDHWTemperature"
     REFRESH_COMFORT_TEMPERATURE = "refreshComfortTemperature"
-    REFRESH_CURRENT_OPERATING_MODE = "refreshCurrentOperatingMode"
-    REFRESH_DEROGATION_REMAINING_TIME = "refreshDerogationRemainingTime"
-    REFRESH_DEVICE_SERIAL_NUMBER = "refreshDeviceSerialNumber"
-    REFRESH_DHW_AVAILABILITY = "refreshDHWAvailability"
-    REFRESH_DHW_CAPACITY = "refreshDHWCapacity"
-    REFRESH_DHW_CONFIGURATION = "refreshDHWConfiguration"
-    REFRESH_DHW_DEROGATION_AVAILABILITY = "refreshDHWDerogationAvailability"
-    REFRESH_DHW_ERROR = "refreshDHWError"
     REFRESH_DHW_MODE = "refreshDHWMode"
-    REFRESH_DHW_ON_OFF_STATE = "refreshDHWOnOffState"
     REFRESH_ECO_COOLING_TARGET_TEMPERATURE = "refreshEcoCoolingTargetTemperature"
     REFRESH_ECO_HEATING_TARGET_TEMPERATURE = "refreshEcoHeatingTargetTemperature"
     REFRESH_ECO_TARGET_DHW_TEMPERATURE = "refreshEcoTargetDHWTemperature"
     REFRESH_ECO_TEMPERATURE = "refreshEcoTemperature"
-    REFRESH_ELECTRICAL_EXTRA_MANAGEMENT = "refreshElectricalExtraManagement"
-    REFRESH_ELECTRIC_ENERGY_CONSUMPTION = "refreshElectricEnergyConsumption"
-    REFRESH_ENERGY_CONSUMPTION_AVAILABILITY = "refreshEnergyConsumptionAvailability"
-    REFRESH_ERROR_CODE = "refreshErrorCode"
-    REFRESH_EXPECTED_NUM_SHOWER = "refreshExpectedNumberOfShower"
-    REFRESH_EXTRACTION_OPTION = "refreshExtractionOption"
-    REFRESH_HEATING_DEROGATION_AVAILABILITY = "refreshHeatingDerogationAvailability"
-    REFRESH_HEATING_LEVEL = "refreshHeatingLevel"
-    REFRESH_INSTALLATION = "refreshInstallation"
     REFRESH_LOWERING_TEMP_PROG = "refreshSetpointLoweringTemperatureInProgMode"
-    REFRESH_MANUFACTURER_NAME = "refreshManufacturerName"
-    REFRESH_MIDDLE_WATER_TEMPERATURE = "refreshMiddleWaterTemperature"
-    REFRESH_MIDDLE_WATER_TEMPERATURE_IN = "refreshMiddleWaterTemperatureIn"
-    REFRESH_OPERATING_MODE_CAPABILITIES = "refreshOperatingModeCapabilities"
     REFRESH_OPERATING_MODE = "refreshOperatingMode"
-    REFRESH_OPERATING_RANGE = "refreshOperatingRange"
-    REFRESH_OPERATING_TIME = "refreshOperatingTime"
-    REFRESH_OPERATION_MODE = "refreshOperatingMode"
-    REFRESH_OUTSIDE_TEMPERATURE = "refreshOutsideTemperature"
-    REFRESH_OUTSIDE_TEMPERATURE_SENSOR_AVAILABILITY = (
-        "refreshOutsideTemperatureSensorAvailability"
-    )
+    REFRESH_OPERATION_MODE = "refreshOperationMode"
     REFRESH_PASS_APC_COOLING_MODE = "refreshPassAPCCoolingMode"
-    REFRESH_PASS_APC_COOLING_PROFILE = "refreshPassAPCCoolingProfile"
     REFRESH_PASS_APC_DHW_MODE = "refreshPassAPCDHWMode"
-    REFRESH_PASS_APC_DHW_PROFILE = "refreshPassAPCDHWProfile"
     REFRESH_PASS_APC_HEATING_MODE = "refreshPassAPCHeatingMode"
-    REFRESH_PASS_APC_HEATING_PROFILE = "refreshPassAPCHeatingProfile"
-    REFRESH_POD_MODE = "refreshPodMode"
-    REFRESH_PRODUCT_TYPE = "refreshProductType"
-    REFRESH_PROGRAMMING_SLOT = "refreshProgrammingSlots"
-    REFRESH_RATE_MANAGMENT = "refreshRateManagement"
-    REFRESH_SMART_GRID_OPTION = "refreshSmartGridOption"
-    REFRESH_TARGET_DHW_TEMPERATURE = "refreshTargetDHWTemperature"
     REFRESH_TARGET_TEMPERATURE = "refreshTargetTemperature"
-    REFRESH_THERMAL_SCHEDULING_AVAILABILITY = "refreshThermalSchedulingAvailability"
-    REFRESH_TIME_PROGRAM_BY_ID = "refreshTimeProgramById"
-    REFRESH_UPDATE_STATUS = "refreshUpdateStatus"
-    REFRESH_WATER_CONSUMPTION = "refreshWaterConsumption"
-    REFRESH_WATER_TARGET_TEMPERATURE = "refreshWaterTargetTemperature"
-    REFRESH_WATER_TEMPERATURE = "refreshWaterTemperature"
-    REFRESH_ZONES_NUMBER = "refreshZonesNumber"
-    REFRESH_ZONES_PASS_APC_COOLING_PROFILE = "refreshZonesPassAPCCoolingProfile"
-    REFRESH_ZONES_PASS_APC_HEATING_PROFILE = "refreshZonesPassAPCHeatingProfile"
-    REFRESH_ZONES_TARGET_TEMPERATURE = "refreshZonesTargetTemperature"
-    REFRESH_ZONES_TEMPERATURE = "refreshZonesTemperature"
-    REFRESH_ZONES_TEMPERATURE_SENSOR_AVAILABILITY = (
-        "refreshZonesTemperatureSensorAvailability"
-    )
-    REFRESH_ZONES_THERMAL_CONFIGURATION = "refreshZonesThermalConfiguration"
