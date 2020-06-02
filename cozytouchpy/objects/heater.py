@@ -153,12 +153,12 @@ class CozytouchHeater(CozytouchDevice):
         await self.set_mode(mode_state, actions)
         self.set_state(mode_state, mode)
 
-    async def set_targeting_heating_level(self, level):
-        """Set targeting heating level."""
+    async def set_targeting_mode(self, mode):
+        """Set targeting heating level (Preset mode)."""
         mode_state = ds.TARGETING_HEATING_LEVEL_STATE
-        actions = [(dc.SET_HEATING_LEVEL, level)]
+        actions = [(dc.SET_HEATING_LEVEL, mode)]
         await self.set_mode(mode_state, actions)
-        self.set_state(mode_state, level)
+        self.set_state(mode_state, mode)
 
     async def set_eco_temperature(self, temp):
         """Set eco temperature."""
@@ -238,21 +238,21 @@ class CozytouchHeater(CozytouchDevice):
     async def turn_away_mode_on(self):
         """Turn on away mode."""
         if self.widget == dt.APC_HEATING_ZONE:
-            await self.set_targeting_heating_level(ModeState.ABSENCE)
+            await self.set_targeting_mode(ModeState.ABSENCE)
         else:
             await self.set_away_mode(OnOffState.ON)
 
     async def turn_away_mode_off(self):
         """Turn off away mode."""
         if self.widget == dt.APC_HEATING_ZONE:
-            await self.set_targeting_heating_level(ModeState.STOP)
+            await self.set_targeting_mode(ModeState.STOP)
         else:
             await self.set_away_mode(OnOffState.OFF)
 
     async def turn_on(self):
         """Set on."""
         if self.widget == dt.PILOT_WIRE_INTERFACE:
-            await self.set_targeting_heating_level(ModeState.COMFORT)
+            await self.set_targeting_mode(ModeState.COMFORT)
         elif self.widget == dt.HEATER:
             await self.set_operating_mode(ModeState.INTERNAL)
         elif self.widget == dt.APC_HEATING_ZONE:
@@ -263,7 +263,7 @@ class CozytouchHeater(CozytouchDevice):
     async def turn_off(self):
         """Set off."""
         if self.widget == dt.PILOT_WIRE_INTERFACE:
-            await self.set_targeting_heating_level(ModeState.OFF)
+            await self.set_targeting_mode(ModeState.OFF)
         elif self.widget == dt.HEATER:
             await self.set_operating_mode(ModeState.STANDBY)
         elif self.widget == dt.APC_HEATING_ZONE:
