@@ -257,6 +257,7 @@ class ThermalState:
 class ModeState:
     """Set operation mode."""
 
+    AWAY = "away"
     ABSENCE = "absence"
     AUTO = "auto"
     BASIC = "basic"
