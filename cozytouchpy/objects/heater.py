@@ -26,7 +26,7 @@ class CozytouchHeater(CozytouchDevice):
     def is_on(self):
         """Heater is on."""
         if self.widget == dt.PILOT_WIRE_INTERFACE:
-            return self.target_heating_level != ModeState.OFF
+            return self.preset_mode != ModeState.OFF
         elif self.widget == dt.HEATER:
             return self.operating_mode != ModeState.STANDBY
         elif self.widget == dt.APC_HEATING_ZONE:
