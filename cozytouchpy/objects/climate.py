@@ -21,15 +21,12 @@ class CozytouchClimate(CozytouchDevice):
 
     @property
     def is_on(self):
-        """Heater is on."""
-        return (
-            self.operating_mode != ModeState.STOP
-            or self.cooling_operating_mode != ModeState.STOP
-        )
+        """Climate is on."""
+        return self.operating_mode != ModeState.STOP
 
     @property
     def is_away(self):
-        """Heater is away."""
+        """Climate is away."""
         away = self.get_state(ds.AWAY_STATE)
         if away is None:
             return False
@@ -37,12 +34,12 @@ class CozytouchClimate(CozytouchDevice):
 
     @property
     def is_heating(self):
-        """Heater is heating."""
+        """Climate is heating."""
         return self.get_state(ds.PASS_APC_HEATING_MODE_STATE) == OnOffState.ON
 
     @property
     def is_cooling(self):
-        """Heater is heating."""
+        """Climate is cooling."""
         return self.get_state(ds.PASS_APC_COOLING_MODE_STATE) == OnOffState.ON
 
     @property
@@ -54,9 +51,14 @@ class CozytouchClimate(CozytouchDevice):
         return sensor.temperature
 
     @property
-    def thermal_state(self):
-        """Return Thermal state."""
+    def operating_mode(self):
+        """Return operating mode."""
         return self.get_state(ds.THERMAL_CONFIGURATION_STATE)
+
+    @property
+    def operating_mode_list(self):
+        """Return Operating mode list."""
+        return self.get_definition(ds.THERMAL_CONFIGURATION_STATE)
 
     @property
     def target_temperature(self):
@@ -70,7 +72,7 @@ class CozytouchClimate(CozytouchDevice):
 
     @property
     def target_comfort_cooling_temperature(self):
-        """Return comfort temperature."""
+        """Return cooling comfort temperature."""
         return self.get_state(ds.COMFORT_COOLING_TARGET_TEMPERATURE_STATE)
 
     @property
@@ -80,26 +82,26 @@ class CozytouchClimate(CozytouchDevice):
 
     @property
     def target_eco_cooling_temperature(self):
-        """Return economic temperature."""
+        """Return cooling economic temperature."""
         return self.get_state(ds.ECO_COOLING_TARGET_TEMPERATURE_STATE)
 
     @property
-    def operating_mode(self):
+    def preset_mode(self):
         """Return operation mode."""
         return self.get_state(ds.PASS_APC_HEATING_MODE_STATE)
 
     @property
-    def cooling_operating_mode(self):
+    def preset_cooling_mode(self):
         """Return operation mode."""
         return self.get_state(ds.PASS_APC_COOLING_MODE_STATE)
 
     @property
-    def operating_mode_list(self):
-        """Return operating mode list."""
+    def preset_mode_list(self):
+        """Return preset mode list."""
         return self.get_definition(ds.PASS_APC_HEATING_MODE_STATE)
 
     @property
-    def cooling_operating_mode_list(self):
+    def preset_cooling_mode_list(self):
         """Return operating mode list."""
         return self.get_definition(ds.PASS_APC_COOLING_MODE_STATE)
 
@@ -116,7 +118,7 @@ class CozytouchClimate(CozytouchDevice):
         """Is supported ."""
         return state in self.supported_states
 
-    async def set_targeting_mode(self, mode, thermal_mode=ThermalState.HEAT):
+    async def set_preset_mode(self, mode, thermal_mode=ThermalState.HEAT):
         """Set operating mode (Preset Mode)."""
         if thermal_mode in [ThermalState.HEAT, ThermalState.HEATCOOL]:
             mode_state = ds.PASS_APC_HEATING_MODE_STATE
