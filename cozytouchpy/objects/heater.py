@@ -83,24 +83,28 @@ class CozytouchHeater(CozytouchDevice):
     def operating_mode(self):
         """Return operation mode."""
         if self.widget == dt.APC_HEATING_ZONE:
-            return self.get_state(ds.PASS_APC_HEATING_MODE_STATE)
+            return self.get_state(ds.THERMAL_CONFIGURATION_STATE)
         return self.get_state(ds.OPERATING_MODE_STATE)
 
     @property
     def operating_mode_list(self):
         """Return operating mode list."""
         if self.widget == dt.APC_HEATING_ZONE:
-            return self.get_definition(ds.PASS_APC_HEATING_MODE_STATE)
+            return self.get_definition(ds.THERMAL_CONFIGURATION_STATE)
         return self.get_definition(ds.OPERATING_MODE_STATE)
 
     @property
     def preset_mode(self):
         """Return heating level."""
+        if self.widget == dt.APC_HEATING_ZONE:
+            return self.get_state(ds.PASS_APC_HEATING_MODE_STATE)
         return self.get_state(ds.TARGETING_HEATING_LEVEL_STATE)
 
     @property
     def preset_mode_list(self):
-        """Return heating level list."""
+        """Return preset mode list."""
+        if self.widget == dt.APC_HEATING_ZONE:
+            return self.get_definition(ds.PASS_APC_HEATING_MODE_STATE)
         return self.get_definition(ds.TARGETING_HEATING_LEVEL_STATE)
 
     @property
