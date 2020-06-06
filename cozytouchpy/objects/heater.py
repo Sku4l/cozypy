@@ -42,6 +42,11 @@ class CozytouchHeater(CozytouchDevice):
         return True if away == "on" else False
 
     @property
+    def is_heating(self):
+        """Climate is heating."""
+        return self.get_state(ds.PASS_APC_HEATING_MODE_STATE) == OnOffState.ON
+
+    @property
     def temperature(self):
         """Return temperature."""
         sensor = self.get_sensors(dt.TEMPERATURE, 0)
