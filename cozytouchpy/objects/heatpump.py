@@ -3,6 +3,7 @@ import logging
 
 from ..constant import DeviceCommand as dc
 from ..constant import DeviceState as ds
+from ..constant import ThermalState
 from ..exception import CozytouchException
 from .device import CozytouchDevice
 from ..utils import dt_to_json
@@ -74,12 +75,14 @@ class CozytouchHeatPump(CozytouchDevice):
         await self.set_mode(mode_state, actions)
         self.set_state(mode_state, mode)
 
-    async def set_derogate_temperature(self, temperature, thermal_mode=None):
+    async def set_derogate_temperature(
+        self, temperature, thermal_mode=ThermalState.HEAT
+    ):
         """Set operating mode."""
-        if thermal_mode == "heat":
+        if thermal_mode == ThermalState.HEAT:
             mode_state = ds.ABSENCE_HEATING_TARGET_TEMPERATURE_STATE
             actions = [(dc.SET_ABSENCE_HEATING_TARGET_TEMP, temperature)]
-        elif thermal_mode == "cool":
+        elif thermal_mode == ThermalState.COOL:
             mode_state = ds.ABSENCE_COOLING_TARGET_TEMPERATURE_STATE
             actions = [(dc.SET_ABSENCE_COOLING_TARGET_TEMP, temperature)]
         await self.set_mode(mode_state, actions)
