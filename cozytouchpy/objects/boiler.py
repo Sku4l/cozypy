@@ -29,18 +29,6 @@ class CozytouchBoiler(CozytouchDevice):
         return self.operating_mode != ModeState.STOP
 
     @property
-    def current_temperature(self) -> float:
-        """Return tempereture (middle water heater)."""
-
-    @property
-    def target_temperature(self) -> float:
-        """Return the temperature we try to reach."""
-
-    @property
-    def is_away_mode_on(self) -> bool:
-        """Return if away mode enabled."""
-
-    @property
     def timeprogram_state(self):
         """Get all time program."""
         TimeProgram = {}
