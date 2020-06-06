@@ -29,30 +29,17 @@ class CozytouchHeater(CozytouchDevice):
             return self.preset_mode != ModeState.OFF
         elif self.widget == dt.HEATER:
             return self.operating_mode != ModeState.STANDBY
-        elif self.widget == dt.APC_HEATING_ZONE:
-            return self.operating_mode != ModeState.STOP
         return False
 
     @property
     def is_away(self):
         """Heater is away."""
-        if self.widget == dt.APC_HEATING_ZONE:
-            return self.operating_mode == ModeState.AWAY
         return self.get_state(ds.AWAY_STATE, "off") == "on"
-
-    @property
-    def is_heating(self):
-        """Climate is heating."""
-        if self.widget == dt.APC_HEATING_ZONE:
-            return self.get_state(ds.PASS_APC_HEATING_MODE_STATE) == OnOffState.ON
-        raise NotImplementedError
 
     @property
     def temperature(self):
         """Return temperature."""
         sensor = self.get_sensors(dt.TEMPERATURE, {})
-        if self.widget == dt.APC_HEATING_ZONE:
-            sensor = self.get_sensors(dt.PASS_APC_ZONE_TEMP, {})
         if self.widget == dt.HEATER:
             sensor = self.get_sensors(dt.TEMPERATURE_IN_CELCIUS_IO_SYSTEM, {})
         if hasattr(sensor, "temperature"):
@@ -62,23 +49,16 @@ class CozytouchHeater(CozytouchDevice):
     @property
     def target_temperature(self):
         """Return target temperature."""
-        if self.widget == dt.APC_HEATING_ZONE:
-            return self.get_state(ds.COMFORT_TARGET_TEMPERATURE_STATE)
         return self.get_state(ds.TARGET_TEMPERATURE_STATE)
 
     @property
     def target_comfort_temperature(self):
         """Return comfort temperature."""
-        if self.widget == dt.APC_HEATING_ZONE:
-            return self.get_state(ds.COMFORT_HEATING_TARGET_TEMPERATURE_STATE)
         return self.get_state(ds.COMFORT_TEMPERATURE_STATE)
 
     @property
     def target_eco_temperature(self):
         """Return economic temperature."""
-        if self.widget == dt.APC_HEATING_ZONE:
-            return self.get_state(ds.ECO_HEATING_TARGET_TEMPERATURE_STATE)
-
         comfort_temp = self.target_comfort_temperature
         if comfort_temp is None:
             return 0
@@ -87,29 +67,21 @@ class CozytouchHeater(CozytouchDevice):
     @property
     def operating_mode(self):
         """Return operation mode."""
-        if self.widget == dt.APC_HEATING_ZONE:
-            return self.get_state(ds.THERMAL_CONFIGURATION_STATE)
         return self.get_state(ds.OPERATING_MODE_STATE)
 
     @property
     def operating_mode_list(self):
         """Return operating mode list."""
-        if self.widget == dt.APC_HEATING_ZONE:
-            return self.get_definition(ds.THERMAL_CONFIGURATION_STATE)
         return self.get_definition(ds.OPERATING_MODE_STATE)
 
     @property
     def preset_mode(self):
         """Return heating level."""
-        if self.widget == dt.APC_HEATING_ZONE:
-            return self.get_state(ds.PASS_APC_HEATING_MODE_STATE)
         return self.get_state(ds.TARGETING_HEATING_LEVEL_STATE)
 
     @property
     def preset_mode_list(self):
         """Return preset mode list."""
-        if self.widget == dt.APC_HEATING_ZONE:
-            return self.get_definition(ds.PASS_APC_HEATING_MODE_STATE)
         return self.get_definition(ds.TARGETING_HEATING_LEVEL_STATE)
 
     @property
@@ -129,12 +101,6 @@ class CozytouchHeater(CozytouchDevice):
         """Set operating mode."""
         mode_state = ds.OPERATING_MODE_STATE
         actions = [(dc.SET_OPERATION_MODE, mode), (dc.REFRESH_OPERATION_MODE, None)]
-        if self.widget == dt.APC_HEATING_ZONE:
-            mode_state = ds.PASS_APC_HEATING_MODE_STATE
-            actions = [
-                (dc.SET_PASS_APC_HEATING_MODE, mode),
-                (dc.REFRESH_PASS_APC_HEATING_MODE, None),
-            ]
         await self.set_mode(mode_state, actions)
         self.set_state(mode_state, mode)
 
@@ -142,13 +108,6 @@ class CozytouchHeater(CozytouchDevice):
         """Set targeting heating level (Preset mode)."""
         mode_state = ds.TARGETING_HEATING_LEVEL_STATE
         actions = [(dc.SET_HEATING_LEVEL, mode)]
-        if self.widget == dt.APC_HEATING_ZONE:
-            mode_state = ds.PASS_APC_HEATING_MODE_STATE
-            actions = [
-                (dc.SET_PASS_APC_HEATING_MODE, mode),
-                (dc.REFRESH_PASS_APC_HEATING_MODE, None),
-            ]
-
         await self.set_mode(mode_state, actions)
         self.set_state(mode_state, mode)
 
@@ -160,15 +119,6 @@ class CozytouchHeater(CozytouchDevice):
             (dc.SET_ECO_TEMP, temperature),
             (dc.REFRESH_LOWERING_TEMP_PROG, None),
         ]
-
-        if self.widget == dt.APC_HEATING_ZONE:
-            mode_state = ds.ECO_HEATING_TARGET_TEMPERATURE_STATE
-            temperature = temp
-            actions = [
-                (dc.SET_ECO_HEATING_TARGET_TEMPERATURE, temperature),
-                (dc.REFRESH_ECO_HEATING_TARGET_TEMPERATURE, None),
-            ]
-
         await self.set_mode(mode_state, actions)
         self.set_state(mode_state, temperature)
 
@@ -184,16 +134,6 @@ class CozytouchHeater(CozytouchDevice):
             (dc.REFRESH_COMFORT_TEMPERATURE, None),
             (dc.REFRESH_LOWERING_TEMP_PROG, None),
         ]
-
-        if self.widget == dt.APC_HEATING_ZONE:
-            mode_state = ds.COMFORT_HEATING_TARGET_TEMPERATURE_STATE
-            eco_state = ds.ECO_HEATING_TARGET_TEMPERATURE_STATE
-            eco_temp = float(self.target_eco_temperature)
-            actions = [
-                (dc.SET_COMFORT_HEATING_TARGET_TEMPERATURE, temperature),
-                (dc.REFRESH_COMFORT_HEATING_TARGET_TEMPERATURE, None),
-            ]
-
         await self.set_mode(mode_state, actions)
         self.set_state(mode_state, temperature)
         self.set_state(eco_state, eco_temp)
@@ -212,23 +152,17 @@ class CozytouchHeater(CozytouchDevice):
 
     async def turn_away_mode_on(self):
         """Turn on away mode."""
-        if self.widget == dt.APC_HEATING_ZONE:
-            self.set_operating_mode(ModeState.AWAY)
-        else:
-            mode_state = ds.AWAY_STATE
-            actions = [(dc.SET_AWAY_MODE, OnOffState.ON)]
-            await self.set_mode(mode_state, actions)
-            self.set_state(mode_state, OnOffState.ON)
+        mode_state = ds.AWAY_STATE
+        actions = [(dc.SET_AWAY_MODE, OnOffState.ON)]
+        await self.set_mode(mode_state, actions)
+        self.set_state(mode_state, OnOffState.ON)
 
     async def turn_away_mode_off(self):
         """Turn off away mode."""
-        if self.widget == dt.APC_HEATING_ZONE:
-            self.set_operating_mode(ModeState.AUTO)
-        else:
-            mode_state = ds.AWAY_STATE
-            actions = [(dc.SET_AWAY_MODE, OnOffState.ON)]
-            await self.set_mode(mode_state, actions)
-            self.set_state(mode_state, OnOffState.ON)
+        mode_state = ds.AWAY_STATE
+        actions = [(dc.SET_AWAY_MODE, OnOffState.ON)]
+        await self.set_mode(mode_state, actions)
+        self.set_state(mode_state, OnOffState.ON)
 
     async def turn_on(self):
         """Set on."""
@@ -236,8 +170,6 @@ class CozytouchHeater(CozytouchDevice):
             await self.set_preset_mode(ModeState.COMFORT)
         elif self.widget == dt.HEATER:
             await self.set_operating_mode(ModeState.INTERNAL)
-        elif self.widget == dt.APC_HEATING_ZONE:
-            await self.set_operating_mode(OnOffState.ON)
 
     async def turn_off(self):
         """Set off."""
@@ -245,8 +177,6 @@ class CozytouchHeater(CozytouchDevice):
             await self.set_preset_mode(ModeState.OFF)
         elif self.widget == dt.HEATER:
             await self.set_operating_mode(ModeState.STANDBY)
-        elif self.widget == dt.APC_HEATING_ZONE:
-            await self.set_operating_mode(OnOffState.ON)
 
     async def update(self):
         """Update heater device."""

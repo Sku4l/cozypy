@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 class CozytouchClimate(CozytouchDevice):
-    """Heater."""
+    """APC Heating And Cooling Zone."""
 
     @property
     def name(self):
@@ -115,26 +115,6 @@ class CozytouchClimate(CozytouchDevice):
         """Is supported ."""
         return state in self.supported_states
 
-    async def set_preset_mode(self, mode, thermal_mode=ThermalState.HEAT):
-        """Set operating mode (Preset Mode)."""
-        if thermal_mode in [ThermalState.HEAT, ThermalState.HEATCOOL]:
-            mode_state = ds.PASS_APC_HEATING_MODE_STATE
-            actions = [
-                (dc.SET_PASS_APC_HEATING_MODE, mode),
-                (dc.REFRESH_PASS_APC_HEATING_MODE, None),
-            ]
-            await self.set_mode(mode_state, actions)
-            self.set_state(mode_state, mode)
-
-        if thermal_mode in [ThermalState.COOL, ThermalState.HEATCOOL]:
-            mode_state = ds.PASS_APC_COOLING_MODE_STATE
-            actions = [
-                (dc.SET_PASS_APC_COOLING_MODE, mode),
-                (dc.REFRESH_PASS_APC_COOLING_MODE, None),
-            ]
-            await self.set_mode(mode_state, actions)
-            self.set_state(mode_state, mode)
-
     async def set_operating_mode(self, thermal_mode):
         """Set thermal state (HVAC Mode Heat/Cool/HeatAndCool)."""
         mode_state = ds.HEATING_ON_OFF_STATE
@@ -160,8 +140,34 @@ class CozytouchClimate(CozytouchDevice):
                 (dc.REFRESH_PASS_APC_HEATING_MODE, None),
                 (dc.REFRESH_PASS_APC_COOLING_MODE, None),
             ]
+        elif self.widget == dt.APC_HEATING_ZONE:
+            mode_state = ds.PASS_APC_HEATING_MODE_STATE
+            actions = [
+                (dc.SET_PASS_APC_HEATING_MODE, thermal_mode),
+                (dc.REFRESH_PASS_APC_HEATING_MODE, None),
+            ]
         await self.set_mode(mode_state, actions)
         self.set_state(thermal_state, thermal_mode)
+
+    async def set_preset_mode(self, mode, thermal_mode=ThermalState.HEAT):
+        """Set operating mode (Preset Mode)."""
+        if thermal_mode in [ThermalState.HEAT, ThermalState.HEATCOOL]:
+            mode_state = ds.PASS_APC_HEATING_MODE_STATE
+            actions = [
+                (dc.SET_PASS_APC_HEATING_MODE, mode),
+                (dc.REFRESH_PASS_APC_HEATING_MODE, None),
+            ]
+            await self.set_mode(mode_state, actions)
+            self.set_state(mode_state, mode)
+
+        if thermal_mode in [ThermalState.COOL, ThermalState.HEATCOOL]:
+            mode_state = ds.PASS_APC_COOLING_MODE_STATE
+            actions = [
+                (dc.SET_PASS_APC_COOLING_MODE, mode),
+                (dc.REFRESH_PASS_APC_COOLING_MODE, None),
+            ]
+            await self.set_mode(mode_state, actions)
+            self.set_state(mode_state, mode)
 
     async def set_eco_temperature(self, temperature, thermal_mode=ThermalState.HEAT):
         """Set eco temperature."""
