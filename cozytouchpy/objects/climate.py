@@ -26,11 +26,8 @@ class CozytouchClimate(CozytouchDevice):
 
     @property
     def is_away(self):
-        """Climate is away."""
-        away = self.get_state(ds.AWAY_STATE)
-        if away is None:
-            return False
-        return True if away == "on" else False
+        """Heater is away."""
+        return self.operating_mode == ModeState.AWAY
 
     @property
     def is_heating(self):
@@ -45,10 +42,10 @@ class CozytouchClimate(CozytouchDevice):
     @property
     def temperature(self):
         """Return temperature."""
-        sensor = self.get_sensors(dt.TEMPERATURE, 0)
-        if self.widget == dt.APC_HEATING_ZONE:
-            sensor = self.get_sensors(dt.PASS_APC_ZONE_TEMP, 0)
-        return sensor.temperature
+        sensor = self.get_sensors(dt.PASS_APC_ZONE_TEMP, {})
+        if hasattr(sensor, "temperature"):
+            return sensor.temperature
+        return None
 
     @property
     def operating_mode(self):
