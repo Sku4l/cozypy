@@ -142,6 +142,13 @@ class CozytouchHeater(CozytouchDevice):
         """Set targeting heating level (Preset mode)."""
         mode_state = ds.TARGETING_HEATING_LEVEL_STATE
         actions = [(dc.SET_HEATING_LEVEL, mode)]
+        if self.widget == dt.APC_HEATING_ZONE:
+            mode_state = ds.PASS_APC_HEATING_MODE_STATE
+            actions = [
+                (dc.SET_PASS_APC_HEATING_MODE, mode),
+                (dc.REFRESH_PASS_APC_HEATING_MODE, None),
+            ]
+
         await self.set_mode(mode_state, actions)
         self.set_state(mode_state, mode)
 
