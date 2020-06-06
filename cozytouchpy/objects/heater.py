@@ -36,30 +36,28 @@ class CozytouchHeater(CozytouchDevice):
     @property
     def is_away(self):
         """Heater is away."""
-        away = self.get_state(ds.AWAY_STATE)
-        if away is None:
-            return False
-        return True if away == "on" else False
+        if self.widget == dt.APC_HEATING_ZONE:
+            return self.operating_mode == ModeState.AWAY
+        return self.get_state(ds.AWAY_STATE, "off") == "on"
 
     @property
     def is_heating(self):
         """Climate is heating."""
-        return self.get_state(ds.PASS_APC_HEATING_MODE_STATE) == OnOffState.ON
+        if self.widget == dt.APC_HEATING_ZONE:
+            return self.get_state(ds.PASS_APC_HEATING_MODE_STATE) == OnOffState.ON
+        raise NotImplementedError
 
     @property
     def temperature(self):
         """Return temperature."""
-        sensor = self.get_sensors(dt.TEMPERATURE, 0)
+        sensor = self.get_sensors(dt.TEMPERATURE, {})
         if self.widget == dt.APC_HEATING_ZONE:
-            sensor = self.get_sensors(dt.PASS_APC_ZONE_TEMP, 0)
+            sensor = self.get_sensors(dt.PASS_APC_ZONE_TEMP, {})
         if self.widget == dt.HEATER:
-            sensor = self.get_sensors(dt.TEMPERATURE_IN_CELCIUS_IO_SYSTEM, 0)
-        return sensor.temperature
-
-    @property
-    def thermal_state(self):
-        """Return Thermal state."""
-        return self.get_state(ds.THERMAL_CONFIGURATION_STATE)
+            sensor = self.get_sensors(dt.TEMPERATURE_IN_CELCIUS_IO_SYSTEM, {})
+        if hasattr(sensor, "temperature"):
+            return sensor.temperature
+        return None
 
     @property
     def target_temperature(self):
