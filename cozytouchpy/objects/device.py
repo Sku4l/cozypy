@@ -50,6 +50,11 @@ class CozytouchDevice(CozytouchObject):
         return self.place.name + " " + self.widget.replace("_", " ").capitalize()
 
     @property
+    def controllable_name(self):
+        """Name."""
+        return self.data["controllableName"]
+
+    @property
     def version(self):
         """Version."""
         return self.get_state(ds.VERSION_STATE)
@@ -78,7 +83,7 @@ class CozytouchDevice(CozytouchObject):
     def get_sensors(self, device_type, default=None):
         """Get sensor."""
         for sensor in self.sensors:
-            if sensor.widget == device_type:
+            if sensor.widget == device_type or sensor.controllable_name == device_type:
                 return sensor
         return default
 
