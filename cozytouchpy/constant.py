@@ -337,7 +337,7 @@ class DeviceCommand:
     SET_ECO_TEMP = "setEcoTemperature"
     SET_HEATING_LEVEL = "setHeatingLevel"
     SET_HEATING_ON_OFF_STATE = "setHeatingOnOffState"
-    SET_OPERATION_MODE = "setOperatingMode"
+    SET_OPERATING_MODE = "setOperatingMode"
     SET_PASS_APC_COOLING_MODE = "setPassAPCCoolingMode"
     SET_PASS_APC_DHW_MODE = "setPassAPCDHWMode"
     SET_PASS_APC_HEATING_MODE = "setPassAPCHeatingMode"

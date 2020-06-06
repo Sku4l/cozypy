@@ -100,7 +100,7 @@ class CozytouchHeater(CozytouchDevice):
     async def set_operating_mode(self, mode):
         """Set operating mode."""
         mode_state = ds.OPERATING_MODE_STATE
-        actions = [(dc.SET_OPERATION_MODE, mode), (dc.REFRESH_OPERATION_MODE, None)]
+        actions = [(dc.SET_OPERATING_MODE, mode), (dc.REFRESH_OPERATING_MODE, None)]
         await self.set_mode(mode_state, actions)
         self.set_state(mode_state, mode)
 
