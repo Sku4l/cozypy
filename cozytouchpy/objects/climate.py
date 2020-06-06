@@ -45,9 +45,9 @@ class CozytouchClimate(CozytouchDevice):
     @property
     def temperature(self):
         """Return temperature."""
-        sensor = self.get_sensors(dt.TEMPERATURE)
-        if sensor is None:
-            return 0
+        sensor = self.get_sensors(dt.TEMPERATURE, 0)
+        if self.widget == dt.APC_HEATING_ZONE:
+            sensor = self.get_sensors(dt.PASS_APC_ZONE_TEMP, 0)
         return sensor.temperature
 
     @property

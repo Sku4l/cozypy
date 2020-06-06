@@ -23,7 +23,7 @@ API_THROTTLE = 60  # Delay minimum between API call
 class DeviceType:
     """Device type."""
 
-    # Actuator
+    # Widget Actuator
     POD = "Pod"
     HEATER = "AtlanticElectricalHeaterWithAdjustableTemperatureSetpoint"
     PILOT_WIRE_INTERFACE = "AtlanticElectricalHeater"
@@ -34,7 +34,7 @@ class DeviceType:
     APC_HEATING_COOLING_ZONE = "AtlanticPassAPCHeatingAndCoolingZone"
     APC_BOILER = "AtlanticPassAPCBoiler"
 
-    # Sensors
+    # Widget Sensors
     TEMPERATURE = "TemperatureSensor"
     CONTACT = "ContactSensor"
     OCCUPANCY = "OccupancySensor"
@@ -42,11 +42,37 @@ class DeviceType:
     DHW_ELECTRECITY = "DHWRelatedElectricalEnergyConsumptionSensor"
     FOSSIL_ENERGY = "CumulativeFossilEnergyConsumptionSensor"
 
+    # Controllable Name
+    PASS_APC_OUTSIDE_TEMP = "io:AtlanticPassAPCOutsideTemperatureSensor"
+    PASS_APC_ZONE_TEMP = "io:AtlanticPassAPCZoneTemperatureSensor"
+    CONTACT_IO_SYSTEM = "io:ContactIOSystemDeviceSensor"
+    CUMULATED_ELECT_ENERGY_CONSUMP_IO_SYSTEM = (
+        "io:CumulatedElectricalEnergyConsumptionIOSystemDeviceSensor"
+    )
+    DHW_CUMULATED_ELECT_ENERGY_CONSUMP_IO_SYSTEM = (
+        "io:DHWCumulatedElectricalEnergyConsumptionIOSystemDeviceSensor"
+    )
+    OCCUPANCY_IO_SYSTEM = "io:OccupancyIOSystemDeviceSensor"
+    TEMPERATURE_IN_CELCIUS_IO_SYSTEM = "io:TemperatureInCelciusIOSystemDeviceSensor"
+    DHW_RELATED_ELECT_ENERGY_CONSUMP = "io:DHWRelatedElectricalEnergyConsumptionSensor"
+    DHW_RELATED_FOSSIL_ENERGY_CONSUMP = "io:DHWRelatedFossilEnergyConsumptionSensor"
+    HEATING_RELATED_ELECT_ENERGY_CONSUMP = (
+        "io:HeatingRelatedElectricalEnergyConsumptionSensor"
+    )
+    COOLING_RELATED_ELECT_ENERGY_CONSUMP = (
+        "io:CoolingRelatedElectricalEnergyConsumptionSensor"
+    )
+    TOTAL_ELECT_ENERGY_CONSUMP = "io:TotalElectricalEnergyConsumptionSensor"
+    TOTAL_FOSSIL_ENERGY_CONSUMP = "io:TotalFossilEnergyConsumptionSensor"
+
+    # Class Sensors
     CLASS_TEMPERATURE = [TEMPERATURE]
     CLASS_CONTACT = [CONTACT]
     CLASS_OCCUPANCY = [OCCUPANCY]
     CLASS_ELECTRECITY = [ELECTRECITY, DHW_ELECTRECITY]
     CLASS_FOSSIL = [FOSSIL_ENERGY]
+
+    # Class Actuators
     CLASS_BOILER = [APC_BOILER]
     CLASS_CLIMATE = [APC_HEATING_COOLING_ZONE]
     CLASS_HEATER = [HEATER, APC_HEATING_ZONE, PILOT_WIRE_INTERFACE]
