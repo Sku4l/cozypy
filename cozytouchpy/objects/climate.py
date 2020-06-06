@@ -48,16 +48,6 @@ class CozytouchClimate(CozytouchDevice):
         return None
 
     @property
-    def operating_mode(self):
-        """Return operating mode."""
-        return self.get_state(ds.THERMAL_CONFIGURATION_STATE)
-
-    @property
-    def operating_mode_list(self):
-        """Return Operating mode list."""
-        return self.get_definition(ds.THERMAL_CONFIGURATION_STATE)
-
-    @property
     def target_temperature(self):
         """Return target temperature."""
         return self.get_state(ds.TARGET_TEMPERATURE_STATE)
@@ -81,6 +71,16 @@ class CozytouchClimate(CozytouchDevice):
     def target_eco_cooling_temperature(self):
         """Return cooling economic temperature."""
         return self.get_state(ds.ECO_COOLING_TARGET_TEMPERATURE_STATE)
+
+    @property
+    def operating_mode(self):
+        """Return operating mode."""
+        return self.get_state(ds.THERMAL_CONFIGURATION_STATE)
+
+    @property
+    def operating_mode_list(self):
+        """Return Operating mode list."""
+        return self.get_definition(ds.THERMAL_CONFIGURATION_STATE)
 
     @property
     def preset_mode(self):
@@ -206,26 +206,28 @@ class CozytouchClimate(CozytouchDevice):
         await self.set_mode(mode_state, actions)
         self.set_state(mode_state, temperature)
 
-    async def set_away_mode(self, mode: OnOffState):
+    async def set_derogated_mode(self, mode: OnOffState):
         """Set away mode off."""
         mode_state = ds.DEROGATION_ON_OFF_STATE
         actions = [(dc.SET_DEROGATION_ON_OFF_STATE, mode)]
         await self.set_mode(mode_state, actions)
         self.set_state(mode_state, mode)
 
+    async def turn_derogated_on(self):
+        """Turn derogated on."""
+        await self.set_derogated_mode(OnOffState.ON)
+
+    async def turn_derogated_off(self):
+        """Turn derogated on."""
+        await self.set_derogated_mode(OnOffState.OFF)
+
     async def turn_away_mode_on(self):
         """Turn on away mode."""
-        mode_state = ds.DEROGATION_ON_OFF_STATE
-        actions = [(dc.SET_DEROGATION_ON_OFF_STATE, OnOffState.ON)]
-        await self.set_mode(mode_state, actions)
-        self.set_state(mode_state, OnOffState.ON)
+        self.set_operating_mode(ModeState.AWAY)
 
     async def turn_away_mode_off(self):
         """Turn off away mode."""
-        mode_state = ds.DEROGATION_ON_OFF_STATE
-        actions = [(dc.SET_DEROGATION_ON_OFF_STATE, OnOffState.OFF)]
-        await self.set_mode(mode_state, actions)
-        self.set_state(mode_state, OnOffState.OFF)
+        self.set_operating_mode(ModeState.AUTO)
 
     async def turn_on(self, thermal_mode=ThermalState.HEAT):
         """Set on."""
