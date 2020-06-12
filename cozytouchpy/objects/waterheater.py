@@ -86,18 +86,30 @@ class CozytouchWaterHeater(CozytouchDevice):
     async def set_away_mode(self, duration):
         """Set away mode."""
         mode_state = ds.AWAY_MODE_DURATION_STATE
+        actions_on = [
+            (dc.SET_CURRENT_OPERATING_MODE, {"relaunch": "off", "absence": "off"})
+        ]
+        actions_off = [
+            (dc.SET_AWAYS_MODE_DURATION, duration),
+            (dc.SET_CURRENT_OPERATING_MODE, {"relaunch": "off", "absence": "on"}),
+            (dc.REFRESH_AWAYS_MODE_DURATION, None),
+        ]
+
+        if self.controllable_name == dt.DHW_V2_CE_FLAT_C2:
+            mode_state = ds.DHW_ABSENCE_MODE_STATE
+            actions_on = [
+                (dc.SET_ABSENCE_MODE, OnOffState.ON),
+                (dc.REFRESH_ABSENCE_MODE, None),
+            ]
+            actions_off = [
+                (dc.SET_ABSENCE_MODE, OnOffState.OFF),
+                (dc.REFRESH_ABSENCE_MODE, None),
+            ]
+
+        actions = actions_on
         if int(duration) == 0:
-            actions = [
-                (dc.SET_CURRENT_OPERATING_MODE, {"relaunch": "off", "absence": "off"})
-            ]
-            await self.set_mode(mode_state, actions)
-        else:
-            actions = [
-                (dc.SET_AWAYS_MODE_DURATION, duration),
-                (dc.SET_CURRENT_OPERATING_MODE, {"relaunch": "off", "absence": "on"}),
-                (dc.REFRESH_AWAYS_MODE_DURATION, None),
-            ]
-            await self.set_mode(mode_state, actions)
+            actions = actions_off
+        await self.set_mode(mode_state, actions)
 
     async def set_boost_mode(self, duration):
         """Set Boost mode."""

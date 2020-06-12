@@ -42,7 +42,19 @@ class DeviceType:
     DHW_ELECTRECITY = "DHWRelatedElectricalEnergyConsumptionSensor"
     FOSSIL_ENERGY = "CumulativeFossilEnergyConsumptionSensor"
 
-    # Controllable Name
+    # Actuators - Controllable Name
+    PASS_APC_DHW = "io:AtlanticPassAPCDHWComponent"
+    PASS_APC_BOILER_MAIN = "io:AtlanticPassAPCBoilerMainComponent"
+    PASS_APC_HEATING_ZONE = "io:AtlanticPassAPCHeatingZoneComponent"
+    PASS_APC_HEATINGANDCOOLING_ZONE = "io:AtlanticPassAPCHeatingAndCoolingZoneComponent"
+    PASS_APC_HEATPUMP = "io:AtlanticPassAPCHeatPumpMainComponent"
+    DHW_V2_CE_FLAT_C2 = "io:AtlanticDomesticHotWaterProductionV2_CE_FLAT_C2_IOComponent"
+    DHW_V2_CETHI_V4 = "io:AtlanticDomesticHotWaterProductionV2_CETHI_V4_IOComponent"
+    HEATER_SETPOINT_IO = (
+        "io:AtlanticElectricalHeaterWithAdjustableTemperatureSetpointIOComponent"
+    )
+
+    # Sensors - Controllable Name
     PASS_APC_OUTSIDE_TEMP = "io:AtlanticPassAPCOutsideTemperatureSensor"
     PASS_APC_ZONE_TEMP = "io:AtlanticPassAPCZoneTemperatureSensor"
     CONTACT_IO_SYSTEM = "io:ContactIOSystemDeviceSensor"
@@ -216,6 +228,7 @@ class DeviceState:
         "io:CoolingInternalSchedulingAvailabilityState"
     )
     DEROGATION_REMAINING_TIME_STATE = "io:DerogationRemainingTimeState"
+    DHW_ABSENCE_MODE_STATE = "io:DHWAbsenceModeState"  # V2_CE_FLAT_C2_IOComponent
     DHW_AVAILABILITY_STATE = "io:DHWAvailabilityState"
     DHW_AWAY_STATE = "io:DHWAbsenceModeState"
     DHW_BOOST_MODE_STATE = "io:DHWBoostModeState"
@@ -318,6 +331,7 @@ class DeviceCommand:
     SET_ABSENCE_COOLING_TARGET_TEMP = "setAbsenceCoolingTargetTemperature"
     SET_ABSENCE_END_DATE_TIME = "setAbsenceEndDateTime"
     SET_ABSENCE_START_DATE_TIME = "setAbsenceStartDateTime"
+    SET_ABSENCE_MODE = "setAbsenceMode"  # V2_CE_FLAT_C2_IOComponent
     SET_AWAY_MODE = "setHolidays"
     SET_AWAYS_MODE_DURATION = "setAwayModeDuration"
     SET_BOOST_MODE = "setBoostMode"
@@ -344,6 +358,7 @@ class DeviceCommand:
     SET_PASS_APC_OPERATING_MODE = "setPassAPCOperatingMode"
     SET_TARGET_TEMP = "setTargetTemperature"
 
+    REFRESH_ABSENCE_MODE = "refreshAbsenceMode"  # V2_CE_FLAT_C2_IOComponent
     REFRESH_ABSENCE_SCHEDULING_AVAILABLE = "refreshAbsenceSchedulingAvailability"
     REFRESH_AWAYS_MODE_DURATION = "refreshAwayModeDuration"
     REFRESH_BOOST_MODE = "refreshBoostMode"
