@@ -121,18 +121,18 @@ class CozytouchDevice(CozytouchObject):
             if state["qualifiedName"] == mode_state and state_command[0][1] > 0:
                 state_values = state.get("values")
                 if 1 in state_type and not isinstance(parameters, int):
-                    raise CozytouchException("Unsupported Integer %s" % parameters)
+                    logger.warning("Unsupported Integer %s" % parameters)
                 if 2 in state_type and not isinstance(parameters, float):
-                    raise CozytouchException("Unsupported Float %s" % parameters)
+                    logger.warning("Unsupported Float %s" % parameters)
                 if 3 in state_type and state_values:
                     if parameters not in state_values:
-                        raise CozytouchException(
+                        logger.warning(
                             "Unsupported '%s' value in %s" % (parameters, state_values)
                         )
                 if (10 in state_type or 11 in state_type) and not isinstance(
                     parameters, list
                 ):
-                    raise CozytouchException("Unsupported List %s" % parameters)
+                    logger.warning("Unsupported List %s" % parameters)
 
     async def update(self):
         """Update device."""
