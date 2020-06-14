@@ -95,7 +95,7 @@ class CozytouchWaterHeater(CozytouchDevice):
             (dc.REFRESH_AWAYS_MODE_DURATION, None),
         ]
 
-        if self.controllable_name == dt.DHW_V2_CE_FLAT_C2:
+        if self.controllable_name == dt.DHW_V2_FLATC2_IO:
             mode_state = ds.DHW_ABSENCE_MODE_STATE
             actions_on = [
                 (dc.SET_ABSENCE_MODE, OnOffState.ON),
@@ -148,13 +148,16 @@ class CozytouchWaterHeater(CozytouchDevice):
 
     async def set_temperature(self, temperature):
         """Set temperature."""
-        mode_state = ds.TARGET_TEMPERATURE_STATE
-        actions = [
-            (dc.SET_TARGET_TEMP, temperature),
-            (dc.REFRESH_TARGET_TEMPERATURE, None),
-        ]
-        await self.set_mode(mode_state, actions)
-        self.set_state(mode_state, temperature)
+        if self.widget == dt.APC_WATER_HEATER:
+            self.set_comfort_temperature(temperature)
+        elif self.widget == dt.PASS_APC_DHW:
+            mode_state = ds.TARGET_TEMPERATURE_STATE
+            actions = [
+                (dc.SET_TARGET_TEMP, temperature),
+                (dc.REFRESH_TARGET_TEMPERATURE, None),
+            ]
+            await self.set_mode(mode_state, actions)
+            self.set_state(mode_state, temperature)
 
     async def set_eco_temperature(self, temperature):
         """Set operating mode."""
