@@ -150,7 +150,7 @@ class CozytouchWaterHeater(CozytouchDevice):
         """Set temperature."""
         if self.widget == dt.APC_WATER_HEATER:
             self.set_comfort_temperature(temperature)
-        elif self.widget == dt.PASS_APC_DHW:
+        elif self.widget == dt.WATER_HEATER:
             mode_state = ds.TARGET_TEMPERATURE_STATE
             actions = [
                 (dc.SET_TARGET_TEMP, temperature),
