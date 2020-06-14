@@ -48,8 +48,12 @@ class DeviceType:
     PASS_APC_HEATING_ZONE = "io:AtlanticPassAPCHeatingZoneComponent"
     PASS_APC_HEATINGANDCOOLING_ZONE = "io:AtlanticPassAPCHeatingAndCoolingZoneComponent"
     PASS_APC_HEATPUMP = "io:AtlanticPassAPCHeatPumpMainComponent"
-    DHW_V2_CE_FLAT_C2 = "io:AtlanticDomesticHotWaterProductionV2_CE_FLAT_C2_IOComponent"
-    DHW_V2_CETHI_V4 = "io:AtlanticDomesticHotWaterProductionV2_CETHI_V4_IOComponent"
+    DHW_V2_FLATC2_IO = "io:AtlanticDomesticHotWaterProductionV2_CE_FLAT_C2_IOComponent"
+    DHW_V2_THIV4_IO = "io:AtlanticDomesticHotWaterProductionV2_CETHI_V4_IOComponent"
+    DHW_IO = "io:AtlanticDomesticHotWaterProductionIOComponent"
+    DHW_V3_IO = "io:AtlanticDomesticHotWaterProductionV3IOComponent"
+    DHW_V2_MURAL_IO = "io:AtlanticDomesticHotWaterProductionV2_MURAL_IOComponent"
+    HEATER_IO = "io:AtlanticElectricalHeaterIOComponent"  # Pilot wire
     HEATER_SETPOINT_IO = (
         "io:AtlanticElectricalHeaterWithAdjustableTemperatureSetpointIOComponent"
     )
