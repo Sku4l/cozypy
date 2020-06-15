@@ -176,7 +176,7 @@ class CozytouchHeater(CozytouchDevice):
         if self.widget == dt.PILOT_WIRE_INTERFACE:
             await self.set_preset_mode(ModeState.OFF)
         elif self.widget == dt.HEATER:
-            await self.set_operating_mode(ModeState.OFF)
+            await self.set_operating_mode(ModeState.STANDBY)
 
     async def update(self):
         """Update heater device."""
