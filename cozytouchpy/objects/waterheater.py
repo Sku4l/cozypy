@@ -86,10 +86,10 @@ class CozytouchWaterHeater(CozytouchDevice):
     async def set_away_mode(self, duration):
         """Set away mode."""
         mode_state = ds.AWAY_MODE_DURATION_STATE
-        actions_on = [
+        actions_off = [
             (dc.SET_CURRENT_OPERATING_MODE, {"relaunch": "off", "absence": "off"})
         ]
-        actions_off = [
+        actions_on = [
             (dc.SET_AWAYS_MODE_DURATION, duration),
             (dc.SET_CURRENT_OPERATING_MODE, {"relaunch": "off", "absence": "on"}),
             (dc.REFRESH_AWAYS_MODE_DURATION, None),
