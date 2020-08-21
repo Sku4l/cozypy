@@ -46,13 +46,19 @@ class CozytouchWaterHeater(CozytouchDevice):
         return self.get_state(ds.TARGET_TEMPERATURE_STATE)
 
     @property
-    def is_away_mode_on(self):
+    def is_away_mode(self):
         """Return true if away mode is on."""
-        return self.get_state(ds.OPERATING_MODE_STATE) == OnOffState.ON
+        if self.widget == dt.WATER_HEATER:
+            return self.get_state(ds.OPERATING_MODE_STATE).get('absence') == OnOffState.ON
+        if self.widget == dt.PASS_APC_DHW:
+            return self.get_state(ds.PASS_APC_DHW_PROFILE_STATE) == "absence"
+        return self.get_state(ds.DHW_ABSENCE_MODE_STATE) == OnOffState.ON
 
     @property
-    def is_boost_mode_on(self):
+    def is_boost_mode(self):
         """Return boot enable."""
+        if self.widget == dt.WATER_HEATER:
+            return self.get_state(ds.OPERATING_MODE_STATE).get('relaunch') == OnOffState.ON        
         if self.widget == dt.APC_WATER_HEATER:
             return self.get_state(ds.BOOST_ON_OFF_STATE) == OnOffState.ON
         return self.get_state(ds.OPERATING_MODE_STATE) == OnOffState.ON
