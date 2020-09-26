@@ -8,7 +8,7 @@ import datetime
 import asyncio
 
 from .constant import USER_AGENT, COZYTOUCH_ENDPOINTS, API_THROTTLE
-from .exception import CozytouchException, AuthentificationFailed, HttpRequestFailed
+from .exception import CozytouchException, AuthentificationFailed, HttpRequestFailed, HttpTimeoutExpired
 from .handlers import SetupHandler, DevicesHandler
 from .utils import CozytouchEncoder
 
@@ -86,6 +86,8 @@ class CozytouchClient:
                         response = resp
                 except aiohttp.ClientError as e:
                     raise HttpRequestFailed("Error Request", e)
+                except asyncio.TimeoutError as e:
+                    raise HttpTimeoutExpired("Error Request", e)
 
         logger.debug("Response status : %s", response.status)
         logger.debug("Response json : %s", response_json)

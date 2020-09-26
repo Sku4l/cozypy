@@ -11,3 +11,7 @@ class AuthentificationFailed(CozytouchException):
 
 class HttpRequestFailed(CozytouchException):
     """Http requestion failed."""
+
+
+class HttpTimeoutExpired(CozytouchException):
+    """Http timeout expired."""
