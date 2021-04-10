@@ -2,7 +2,7 @@
 import logging
 
 from cozytouchpy.constant import DeviceState as ds
-from cozytouchpy.utils import qualifiedName
+from cozytouchpy.utils import qualifiedname
 
 from .device import CozytouchDevice
 
@@ -20,7 +20,7 @@ class CozytouchSensor(CozytouchDevice):
     @property
     def name(self):
         """Name."""
-        return qualifiedName(self.data["controllableName"])
+        return qualifiedname(self.data["controllableName"])
 
     @property
     def sensor_class(self):

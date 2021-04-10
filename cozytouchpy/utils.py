@@ -147,7 +147,7 @@ class CozytouchTimeProgram:
         return self._days
 
 
-def qualifiedName(name):
+def qualifiedname(name):
     """Return human readable name."""
     name = name.replace("APC", "Apc").replace("DHW", "Dhw").replace("MBL", "Mbl")
     name = (name.split(":"))[1]
