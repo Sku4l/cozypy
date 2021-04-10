@@ -55,7 +55,7 @@ class CozytouchWaterHeater(CozytouchDevice):
     def is_boost_mode(self):
         """Return boot enable."""
         if self.widget == dt.WATER_HEATER:
-            return self.get_state(ds.OPERATING_MODE_STATE).get('relaunch') == OnOffState.ON        
+            return self.get_state(ds.OPERATING_MODE_STATE).get('relaunch') == OnOffState.ON
         if self.widget == dt.APC_WATER_HEATER:
             return self.get_state(ds.BOOST_ON_OFF_STATE) == OnOffState.ON
         return self.get_state(ds.OPERATING_MODE_STATE) == OnOffState.ON
