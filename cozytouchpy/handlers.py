@@ -97,7 +97,7 @@ class SetupHandler:
     @staticmethod
     def parse_url(url):
         """Parse url."""
-        scheme = url[0 : url.find("://")]
+        scheme = url[0: url.find("://")]
         if scheme not in ["io", "internal", "modbuslink"]:
             raise CozytouchException("Invalid url {url}".format(url=url))
         metadata = DeviceMetadata()
