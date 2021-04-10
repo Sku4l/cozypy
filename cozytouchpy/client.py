@@ -1,15 +1,17 @@
 """Cozytouch API."""
-import logging
-import json
-import re
-import aiohttp
-import urllib.parse
-import datetime
 import asyncio
+import datetime
+import json
+import logging
+import re
+import urllib.parse
 
-from .constant import USER_AGENT, COZYTOUCH_ENDPOINTS, API_THROTTLE
-from .exception import CozytouchException, AuthentificationFailed, HttpRequestFailed, HttpTimeoutExpired
-from .handlers import SetupHandler, DevicesHandler
+import aiohttp
+
+from .constant import API_THROTTLE, COZYTOUCH_ENDPOINTS, USER_AGENT
+from .exception import (AuthentificationFailed, CozytouchException,
+                        HttpRequestFailed, HttpTimeoutExpired)
+from .handlers import DevicesHandler, SetupHandler
 from .utils import CozytouchEncoder
 
 logger = logging.getLogger(__name__)
@@ -47,9 +49,7 @@ class CozytouchClient:
 
         return url
 
-    async def __make_request(
-        self, resource, method="GET", data=None, headers=None, json_encode=True
-    ):
+    async def __make_request(self, resource, method="GET", data=None, headers=None, json_encode=True):
         """Make call to Cozytouch API."""
         if not self.is_connected and resource != "login":
             raise AuthentificationFailed
@@ -64,16 +64,16 @@ class CozytouchClient:
 
         url = self.build_url(resource, data)
         logger.debug("Request %s : %s", method, resource)
-        async with aiohttp.ClientSession(
-            cookies=self.cookies, timeout=self.timeout
-        ) as session:
+        async with aiohttp.ClientSession(cookies=self.cookies, timeout=self.timeout) as session:
             if method == "GET":
                 try:
                     async with session.get(url) as resp:
                         response_json = await resp.json()
                         response = resp
-                except aiohttp.ClientError as e:
-                    raise HttpRequestFailed("Error Request", e)
+                except aiohttp.ClientError as error:
+                    raise HttpRequestFailed("Error Request") from error
+                except asyncio.TimeoutError as error:
+                    raise HttpTimeoutExpired("Error Request") from error
             else:
                 if json_encode:
                     data = json.dumps(data, cls=CozytouchEncoder)
@@ -84,19 +84,17 @@ class CozytouchClient:
                     async with session.post(url, headers=headers, data=data) as resp:
                         response_json = await resp.json()
                         response = resp
-                except aiohttp.ClientError as e:
-                    raise HttpRequestFailed("Error Request", e)
-                except asyncio.TimeoutError as e:
-                    raise HttpTimeoutExpired("Error Request", e)
+                except aiohttp.ClientError as error:
+                    raise HttpRequestFailed("Error Request") from error
+                except asyncio.TimeoutError as error:
+                    raise HttpTimeoutExpired("Error Request") from error
 
         logger.debug("Response status : %s", response.status)
         logger.debug("Response json : %s", response_json)
 
         return response_json, response
 
-    async def __make_request_reconnect(
-        self, resource, method="GET", data=None, headers=None, json_encode=True
-    ):
+    async def __make_request_reconnect(self, resource, method="GET", data=None, headers=None, json_encode=True):
         response_json, response = await self.__make_request(
             resource, method, data, headers, json_encode
         )
