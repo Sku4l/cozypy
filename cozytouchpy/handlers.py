@@ -44,8 +44,8 @@ class SetupHandler:
         self.__build_devices(data["devices"])
 
     def __build_places(self, place):
-        for subPlace in place["subPlaces"]:
-            self.__build_places(subPlace)
+        for subplace in place["subPlaces"]:
+            self.__build_places(subplace)
         self.places.append(CozytouchPlace(place))
 
     def __build_gateways(self, gateways):
@@ -91,8 +91,8 @@ class SetupHandler:
                     self.pods.append(cozyouch_device)
                 elif device_type in dt.CLASS_WATERHEATER:
                     self.water_heaters.append(cozyouch_device)
-            except CozytouchException as e:
-                logger.warning("Error building device, skipping: %s", e)
+            except CozytouchException as error:
+                logger.warning("Error building device, skipping: %s", error)
 
     @staticmethod
     def parse_url(url):
@@ -112,13 +112,7 @@ class SetupHandler:
             metadata.entity_id = parts[2]
         return metadata
 
-    def __link_sensors(
-        self,
-        sensors,
-        place: CozytouchPlace,
-        gateway: CozytouchGateway,
-        parent: CozytouchDevice,
-    ):
+    def __link_sensors(self, sensors, place: CozytouchPlace, gateway: CozytouchGateway, parent: CozytouchDevice):
         device_sensors = []
         for sensor in sensors:
             metadata = self.parse_url(sensor["deviceURL"])
@@ -165,13 +159,11 @@ class DevicesHandler:
         for device in data:
             try:
                 self.devices.append(self.build(device, self))
-            except CozytouchException as e:
-                logger.warning("Error building device, skipping: %s", e)
+            except CozytouchException as error:
+                logger.warning("Error building device, skipping: %s", error)
 
     @staticmethod
-    def build(
-        data, client, metadata=None, gateway=None, place=None, sensors=None, parent=None
-    ):
+    def build(data, client, metadata=None, gateway=None, place=None, sensors=None, parent=None):
         """Build device object."""
         if sensors is None:
             sensors = []

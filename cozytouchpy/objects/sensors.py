@@ -1,9 +1,10 @@
 """Describe objects for cozytouch."""
 import logging
 
+from cozytouchpy.constant import DeviceState as ds
+from cozytouchpy.utils import qualifiedName
+
 from .device import CozytouchDevice
-from ..constant import DeviceState as ds
-from ..utils import qualifiedName
 
 logger = logging.getLogger(__name__)
 

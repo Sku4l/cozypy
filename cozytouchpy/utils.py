@@ -126,9 +126,7 @@ class CozytouchTimeProgram:
         for day in self._days:
             for value in day.values():
                 if len(value) < self._bracket:
-                    for idx in range(  # pylint: disable=unused-variable
-                        0, 3 - len(value)
-                    ):
+                    for idx in range(0, 3 - len(value)):  # pylint: disable=unused-variable
                         value.append({"start": "00:00", "end": "00:00"})
 
     def add_day(self, day, start, end):
@@ -143,7 +141,7 @@ class CozytouchTimeProgram:
             for value in day.values():
                 value.append({"start": start, "end": end})
 
-    def get_TimeProgram(self):
+    def get_timeprogram(self):
         """Return Timeprogram."""
         self._normalize()
         return self._days

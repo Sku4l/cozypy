@@ -1,8 +1,8 @@
 """Describe objects for cozytouch."""
 import logging
-from ..constant import DeviceState as ds
-from ..exception import CozytouchException
-from ..utils import CozytouchAction, CozytouchCommand, CozytouchCommands, DeviceMetadata
+from cozytouchpy.constant import DeviceState as ds
+from cozytouchpy.exception import CozytouchException
+from cozytouchpy.utils import CozytouchAction, CozytouchCommand, CozytouchCommands, DeviceMetadata
 from .gateway import CozytouchGateway
 from .object import CozytouchObject
 from .place import CozytouchPlace
@@ -16,8 +16,8 @@ class CozytouchDevice(CozytouchObject):
     def __init__(self, data: dict):
         """Initialize."""
         super(CozytouchDevice, self).__init__(data)
-        self.states = data["states"]
-        self.definition = data["definition"]
+        self.states = data.get("states", {})
+        self.definition = data.get("definition", {})
         self.sensors = []
         self.metadata: DeviceMetadata = None
         self.gateway: CozytouchGateway = None
@@ -32,7 +32,7 @@ class CozytouchDevice(CozytouchObject):
     @property
     def widget(self):
         """Widget."""
-        return self.data["widget"]
+        return self.data.get("widget", "")
 
     @property
     def manufacturer(self):
@@ -92,14 +92,14 @@ class CozytouchDevice(CozytouchObject):
         if self.client is None:
             raise CozytouchException("Unable to execute command")
 
-        objCommands = CozytouchCommands(f"Change {mode_state} mode")
-        objAction = CozytouchAction(device_url=self.deviceUrl)
+        obj_commands = CozytouchCommands(f"Change {mode_state} mode")
+        obj_action = CozytouchAction(device_url=self.deviceUrl)
         for action in actions:
             command, paramters = action
             self.has_state(mode_state, command, paramters)
-            objAction.add_command(CozytouchCommand(command, paramters))
-        objCommands.add_action(objAction)
-        await self.client.send_commands(objCommands)
+            obj_action.add_command(CozytouchCommand(command, paramters))
+        obj_commands.add_action(obj_action)
+        await self.client.send_commands(obj_commands)
 
     def has_state(self, mode_state, command_name, parameters):
         """Search and check parameters."""
@@ -129,9 +129,7 @@ class CozytouchDevice(CozytouchObject):
                         logger.warning(
                             "Unsupported '%s' value in %s", parameters, state_values
                         )
-                if (10 in state_type or 11 in state_type) and not isinstance(
-                    parameters, list
-                ):
+                if (10 in state_type or 11 in state_type) and not isinstance(parameters, list):
                     logger.warning("Unsupported List %s", parameters)
 
     async def update(self):

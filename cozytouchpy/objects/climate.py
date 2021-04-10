@@ -186,9 +186,7 @@ class CozytouchClimate(CozytouchDevice):
         await self.set_mode(mode_state, actions)
         self.set_state(mode_state, temperature)
 
-    async def set_comfort_temperature(
-        self, temperature, thermal_mode=ThermalState.HEAT
-    ):
+    async def set_comfort_temperature(self, temperature, thermal_mode=ThermalState.HEAT):
         """Set comfort temperature."""
         if thermal_mode == ThermalState.HEAT:
             mode_state = ds.COMFORT_HEATING_TARGET_TEMPERATURE_STATE

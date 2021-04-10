@@ -1,10 +1,7 @@
 """Describe objects for cozytouch."""
 import logging
 
-from ..constant import DeviceCommand as dc
-from ..constant import DeviceState as ds
-from ..constant import DeviceType as dt
-from ..constant import ModeState, OnOffState
+from cozytouchpy.constant import DeviceCommand as dc, DeviceState as ds, DeviceType as dt, ModeState, OnOffState
 from ..exception import CozytouchException
 from .device import CozytouchDevice
 

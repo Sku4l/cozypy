@@ -31,11 +31,11 @@ class CozytouchBoiler(CozytouchDevice):
     @property
     def timeprogram_state(self):
         """Get all time program."""
-        TimeProgram = {}
+        time_program = {}
         for i in range(4):
             state = f"core:TimeProgram{i+1}State"
-            TimeProgram.update({f"TimeProgram{i+1}": self.get_state(state)})
-        return TimeProgram
+            time_program.update({f"TimeProgram{i+1}": self.get_state(state)})
+        return time_program
 
     @property
     def operating_mode(self):
