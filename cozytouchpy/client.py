@@ -21,7 +21,7 @@ class CozytouchClient:
     """Client session."""
 
     def __init__(self, username, password, timeout=60, max_retry=3):
-        """Initializate session."""
+        """Initialize session."""
         self.cookies = None
         self.retry = 0
         self.max_retry = max_retry
@@ -162,12 +162,12 @@ class CozytouchClient:
         return self._devices_data
 
     async def get_devices(self):
-        """.Get cozytouch setup (devices, places)."""
+        """Get all devices (devices, places)."""
         data = await self.devices_data()
         return DevicesHandler(data, self)
 
     async def devices_info(self):
-        """Get data using cache if available."""
+        """Get all infos device."""
         self._devices_info = {}
         data = await self.devices_data()
         for dev in data:
@@ -176,7 +176,7 @@ class CozytouchClient:
         return self._devices_info
 
     async def get_device_info(self, device_url):
-        """Get cozytouch setup (devices, places)."""
+        """Get device info (devices, places)."""
         datas = await self.devices_info()
 
         if device_url not in datas:
@@ -187,8 +187,22 @@ class CozytouchClient:
             )
         return datas.get(device_url).get("states")
 
+    async def get_device(self, device_url):
+        """Get device object (devices, places)."""
+        datas = await self.devices_info()
+
+        if device_url not in datas:
+            raise CozytouchException(
+                "Unable to retrieve device {device_url}: not in available devices".format(
+                    device_url=device_url
+                )
+            )
+        
+        dh = DevicesHandler(datas.get(device_url), self)
+        return dh.build(datas.get(device_url), self)
+
     async def send_commands(self, commands):
-        """Get devices states."""
+        """Send command to device."""
         response_json, response = await self.__make_request_reconnect(
             "apply",
             method="POST",
