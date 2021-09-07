@@ -25,20 +25,20 @@ class TextEnum(enum.Enum):
 class CozytouchEncoder(json.JSONEncoder):
     """Encode json."""
 
-    def default(self, obj):  # pylint: disable=arguments-differ, method-hidden
+    def default(self, data_enc):  # pylint: disable=arguments-differ, method-hidden
         """Transform json."""
-        if isinstance(obj, Enum):
-            return obj.value
-        if isinstance(obj, CozytouchCommands):
-            return {"label": obj.label, "actions": obj.actions}
-        if isinstance(obj, CozytouchAction):
-            return {"deviceURL": obj.device_url, "commands": obj.commands}
-        if isinstance(obj, CozytouchCommand):
-            data = {"name": obj.name}
-            if obj.parameters is not None:
-                data["parameters"] = obj.parameters
+        if isinstance(data_enc, Enum):
+            return data_enc.value
+        if isinstance(data_enc, CozytouchCommands):
+            return {"label": data_enc.label, "actions": data_enc.actions}
+        if isinstance(data_enc, CozytouchAction):
+            return {"deviceURL": data_enc.device_url, "commands": data_enc.commands}
+        if isinstance(data_enc, CozytouchCommand):
+            data = {"name": data_enc.name}
+            if data_enc.parameters is not None:
+                data["parameters"] = data_enc.parameters
             return data
-        return json.JSONEncoder.default(self, obj)
+        return json.JSONEncoder.default(self, data_enc)
 
 
 class DeviceMetadata:
