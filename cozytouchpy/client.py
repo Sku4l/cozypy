@@ -198,8 +198,7 @@ class CozytouchClient:
                 )
             )
         
-        dh = DevicesHandler(datas.get(device_url), self)
-        return dh.build(datas.get(device_url), self)
+        return DevicesHandler.build(datas.get(device_url), self)
 
     async def send_commands(self, commands):
         """Send command to device."""
