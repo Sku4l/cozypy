@@ -4,7 +4,7 @@ from .client import CozytouchClient
 from .exception import AuthentificationFailed, CozytouchException, HttpRequestFailed, HttpTimeoutExpired
 
 name = "cozytouchpy"
-__version__ = "2.0.1"
+__version__ = "2.0.2"
 __all__ = [
     "CozytouchClient",
     "AuthentificationFailed",
