@@ -200,25 +200,6 @@ class CozytouchClient:
         return response
 
     @backoff.on_exception(
-        backoff.expo,
-        (CozytouchException, ServerDisconnectedError),
-        max_tries=2,
-        on_backoff=relogin,
-    )
-    async def get_scenarios(self) -> list[Scenario]:
-        """List the scenarios"""
-        response = await self.__get("actionGroups")
-        return [Scenario(**scenario) for scenario in response]
-
-    @backoff.on_exception(
-        backoff.expo, AuthentificationFailed, max_tries=2, on_backoff=relogin
-    )
-    async def execute_scenario(self, oid: str) -> str:
-        """Execute a scenario"""
-        response = await self.__post(f"exec/{oid}")
-        return response["execId"]
-
-    @backoff.on_exception(
         backoff.expo, AuthentificationFailed, max_tries=2, on_backoff=relogin
     )
     async def send_commands(
