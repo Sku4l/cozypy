@@ -62,13 +62,7 @@ class CozytouchBoiler(CozytouchDevice):
 
     async def set_operating_mode(self, mode):
         """Set operating mode."""
-        mode_state = ds.PASS_APC_OPERATING_MODE_STATE
-        actions = [
-            (dc.SET_PASS_APC_OPERATING_MODE, mode),
-            (dc.REFRESH_OPERATION_MODE, None),
-        ]
-        await self.set_mode(mode_state, actions)
-        self.set_state(mode_state, mode)
+        await self.set_mode(dc.SET_PASS_APC_OPERATING_MODE, mode)
 
     async def update(self):
         """Update boiler state."""

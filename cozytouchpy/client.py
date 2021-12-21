@@ -1,183 +1,175 @@
 """Cozytouch API."""
-import asyncio
-import datetime
-import json
+from __future__ import annotations
+
+import backoff
 import logging
-import re
-import urllib.parse
+from json import JSONDecodeError
+from typing import Any, Dict, List, Union
 
-import aiohttp
+from aiohttp import (ClientResponse, ClientSession, FormData,
+                     ServerDisconnectedError)
 
-from .constant import API_THROTTLE, COZYTOUCH_ENDPOINTS, USER_AGENT
-from .exception import (AuthentificationFailed, CozytouchException,
-                        HttpRequestFailed, HttpTimeoutExpired)
-from .handlers import DevicesHandler, SetupHandler
-from .utils import CozytouchEncoder
+from .constant import COZYTOUCH_ATLANTIC_API, COZYTOUCH_CLIENT_ID, Command
+from .exception import AuthentificationFailed, CozytouchException
+from .handlers import Handler
+
+JSON = Union[Dict[str, Any], List[Dict[str, Any]]]
 
 logger = logging.getLogger(__name__)
 
 
+async def relogin(invocation: dict[str, Any]) -> None:
+    await invocation["args"][0].connect()
+
+
+async def refresh_listener(invocation: dict[str, Any]) -> None:
+    await invocation["args"][0].register_event_listener()
+
 class CozytouchClient:
     """Client session."""
 
-    def __init__(self, username, password, timeout=60, max_retry=3):
+    def __init__(self, username, password, server, session=None):
         """Initialize session."""
-        self.cookies = None
-        self.retry = 0
-        self.max_retry = max_retry
         self.username = username
         self.password = password
-        self.timeout = aiohttp.ClientTimeout(total=timeout)
-        self.is_connected = False
-        self._devices_data = None
-        self._devices_info = None
-        self._last_fetch = None
-        self._lock = asyncio.Lock()
+        self.server = server
+        self.session = session if session else ClientSession()
+        self.event_listener_id = None
 
-    @classmethod
-    def build_url(cls, resource, data):
-        """Build url."""
-        if resource not in COZYTOUCH_ENDPOINTS:
-            raise CozytouchException(
-                "Bad resource: {resource}".format(resource=resource)
-            )
-        url = COZYTOUCH_ENDPOINTS[resource]
+    async def __aenter__(self):
+        return self
 
-        matches = re.findall("(?P<text>\\[(?P<param>[^] ]+)\\])", url)
-        for text, key in matches:
-            url = url.replace(text, urllib.parse.quote_plus(data[key]))
+    async def __aexit__(self, exc_type=None, exc_value=None, traceback=None):
+        await self.close()
 
-        return url
+    async def close(self) -> None:
+        """Close the session."""
+        if self.event_listener_id:
+            await self.unregister_event_listener()
+        await self.session.close()
 
-    async def __make_request(self, resource, method="GET", data=None, headers=None, json_encode=True):
-        """Make call to Cozytouch API."""
-        if not self.is_connected and resource != "login":
-            raise AuthentificationFailed
+    async def __post(
+        self, path: str, payload: JSON | None = None, data: JSON | None = None
+    ) -> Any:
+        """Make a POST request to API"""
+        logger.debug(f"POST {self.server.endpoint}{path} {payload} {data}")
+        async with self.session.post(
+            f"{self.server.endpoint}{path}",
+            data=data,
+            json=payload,
+        ) as response:
+            await self.check_response(response)
+            return await response.json()
 
-        if data is None:
-            data = {}
+    async def __get(self, path: str) -> Any:
+        """Make a GET request to the API"""
+        logger.debug(f"GET {path}")
+        async with self.session.get(f"{self.server.endpoint}{path}") as response:
+            await self.check_response(response)
+            return await response.json()
 
-        if headers is None:
-            headers = {}
+    async def __delete(self, path: str) -> None:
+        """Make a DELETE request to the API"""
+        async with self.session.delete(f"{self.server.endpoint}{path}") as response:
+            await self.check_response(response)
 
-        headers["User-Agent"] = USER_AGENT
+    async def connect(
+        self,
+        register_event_listener: bool | None = True,
+    ) -> bool:
 
-        url = self.build_url(resource, data)
-        logger.debug("Request %s : %s", method, resource)
-        async with aiohttp.ClientSession(cookies=self.cookies, timeout=self.timeout) as session:
-            if method == "GET":
-                try:
-                    async with session.get(url) as resp:
-                        response_json = await resp.json()
-                        response = resp
-                except aiohttp.ClientError as error:
-                    raise HttpRequestFailed("Error Request") from error
-                except asyncio.TimeoutError as error:
-                    raise HttpTimeoutExpired("Error Request") from error
-            else:
-                if json_encode:
-                    data = json.dumps(data, cls=CozytouchEncoder)
-                    headers["Content-Type"] = "application/json"
+        jwt = await self.get_token()
+        payload = {"jwt": jwt}
 
-                try:
-                    logger.debug("Json: %s", data)
-                    async with session.post(url, headers=headers, data=data) as resp:
-                        response_json = await resp.json()
-                        response = resp
-                except aiohttp.ClientError as error:
-                    raise HttpRequestFailed("Error Request") from error
-                except asyncio.TimeoutError as error:
-                    raise HttpTimeoutExpired("Error Request") from error
+        response = await self.__post("login", data=payload)
+        if response.get("success"):
+            if register_event_listener:
+                await self.register_event_listener()
+                self.is_connected = True
+            return True
 
-        logger.debug("Response status : %s", response.status)
-        logger.debug("Response json : %s", response_json)
+        return False
 
-        return response_json, response
+    async def get_token(self):
+        """Authenticate via CozyTouch identity and acquire JWT token."""
+        # Request access token
+        async with self.session.post(
+            COZYTOUCH_ATLANTIC_API + "/token",
+            data=FormData(
+                {
+                    "grant_type": "password",
+                    "username": self.username,
+                    "password": self.password,
+                }
+            ),
+            headers={
+                "Authorization": f"Basic {COZYTOUCH_CLIENT_ID}",
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+        ) as response:
+            token = await response.json()
 
-    async def __make_request_reconnect(self, resource, method="GET", data=None, headers=None, json_encode=True):
-        response_json, response = await self.__make_request(
-            resource, method, data, headers, json_encode
-        )
-        if response.status == 401:
-            logger.debug("Connection refused, reconnecting")
-            await self.connect()
-            response_json, response = await self.__make_request(
-                resource, method, data, headers, json_encode
-            )
-        return response_json, response
+            # {'error': 'invalid_grant',
+            # 'error_description': 'Provided Authorization Grant is invalid.'}
+            if "error" in token and token["error"] == "invalid_grant":
+                raise CozytouchException(token["error_description"])
 
-    async def connect(self):
-        """Authenticate using username and userPassword."""
-        _, response = await self.__make_request(
-            "login",
-            method="POST",
-            data={"userId": self.username, "userPassword": self.password},
-            json_encode=False,
-        )
+            if "token_type" not in token:
+                raise CozytouchException("No CozyTouch token provided.")
 
-        if response.status != 200:
-            raise AuthentificationFailed(response.status)
-        self.is_connected = True
-        self.cookies = {"JSESSIONID": response.cookies.get("JSESSIONID")}
+        # Request JWT
+        async with self.session.get(
+            COZYTOUCH_ATLANTIC_API + "/gacoma/gacomawcfservice/accounts/jwt",
+            headers={"Authorization": f"Bearer {token['access_token']}"},
+        ) as response:
+            jwt = await response.text()
 
+            if not jwt:
+                raise CozytouchException("No JWT token provided.")
+
+            jwt = jwt.strip('"')  # Remove surrounding quotes
+
+            return jwt
+
+    @backoff.on_exception(
+        backoff.expo,
+        (CozytouchException, ServerDisconnectedError),
+        max_tries=2,
+        on_backoff=relogin,
+    )
     async def get_setup(self):
         """Get cozytouch setup (devices, places)."""
-        response_json, response = await self.__make_request_reconnect(
-            "setup", method="GET"
-        )
-        if response.status != 200:
-            raise CozytouchException(
-                "Unable to retrieve setup: {error}[{code}]".format(
-                    error=response_json["error"], code=response_json["errorCode"]
-                )
-            )
-        return SetupHandler(response_json, self)
+        response = await self.__get("setup")
+        return Handler(response, self)
 
-    async def devices_data(self):
+    @backoff.on_exception(
+        backoff.expo,
+        (CozytouchException, ServerDisconnectedError),
+        max_tries=2,
+        on_backoff=relogin,
+    )
+    async def get_devices_data(self):
         """Fetch data."""
-        async with self._lock:  # Prevent call to the API if there is already one running
-            fresh = False
-            if self._last_fetch is not None:
-                fresh = (
-                    datetime.datetime.now() - self._last_fetch
-                ).total_seconds() < API_THROTTLE
-            if self._devices_data is None or not fresh:
-                if self._devices_data is None:
-                    logger.debug("Cache not available, fetching datas")
-                else:
-                    delta = (datetime.datetime.now() - self._last_fetch).total_seconds()
-                    logger.debug("Cache too old %s, fetching datas", delta)
-                response_json, response = await self.__make_request_reconnect("devices")
-                if response.status != 200:
-                    raise CozytouchException(
-                        "Unable to retrieve devices : {error}[{code}]".format(
-                            error=response_json["error"],
-                            code=response_json["errorCode"],
-                        )
-                    )
-                self._devices_data = response_json
-                self._last_fetch = datetime.datetime.now()
-            else:
-                logger.debug("Using cache for devices data")
-        return self._devices_data
+        response = await self.__get("setup/devices")
+        return response
 
     async def get_devices(self):
         """Get all devices (devices, places)."""
-        data = await self.devices_data()
-        return DevicesHandler(data, self)
+        setup = await self.get_setup()
+        return setup.devices
 
-    async def devices_info(self):
+    async def get_devices_info(self):
         """Get all infos device."""
         self._devices_info = {}
-        data = await self.devices_data()
+        data = await self.get_devices_data()
         for dev in data:
-            metadata = SetupHandler.parse_url(dev["deviceURL"])
+            metadata = Handler.parse_url(dev["deviceURL"])
             self._devices_info[metadata.base_url] = dev
         return self._devices_info
 
-    async def get_device_info(self, device_url):
+    async def get_device_state(self, device_url):
         """Get device info (devices, places)."""
-        datas = await self.devices_info()
+        datas = await self.get_devices_info()
 
         if device_url not in datas:
             raise CozytouchException(
@@ -189,29 +181,149 @@ class CozytouchClient:
 
     async def get_device(self, device_url):
         """Get device object (devices, places)."""
-        datas = await self.devices_info()
+        devices = await self.get_devices()
 
-        if device_url not in datas:
-            raise CozytouchException(
-                "Unable to retrieve device {device_url}: not in available devices".format(
-                    device_url=device_url
-                )
-            )
-        
-        return DevicesHandler.build(datas.get(device_url), self)
+        for item in devices.values():
+            if item.deviceUrl == device_url:
+                return item
+        return None
 
-    async def send_commands(self, commands):
-        """Send command to device."""
-        response_json, response = await self.__make_request_reconnect(
-            "apply",
-            method="POST",
-            data=commands,
-            headers={"Content-type": "application/json"},
-        )
-        if response.status != 200:
-            raise CozytouchException(
-                "Unable to send command : {error}[{code}]".format(
-                    error=response_json["error"], code=response_json["errorCode"]
-                )
-            )
-        return response_json
+    @backoff.on_exception(
+        backoff.expo,
+        (AuthentificationFailed, ServerDisconnectedError),
+        max_tries=2,
+        on_backoff=relogin,
+    )
+    async def get_places(self):
+        """List the places"""
+        response = await self.__get("setup/places")
+        return response
+
+    @backoff.on_exception(
+        backoff.expo,
+        (CozytouchException, ServerDisconnectedError),
+        max_tries=2,
+        on_backoff=relogin,
+    )
+    async def get_scenarios(self) -> list[Scenario]:
+        """List the scenarios"""
+        response = await self.__get("actionGroups")
+        return [Scenario(**scenario) for scenario in response]
+
+    @backoff.on_exception(
+        backoff.expo, AuthentificationFailed, max_tries=2, on_backoff=relogin
+    )
+    async def execute_scenario(self, oid: str) -> str:
+        """Execute a scenario"""
+        response = await self.__post(f"exec/{oid}")
+        return response["execId"]
+
+    @backoff.on_exception(
+        backoff.expo, AuthentificationFailed, max_tries=2, on_backoff=relogin
+    )
+    async def send_commands(
+        self,
+        device_url: str,
+        commands: list[Command],
+        label: str | None = "python-api",
+    ) -> str:
+        """Send several commands in one call"""
+        if isinstance(commands, str):
+            command = Command(commands)
+
+        payload = {
+            "label": label,
+            "actions": [{"deviceURL": device_url, "commands": [commands]}],
+        }
+        response = await self.__post("exec/apply", payload)
+        return response["execId"]
+
+    @staticmethod
+    async def check_response(response: ClientResponse) -> None:
+        """Check the response returned by API"""
+        if response.status in [200, 204]:
+            return
+
+        try:
+            result = await response.json(content_type=None)
+        except JSONDecodeError as error:
+            result = await response.text()
+            if "Server is down for maintenance" in result:
+                raise CozytouchException("Server is down for maintenance") from error
+            raise Exception(
+                f"Unknown error while requesting {response.url}. {response.status} - {result}"
+            ) from error
+
+        if result.get("errorCode"):
+            message = result.get("error")
+
+            # {"errorCode": "AUTHENTICATION_ERROR",
+            # "error": "Too many requests, try again later : login with xxx@xxx.tld"}
+            if "Too many requests" in message:
+                raise AuthentificationFailed(message)
+
+            # {"errorCode": "AUTHENTICATION_ERROR", "error": "Bad credentials"}
+            if message == "Bad credentials":
+                raise AuthentificationFailed(message)
+
+            # {"errorCode": "RESOURCE_ACCESS_DENIED", "error": "Not authenticated"}
+            if message == "Not authenticated":
+                raise AuthentificationFailed(message)
+
+            # {"error": "Server busy, please try again later. (Too many executions)"}
+            if message == "Server busy, please try again later. (Too many executions)":
+                raise CozytouchException(message)
+
+            # {"error": "UNSUPPORTED_OPERATION", "error": "No such command : ..."}
+            if "No such command" in message:
+                raise CozytouchException(message)
+
+            # {'errorCode': 'UNSPECIFIED_ERROR', 'error': 'Invalid event listener id : ...'}
+            if "Invalid event listener id" in message:
+                raise CozytouchException(message)
+
+            # {'errorCode': 'UNSPECIFIED_ERROR', 'error': 'No registered event listener'}
+            if message == "No registered event listener":
+                raise CozytouchException(message)
+
+        raise Exception(message if message else result)
+
+    async def register_event_listener(self) -> str:
+        """
+        Register a new setup event listener on the current session and return a new
+        listener id.
+        Only one listener may be registered on a given session.
+        Registering an new listener will invalidate the previous one if any.
+        Note that registering an event listener drastically reduces the session
+        timeout : listening sessions are expected to call the /events/{listenerId}/fetch
+        API on a regular basis.
+        """
+        reponse = await self.__post("events/register")
+        listener_id = reponse.get("id")
+        self.event_listener_id = listener_id
+
+        return listener_id
+
+    async def unregister_event_listener(self) -> None:
+        """
+        Unregister an event listener.
+        API response status is always 200, even on unknown listener ids.
+        """
+        await self.__post(f"events/{self.event_listener_id}/unregister")
+        self.event_listener_id = None
+
+    @backoff.on_exception(
+        backoff.expo,
+        (AuthentificationFailed, CozytouchException),
+        max_tries=2,
+        on_backoff=refresh_listener,
+    )
+    async def fetch_events(self):
+        """
+        Fetch new events from a registered event listener. Fetched events are removed
+        from the listener buffer. Return an empty response if no event is available.
+        Per-session rate-limit : 1 calls per 1 SECONDS period for this particular
+        operation (polling)
+        """
+        response = await self.__post(f"events/{self.event_listener_id}/fetch")
+        return response

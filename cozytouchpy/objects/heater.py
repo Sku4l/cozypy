@@ -99,70 +99,35 @@ class CozytouchHeater(CozytouchDevice):
 
     async def set_operating_mode(self, mode):
         """Set operating mode."""
-        mode_state = ds.OPERATING_MODE_STATE
-        actions = [(dc.SET_OPERATING_MODE, mode), (dc.REFRESH_OPERATING_MODE, None)]
-        await self.set_mode(mode_state, actions)
-        self.set_state(mode_state, mode)
+        await self.set_mode(dc.SET_OPERATING_MODE, mode)
 
     async def set_preset_mode(self, mode):
         """Set targeting heating level (Preset mode)."""
-        mode_state = ds.TARGETING_HEATING_LEVEL_STATE
-        actions = [(dc.SET_HEATING_LEVEL, mode)]
-        await self.set_mode(mode_state, actions)
-        self.set_state(mode_state, mode)
+        await self.set_mode(dc.SET_HEATING_LEVEL, mode)
 
     async def set_eco_temperature(self, temp):
         """Set eco temperature."""
-        mode_state = ds.ECO_TEMPERATURE_STATE
         temperature = float(self.target_comfort_temperature) - float(temp)
-        actions = [
-            (dc.SET_ECO_TEMP, temperature),
-            (dc.REFRESH_LOWERING_TEMP_PROG, None),
-        ]
-        await self.set_mode(mode_state, actions)
-        self.set_state(mode_state, temperature)
+        await self.set_mode(dc.SET_ECO_TEMP, temperature)
 
     async def set_comfort_temperature(self, temperature):
         """Set comfort temperature."""
-        mode_state = ds.COMFORT_TEMPERATURE_STATE
-        eco_state = ds.ECO_TEMPERATURE_STATE
         eco_temp = float(temperature) - float(self.target_eco_temperature)
-        actions = [
-            (dc.SET_COMFORT_TEMP, temperature),
-            (dc.SET_ECO_TEMP, eco_temp),
-            (dc.REFRESH_TARGET_TEMPERATURE, None),
-            (dc.REFRESH_COMFORT_TEMPERATURE, None),
-            (dc.REFRESH_LOWERING_TEMP_PROG, None),
-        ]
-        await self.set_mode(mode_state, actions)
-        self.set_state(mode_state, temperature)
-        self.set_state(eco_state, eco_temp)
+        await self.set_mode(dc.SET_COMFORT_TEMP, temperature)
+        await self.set_mode(dc.SET_ECO_TEMP, eco_temp)
+
 
     async def set_target_temperature(self, temperature):
         """Set target temperature."""
-        mode_state = ds.TARGET_TEMPERATURE_STATE
-        actions = [
-            (dc.SET_TARGET_TEMP, temperature),
-            (dc.REFRESH_ECO_TEMPERATURE, None),
-            (dc.REFRESH_COMFORT_TEMPERATURE, None),
-            (dc.REFRESH_LOWERING_TEMP_PROG, None),
-        ]
-        await self.set_mode(mode_state, actions)
-        self.set_state(mode_state, temperature)
+        await self.set_mode(dc.SET_TARGET_TEMP, temperature)
 
     async def turn_away_mode_on(self):
         """Turn on away mode."""
-        mode_state = ds.AWAY_STATE
-        actions = [(dc.SET_AWAY_MODE, OnOffState.ON)]
-        await self.set_mode(mode_state, actions)
-        self.set_state(mode_state, OnOffState.ON)
+        await self.set_mode(dc.SET_AWAY_MODE, OnOffState.ON)
 
     async def turn_away_mode_off(self):
         """Turn off away mode."""
-        mode_state = ds.AWAY_STATE
-        actions = [(dc.SET_AWAY_MODE, OnOffState.ON)]
-        await self.set_mode(mode_state, actions)
-        self.set_state(mode_state, OnOffState.ON)
+        await self.set_mode(dc.SET_AWAY_MODE, OnOffState.OFF)
 
     async def turn_on(self):
         """Set on."""

@@ -117,105 +117,47 @@ class CozytouchClimate(CozytouchDevice):
 
     async def set_operating_mode(self, thermal_mode):
         """Set thermal state (HVAC Mode Heat/Cool/HeatAndCool)."""
-        mode_state = ds.HEATING_ON_OFF_STATE
-        thermal_state = ds.THERMAL_CONFIGURATION_STATE
         if thermal_mode == ThermalState.HEAT:
-            actions = [
-                (dc.SET_HEATING_ON_OFF_STATE, OnOffState.ON),
-                (dc.SET_COOLING_ON_OFF_STATE, OnOffState.OFF),
-                (dc.REFRESH_PASS_APC_HEATING_MODE, None),
-                (dc.REFRESH_PASS_APC_COOLING_MODE, None),
-            ]
+            await self.set_mode(dc.SET_HEATING_ON_OFF_STATE, OnOffState.ON)
+            await self.set_mode(dc.SET_COOLING_ON_OFF_STATE, OnOffState.OFF)
         elif thermal_mode == ThermalState.COOL:
-            actions = [
-                (dc.SET_HEATING_ON_OFF_STATE, OnOffState.OFF),
-                (dc.SET_COOLING_ON_OFF_STATE, OnOffState.ON),
-                (dc.REFRESH_PASS_APC_HEATING_MODE, None),
-                (dc.REFRESH_PASS_APC_COOLING_MODE, None),
-            ]
+            await self.set_mode(dc.SET_HEATING_ON_OFF_STATE, OnOffState.OFF)
+            await self.set_mode(dc.SET_COOLING_ON_OFF_STATE, OnOffState.ON)
         elif thermal_mode == ThermalState.HEATCOOL:
-            actions = [
-                (dc.SET_HEATING_ON_OFF_STATE, OnOffState.ON),
-                (dc.SET_COOLING_ON_OFF_STATE, OnOffState.ON),
-                (dc.REFRESH_PASS_APC_HEATING_MODE, None),
-                (dc.REFRESH_PASS_APC_COOLING_MODE, None),
-            ]
+            await self.set_mode(dc.SET_HEATING_ON_OFF_STATE, OnOffState.ON)
+            await self.set_mode(dc.SET_COOLING_ON_OFF_STATE, OnOffState.ON)            
         elif self.widget == dt.APC_HEATING_ZONE:
-            mode_state = ds.PASS_APC_HEATING_MODE_STATE
-            actions = [
-                (dc.SET_PASS_APC_HEATING_MODE, thermal_mode),
-                (dc.REFRESH_PASS_APC_HEATING_MODE, None),
-            ]
-        await self.set_mode(mode_state, actions)
-        self.set_state(thermal_state, thermal_mode)
+            await self.set_mode(dc.SET_PASS_APC_HEATING_MODE, thermal_mode)
 
     async def set_preset_mode(self, mode, thermal_mode=ThermalState.HEAT):
         """Set operating mode (Preset Mode)."""
         if thermal_mode in [ThermalState.HEAT, ThermalState.HEATCOOL]:
-            mode_state = ds.PASS_APC_HEATING_MODE_STATE
-            actions = [
-                (dc.SET_PASS_APC_HEATING_MODE, mode),
-                (dc.REFRESH_PASS_APC_HEATING_MODE, None),
-            ]
-            await self.set_mode(mode_state, actions)
-            self.set_state(mode_state, mode)
+            await self.set_mode(dc.SET_PASS_APC_HEATING_MODE, mode)
 
         if thermal_mode in [ThermalState.COOL, ThermalState.HEATCOOL]:
-            mode_state = ds.PASS_APC_COOLING_MODE_STATE
-            actions = [
-                (dc.SET_PASS_APC_COOLING_MODE, mode),
-                (dc.REFRESH_PASS_APC_COOLING_MODE, None),
-            ]
-            await self.set_mode(mode_state, actions)
-            self.set_state(mode_state, mode)
+            await self.set_mode(dc.SET_PASS_APC_COOLING_MODE, mode)
 
     async def set_eco_temperature(self, temperature, thermal_mode=ThermalState.HEAT):
         """Set eco temperature."""
         if thermal_mode == ThermalState.HEAT:
-            mode_state = ds.ECO_HEATING_TARGET_TEMPERATURE_STATE
-            actions = [
-                (dc.SET_ECO_HEATING_TARGET_TEMPERATURE, temperature),
-                (dc.REFRESH_ECO_HEATING_TARGET_TEMPERATURE, None),
-            ]
+            await self.set_mode(dc.SET_ECO_HEATING_TARGET_TEMPERATURE, temperature)
         elif thermal_mode == ThermalState.COOL:
-            mode_state = ds.ECO_COOLING_TARGET_TEMPERATURE_STATE
-            actions = [
-                (dc.SET_ECO_COOLING_TARGET_TEMPERATURE, temperature),
-                (dc.REFRESH_ECO_COOLING_TARGET_TEMPERATURE, None),
-            ]
-        await self.set_mode(mode_state, actions)
-        self.set_state(mode_state, temperature)
+            await self.set_mode(dc.SET_ECO_COOLING_TARGET_TEMPERATURE, temperature)
 
     async def set_comfort_temperature(self, temperature, thermal_mode=ThermalState.HEAT):
         """Set comfort temperature."""
         if thermal_mode == ThermalState.HEAT:
-            mode_state = ds.COMFORT_HEATING_TARGET_TEMPERATURE_STATE
-            actions = [
-                (dc.SET_COMFORT_HEATING_TARGET_TEMPERATURE, temperature),
-                (dc.REFRESH_COMFORT_HEATING_TARGET_TEMPERATURE, None),
-            ]
+            await self.set_mode(dc.SET_COMFORT_HEATING_TARGET_TEMPERATURE, temperature)
         elif thermal_mode == ThermalState.COOL:
-            mode_state = ds.COMFORT_COOLING_TARGET_TEMPERATURE_STATE
-            actions = [
-                (dc.SET_COMFORT_COOLING_TARGET_TEMPERATURE, temperature),
-                (dc.REFRESH_COMFORT_COOLING_TARGET_TEMPERATURE, None),
-            ]
-        await self.set_mode(mode_state, actions)
-        self.set_state(mode_state, temperature)
+            await self.set_mode(dc.SET_COMFORT_COOLING_TARGET_TEMPERATURE, temperature)        
 
     async def set_derogated_temperature(self, temperature: float):
         """Set derogate temp."""
-        mode_state = ds.DEROGATION_ON_OFF_STATE
-        actions = [(dc.SET_DEROGATED_TARGET_TEMP, temperature)]
-        await self.set_mode(mode_state, actions)
-        self.set_state(mode_state, temperature)
+        await self.set_mode(dc.SET_DEROGATED_TARGET_TEMP, temperature)
 
     async def set_derogated_mode(self, mode: OnOffState):
         """Set away mode off."""
-        mode_state = ds.DEROGATION_ON_OFF_STATE
-        actions = [(dc.SET_DEROGATION_ON_OFF_STATE, mode)]
-        await self.set_mode(mode_state, actions)
-        self.set_state(mode_state, mode)
+        await self.set_mode(dc.SET_DEROGATION_ON_OFF_STATE, mode)
 
     async def turn_derogated_on(self):
         """Turn derogated on."""
@@ -236,22 +178,16 @@ class CozytouchClimate(CozytouchDevice):
     async def turn_on(self, thermal_mode=ThermalState.HEAT):
         """Set on."""
         if thermal_mode == ThermalState.HEAT:
-            mode_state = ds.HEATING_ON_OFF_STATE
-            actions = [(dc.SET_HEATING_ON_OFF_STATE, OnOffState.ON)]
+            await self.set_mode(dc.SET_HEATING_ON_OFF_STATE, OnOffState.ON)
         elif thermal_mode == ThermalState.COOL:
-            mode_state = ds.COOLING_ON_OFF_STATE
-            actions = [(dc.SET_COOLING_ON_OFF_STATE, OnOffState.ON)]
-        await self.set_mode(mode_state, actions)
+            await self.set_mode(dc.SET_COOLING_ON_OFF_STATE, OnOffState.ON)
 
     async def turn_off(self, thermal_mode=ThermalState.HEAT):
         """Set off."""
         if thermal_mode == ThermalState.HEAT:
-            mode_state = ds.HEATING_ON_OFF_STATE
-            actions = [(dc.SET_HEATING_ON_OFF_STATE, OnOffState.OFF)]
+            await self.set_mode(dc.SET_HEATING_ON_OFF_STATE, OnOffState.OFF)
         elif thermal_mode == ThermalState.COOL:
-            mode_state = ds.COOLING_ON_OFF_STATE
-            actions = [(dc.SET_COOLING_ON_OFF_STATE, OnOffState.OFF)]
-        await self.set_mode(mode_state, actions)
+            await self.set_mode(dc.SET_COOLING_ON_OFF_STATE, OnOffState.OFF)
 
     async def update(self):
         """Update heater device."""

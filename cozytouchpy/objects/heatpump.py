@@ -47,42 +47,22 @@ class CozytouchHeatPump(CozytouchDevice):
 
     async def set_operating_mode(self, mode):
         """Set operating mode."""
-        mode_state = ds.OPERATING_MODE_STATE
-        actions = [
-            (dc.SET_PASS_APC_OPERATING_MODE, mode),
-            (dc.REFRESH_OPERATING_MODE, None),
-        ]
-        await self.set_mode(mode_state, actions)
-        self.set_state(mode_state, mode)
+        await self.set_mode(dc.SET_PASS_APC_OPERATING_MODE, mode)
 
     async def set_away_datetime(self, parameters, mode):
         """Set away date time."""
         parameters = dt_to_json(parameters)
         if mode == "start":
-            mode_state = ds.ABSENCE_START_DATE_STATE
-            actions = [
-                (dc.SET_ABSENCE_START_DATE_TIME, parameters),
-                (dc.REFRESH_ABSENCE_SCHEDULING_AVAILABLE, None),
-            ]
+            await self.set_mode(dc.SET_ABSENCE_START_DATE_TIME, parameters)
         if mode == "end":
-            mode_state = ds.ABSENCE_END_DATE_STATE
-            actions = [
-                (dc.SET_ABSENCE_END_DATE_TIME, parameters),
-                (dc.REFRESH_ABSENCE_SCHEDULING_AVAILABLE, None),
-            ]
-        await self.set_mode(mode_state, actions)
-        self.set_state(mode_state, mode)
+            await self.set_mode(dc.SET_ABSENCE_END_DATE_TIME, parameters)
 
     async def set_derogate_temperature(self, temperature, thermal_mode=ThermalState.HEAT):
         """Set operating mode."""
         if thermal_mode == ThermalState.HEAT:
-            mode_state = ds.ABSENCE_HEATING_TARGET_TEMPERATURE_STATE
-            actions = [(dc.SET_ABSENCE_HEATING_TARGET_TEMP, temperature)]
+            await self.set_mode(dc.SET_ABSENCE_HEATING_TARGET_TEMP, temperature)
         elif thermal_mode == ThermalState.COOL:
-            mode_state = ds.ABSENCE_COOLING_TARGET_TEMPERATURE_STATE
-            actions = [(dc.SET_ABSENCE_COOLING_TARGET_TEMP, temperature)]
-        await self.set_mode(mode_state, actions)
-        self.set_state(mode_state, temperature)
+            await self.set_mode(dc.SET_ABSENCE_COOLING_TARGET_TEMP, temperature)
 
     async def update(self):
         """Update heating zone box."""

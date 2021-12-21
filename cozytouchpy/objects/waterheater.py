@@ -32,7 +32,7 @@ class CozytouchWaterHeater(CozytouchDevice):
 
     @property
     def current_temperature(self):
-        """Return tempereture (middle water heater)."""
+        """Return temperature (middle water heater)."""
         return self.get_state(ds.MIDDLE_WATER_TEMPERATURE_STATE)
 
     @property
@@ -75,112 +75,52 @@ class CozytouchWaterHeater(CozytouchDevice):
 
     async def set_operating_mode(self, mode):
         """Set operating mode."""
-        mode_state = ds.DHW_MODE_STATE
-        actions = [(dc.SET_DWH_MODE, mode), (dc.REFRESH_DHW_MODE, None)]
         if self.widget == dt.APC_WATER_HEATER:
-            mode_state = ds.PASS_APC_DHW_MODE_STATE
-            actions = [
-                (dc.SET_PASS_APC_DHW_MODE, mode),
-                (dc.REFRESH_PASS_APC_DHW_MODE, None),
-            ]
-        await self.set_mode(mode_state, actions)
-        self.set_state(mode_state, mode)
+            await self.set_mode(dc.SET_PASS_APC_DHW_MODE, mode)
+        await self.set_mode(dc.SET_DWH_MODE, mode)
 
     async def set_away_mode(self, duration):
         """Set away mode."""
-        mode_state = ds.AWAY_MODE_DURATION_STATE
-        actions_off = [
-            (dc.SET_CURRENT_OPERATING_MODE, {"relaunch": "off", "absence": "off"})
-        ]
-        actions_on = [
-            (dc.SET_AWAYS_MODE_DURATION, duration),
-            (dc.SET_CURRENT_OPERATING_MODE, {"relaunch": "off", "absence": "on"}),
-            (dc.REFRESH_AWAYS_MODE_DURATION, None),
-        ]
-
         if self.controllable_name == dt.DHW_V2_FLATC2_IO:
-            mode_state = ds.DHW_ABSENCE_MODE_STATE
-            actions_on = [
-                (dc.SET_ABSENCE_MODE, OnOffState.ON),
-                (dc.REFRESH_ABSENCE_MODE, None),
-            ]
-            actions_off = [
-                (dc.SET_ABSENCE_MODE, OnOffState.OFF),
-                (dc.REFRESH_ABSENCE_MODE, None),
-            ]
-
-        actions = actions_on
-        if int(duration) == 0:
-            actions = actions_off
-        await self.set_mode(mode_state, actions)
+            if int(duration) == 0:
+                await self.set_mode(dc.SET_ABSENCE_MODE, OnOffState.OFF)
+            else:
+                await self.set_mode(dc.SET_ABSENCE_MODE, OnOffState.ON)
+        else:
+            if int(duration) == 0:
+                await self.set_mode(dc.SET_CURRENT_OPERATING_MODE, {"relaunch": "off", "absence": "off"})
+            else:
+                await self.set_mode(dc.SET_AWAYS_MODE_DURATION, duration)
+                await self.set_mode(dc.SET_CURRENT_OPERATING_MODE, {"relaunch": "off", "absence": "on"})
 
     async def set_boost_mode(self, duration):
         """Set Boost mode."""
         if self.widget == dt.APC_WATER_HEATER:
-            mode_state = ds.BOOST_ON_OFF_STATE
             if int(duration) == 0:
-                actions = [(dc.SET_BOOST_MODE_DURATION, OnOffState.OFF)]
-                await self.set_mode(mode_state, actions)
-                self.set_state(mode_state, OnOffState.OFF)
+                await self.set_mode(dc.SET_BOOST_MODE_DURATION, OnOffState.OFF)
             else:
-                actions = [(dc.SET_BOOST_MODE_DURATION, OnOffState.ON)]
-                await self.set_mode(mode_state, actions)
-                self.set_state(mode_state, OnOffState.ON)
+                await self.set_mode(dc.SET_BOOST_MODE_DURATION, OnOffState.ON)
         else:
-            mode_state = ds.BOOST_MODE_DURATION_STATE
             if int(duration) == 0:
-                actions = [
-                    (
-                        dc.SET_CURRENT_OPERATING_MODE,
-                        {"relaunch": "off", "absence": "off"},
-                    )
-                ]
-                await self.set_mode(mode_state, actions)
-                self.set_state(mode_state, duration)
+                await self.set_mode(dc.SET_CURRENT_OPERATING_MODE, {"relaunch": "off", "absence": "off"})
             else:
-                actions = [
-                    (dc.SET_BOOST_MODE_DURATION, duration),
-                    (
-                        dc.SET_CURRENT_OPERATING_MODE,
-                        {"relaunch": "on", "absence": "off"},
-                    ),
-                    (dc.REFRESH_BOOST_MODE_DURATION, None),
-                ]
-                await self.set_mode(mode_state, actions)
-                self.set_state(mode_state, duration)
+                await self.set_mode(dc.SET_BOOST_MODE_DURATION, duration)
+                await self.set_mode(dc.SET_CURRENT_OPERATING_MODE, {"relaunch": "on", "absence": "off"})
 
     async def set_temperature(self, temperature):
         """Set temperature."""
         if self.widget == dt.APC_WATER_HEATER:
             self.set_comfort_temperature(temperature)
         elif self.widget == dt.WATER_HEATER:
-            mode_state = ds.TARGET_TEMPERATURE_STATE
-            actions = [
-                (dc.SET_TARGET_TEMP, temperature),
-                (dc.REFRESH_TARGET_TEMPERATURE, None),
-            ]
-            await self.set_mode(mode_state, actions)
-            self.set_state(mode_state, temperature)
+            await self.set_mode(dc.SET_TARGET_TEMP, temperature)
 
     async def set_eco_temperature(self, temperature):
         """Set operating mode."""
-        mode_state = ds.ECO_TARGET_DHW_TEMPERATURE_STATE
-        actions = [
-            (dc.SET_ECO_TARGET_DHW_TEMPERATURE, temperature),
-            (dc.REFRESH_ECO_TARGET_DHW_TEMPERATURE, None),
-        ]
-        await self.set_mode(mode_state, actions)
-        self.set_state(mode_state, temperature)
+        await self.set_mode(dc.SET_ECO_TARGET_DHW_TEMPERATURE, temperature)
 
     async def set_comfort_temperature(self, temperature):
         """Set operating mode."""
-        mode_state = ds.COMFORT_TARGET_DHW_TEMPERATURE_STATE
-        actions = [
-            (dc.SET_COMFORT_TARGET_DHW_TEMPERATURE, temperature),
-            (dc.REFRESH_COMFORT_TARGET_DHW_TEMPERATURE, None),
-        ]
-        await self.set_mode(mode_state, actions)
-        self.set_state(mode_state, temperature)
+        await self.set_mode(dc.SET_COMFORT_TARGET_DHW_TEMPERATURE, temperature)
 
     async def update(self):
         """Update water heater ."""

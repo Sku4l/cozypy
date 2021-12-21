@@ -1,8 +1,8 @@
 """Describe objects for cozytouch."""
 import logging
-from cozytouchpy.constant import DeviceState as ds
+from cozytouchpy.constant import DeviceState as ds, Command
 from cozytouchpy.exception import CozytouchException
-from cozytouchpy.utils import CozytouchAction, CozytouchCommand, CozytouchCommands, DeviceMetadata
+from cozytouchpy.utils import DeviceMetadata
 from .gateway import CozytouchGateway
 from .object import CozytouchObject
 from .place import CozytouchPlace
@@ -18,7 +18,7 @@ class CozytouchDevice(CozytouchObject):
         super(CozytouchDevice, self).__init__(data)
         self.states = data.get("states", {})
         self.definition = data.get("definition", {})
-        self.sensors = []
+        self.sensors = {}
         self.metadata: DeviceMetadata = None
         self.gateway: CozytouchGateway = None
         self.place: CozytouchPlace = None
@@ -87,19 +87,9 @@ class CozytouchDevice(CozytouchObject):
                 return sensor
         return default
 
-    async def set_mode(self, mode_state, actions):
+    async def set_mode(self, command_name, *args):
         """Set mode."""
-        if self.client is None:
-            raise CozytouchException("Unable to execute command")
-
-        obj_commands = CozytouchCommands(f"Change {mode_state} mode")
-        obj_action = CozytouchAction(device_url=self.deviceUrl)
-        for action in actions:
-            command, paramters = action
-            self.has_state(mode_state, command, paramters)
-            obj_action.add_command(CozytouchCommand(command, paramters))
-        obj_commands.add_action(obj_action)
-        await self.client.send_commands(obj_commands)
+        await self.client.send_commands(self.deviceUrl, Command(command_name, list(args)))
 
     def has_state(self, mode_state, command_name, parameters):
         """Search and check parameters."""
@@ -137,7 +127,7 @@ class CozytouchDevice(CozytouchObject):
         if self.client is None:
             raise CozytouchException("Unable to execute command")
         logger.debug("Update states sensors")
-        self.states = await self.client.get_device_info(self.deviceUrl)
+        self.states = await self.client.get_device_state(self.deviceUrl)
 
     def __str__(self):
         """Definition."""

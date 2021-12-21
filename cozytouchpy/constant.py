@@ -1,4 +1,44 @@
 """Constants."""
+from __future__ import annotations
+
+from typing import Any
+
+import attr
+
+
+@attr.s(auto_attribs=True, slots=True, kw_only=True)
+class OverkizServer:
+    """Class to describe an Overkiz server."""
+
+    name: str
+    endpoint: str
+    manufacturer: str
+    configuration_url: str
+
+
+class Command(dict):  # type: ignore
+    """Represents an Command."""
+
+    def __init__(self, name: str, parameters: list[str] | None = None, **_: Any):
+        self.name = name
+        self.parameters = parameters
+        dict.__init__(self, name=name, parameters=parameters)
+
+
+COZYTOUCH_ATLANTIC_API = "https://api.groupe-atlantic.com"
+COZYTOUCH_CLIENT_ID = (
+    "czduc0RZZXdWbjVGbVV4UmlYN1pVSUM3ZFI4YTphSDEzOXZmbzA1ZGdqeDJkSFVSQkFTbmhCRW9h"
+)
+
+SUPPORTED_SERVERS = {
+    "atlantic_cozytouch": OverkizServer(
+        name="Atlantic Cozytouch",
+        endpoint="https://ha110-1.overkiz.com/enduser-mobile-web/enduserAPI/",
+        manufacturer="Atlantic",
+        configuration_url=None,
+    )
+}
+
 
 COZYTOUCH_BASE_URL = "https://ha110-1.overkiz.com/enduser-mobile-web/enduserAPI"
 
@@ -20,6 +60,7 @@ USER_AGENT = "Home assistant/Cozytouch"
 API_THROTTLE = 60  # Delay minimum between API call
 
 
+
 class DeviceType:
     """Device type."""
 
@@ -38,8 +79,8 @@ class DeviceType:
     TEMPERATURE = "TemperatureSensor"
     CONTACT = "ContactSensor"
     OCCUPANCY = "OccupancySensor"
-    ELECTRECITY = "CumulativeElectricPowerConsumptionSensor"
-    DHW_ELECTRECITY = "DHWRelatedElectricalEnergyConsumptionSensor"
+    ELECTRICITY = "CumulativeElectricPowerConsumptionSensor"
+    DHW_ELECTRICITY = "DHWRelatedElectricalEnergyConsumptionSensor"
     FOSSIL_ENERGY = "CumulativeFossilEnergyConsumptionSensor"
 
     # Actuators - Controllable Name
@@ -85,7 +126,7 @@ class DeviceType:
     CLASS_TEMPERATURE = [TEMPERATURE]
     CLASS_CONTACT = [CONTACT]
     CLASS_OCCUPANCY = [OCCUPANCY]
-    CLASS_ELECTRECITY = [ELECTRECITY, DHW_ELECTRECITY]
+    CLASS_ELECTRICITY = [ELECTRICITY, DHW_ELECTRICITY]
     CLASS_FOSSIL = [FOSSIL_ENERGY]
 
     # Class Actuators
@@ -103,8 +144,8 @@ class DeviceType:
             cls.TEMPERATURE,
             cls.CONTACT,
             cls.OCCUPANCY,
-            cls.ELECTRECITY,
-            cls.DHW_ELECTRECITY,
+            cls.ELECTRICITY,
+            cls.DHW_ELECTRICITY,
             cls.FOSSIL_ENERGY,
         ]
 
